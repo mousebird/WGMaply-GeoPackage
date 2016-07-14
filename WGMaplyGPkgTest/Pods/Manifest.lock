@@ -1,0 +1,45 @@
+PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
+  - geopackage-ios (1.2.1):
+    - AFNetworking (~> 3.1)
+    - proj4 (~> 4.8)
+    - wkb-ios (~> 1.0.6)
+  - proj4 (4.8.0)
+  - wkb-ios (1.0.6)
+
+DEPENDENCIES:
+  - geopackage-ios (from `https://github.com/ngageoint/geopackage-ios.git`, branch `master`)
+
+EXTERNAL SOURCES:
+  geopackage-ios:
+    :branch: master
+    :git: https://github.com/ngageoint/geopackage-ios.git
+
+CHECKOUT OPTIONS:
+  geopackage-ios:
+    :commit: 3f32e20eb59486cc8e200474cbf20561700159eb
+    :git: https://github.com/ngageoint/geopackage-ios.git
+
+SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  geopackage-ios: 84aa271bc46253283fb997db4a954dd7defcdeed
+  proj4: 234525105d05a33b2ae9a90a6fe3935f7a246f7e
+  wkb-ios: 8d1526e825e3d088a5a191c8eefe213a9e41d25e
+
+PODFILE CHECKSUM: a6d3402d2431c1a1664c58a88253eeefdbc41f7b
+
+COCOAPODS: 1.0.1

@@ -1,0 +1,1 @@
+../../../geopackage-ios/geopackage-ios/schema/columns/GPKGDataColumns.h

@@ -1,0 +1,1 @@
+../../../geopackage-ios/geopackage-ios/factory/GPKGGeoPackageFactory.h

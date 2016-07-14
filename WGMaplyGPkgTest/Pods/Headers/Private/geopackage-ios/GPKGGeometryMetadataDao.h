@@ -1,0 +1,1 @@
+../../../geopackage-ios/geopackage-ios/db/metadata/GPKGGeometryMetadataDao.h
