@@ -13,8 +13,8 @@
 #define kERDCWhitehorseTest 1
 #define kRiverTilesTest 2
 
-#define gpkgTestMode kERDCWhitehorseTest
+#define gpkgTestMode kDNCSanDiegoTest
 #define gpkgTestDoGlobe false
-#define gpkgTestSanDiegoForce3857 false
+
 
 #endif /* GPkgTestConfig_h */

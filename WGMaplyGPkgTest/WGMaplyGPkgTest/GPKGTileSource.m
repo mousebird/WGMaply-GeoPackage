@@ -54,17 +54,10 @@
             NSLog(@"srs is EPSG 4326");
             projMinX = -180.0;
             projMinY = -180.0;
-            if (gpkgTestSanDiegoForce3857)
-                _coordSys = [[MaplySphericalMercator alloc] initWebStandard];
-            else {
-                //_coordSys = [[MaplyPlateCarree alloc] initFullCoverage];
-                
-                MaplyProj4CoordSystem *cs = [[MaplyProj4CoordSystem alloc] initWithString:@"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"];
-                [cs setBounds:MaplyBoundingBoxMakeWithDegrees(-180.0, -180, 180.0, 180.0)];
-                NSLog(@"valid: %i", cs.valid);
-                _coordSys = cs;
-            }
-            //_coordSys = [[MaplySphericalMercator alloc] initWebStandard];
+            
+            MaplyProj4CoordSystem *cs = [[MaplyProj4CoordSystem alloc] initWithString:@"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"];
+            [cs setBounds:MaplyBoundingBoxMakeWithDegrees(-180.0, -180, 180.0, 180.0)];
+            _coordSys = cs;
         } else if ([srs.organizationCoordsysId isEqualToNumber:@(3857)]) {
             NSLog(@"srs is EPSG 3857");
             projMinX = -20037508.3427892;
@@ -81,18 +74,11 @@
         
         GPKGBoundingBox * gpkgBBox = [tileMatrixSet getBoundingBox];
         
-        MaplyBoundingBox matrixSetBbox = MaplyBoundingBoxMakeWithDegrees(
-                                                                gpkgBBox.minLongitude.doubleValue,
-                                                                gpkgBBox.minLatitude.doubleValue,
-                                                                gpkgBBox.maxLongitude.doubleValue,
-                                                                gpkgBBox.maxLatitude.doubleValue);
-        
         NSLog(@"bbox %f %f %f %f",
               gpkgBBox.minLongitude.doubleValue,
               gpkgBBox.minLatitude.doubleValue,
               gpkgBBox.maxLongitude.doubleValue,
               gpkgBBox.maxLatitude.doubleValue);
-        
         
         _tileOffsets = [NSMutableDictionary dictionary];
         int n = -1;
@@ -119,12 +105,10 @@
             double ySridUnitsPerTile = n * tileMatrix.pixelYSize.doubleValue;
             double xOffset = (tileMatrixSet.minX.doubleValue - projMinX) / xSridUnitsPerTile;
             double yOffset;
-            if (gpkgTestMode == kDNCSanDiegoTest)
-                yOffset = (tileMatrixSet.maxY.doubleValue - projMinY) / ySridUnitsPerTile;
-            else if (gpkgTestMode == kERDCWhitehorseTest)
-                yOffset = (tileMatrixSet.maxY.doubleValue - projMinY) / ySridUnitsPerTile;
-            else
+            if (gpkgTestMode == kRiverTilesTest)
                 yOffset = (tileMatrixSet.minY.doubleValue - projMinY) / ySridUnitsPerTile;
+            else
+                yOffset = (tileMatrixSet.maxY.doubleValue - projMinY) / ySridUnitsPerTile;
             if (xOffset < 1.0)
                 xOffset = 0.0;
             if (yOffset < 1.0)
@@ -180,26 +164,13 @@
                        
                        int newX = tileID.x - xOffset;
                        int newY;
-                       if (gpkgTestMode == kDNCSanDiegoTest) {
-                           //newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
-                           newY = yOffset - (tileID.y + 1);
-                       }
-                       else if (gpkgTestMode == kRiverTilesTest)
+                       if (gpkgTestMode == kRiverTilesTest)
                            newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
-                       else if (gpkgTestMode == kERDCWhitehorseTest) {
-                           //newY = yOffset - (tileID.y + 1 - (1 << (tileID.level-10)));
+                       else
                            newY = yOffset - (tileID.y + 1);
-                       }
                        
-                       //int invY = (1 << tileID.level) - tileID.y - 1;
                        NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, newX, newY);
-                       //int invY = tileID.y;
-//                       if (yOffset-invY-1>=0 && tileID.x-xOffset>=0) {
-//                           NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, tileID.x-xOffset, yOffset-invY-1);
-//                       }
                        GPKGGeoPackageTile *gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
-                       //GPKGGeoPackageTile *gpkgTile = [_retriever getTileWithX:tileID.x-xOffset andY:yOffset-(invY+1) andZoom:tileID.level];
-                           
 
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
