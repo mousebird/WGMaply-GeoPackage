@@ -48,12 +48,12 @@
         }
         
         
-        double projMinX, projMinY;
+        double projMinX, projMaxY;
         
         if ([srs.organizationCoordsysId isEqualToNumber:@(4326)]) {
             NSLog(@"srs is EPSG 4326");
             projMinX = -180.0;
-            projMinY = -180.0;
+            projMaxY = 180.0;
             
             MaplyProj4CoordSystem *cs = [[MaplyProj4CoordSystem alloc] initWithString:@"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"];
             [cs setBounds:MaplyBoundingBoxMakeWithDegrees(-180.0, -180, 180.0, 180.0)];
@@ -61,7 +61,7 @@
         } else if ([srs.organizationCoordsysId isEqualToNumber:@(3857)]) {
             NSLog(@"srs is EPSG 3857");
             projMinX = -20037508.3427892;
-            projMinY = -20037508.3427892;
+            projMaxY = 20037508.3427892;
             _coordSys = [[MaplySphericalMercator alloc] initWebStandard];
             
 
@@ -104,15 +104,7 @@
             double xSridUnitsPerTile = n * tileMatrix.pixelXSize.doubleValue;
             double ySridUnitsPerTile = n * tileMatrix.pixelYSize.doubleValue;
             double xOffset = (tileMatrixSet.minX.doubleValue - projMinX) / xSridUnitsPerTile;
-            double yOffset;
-            if (gpkgTestMode == kRiverTilesTest)
-                yOffset = (tileMatrixSet.minY.doubleValue - projMinY) / ySridUnitsPerTile;
-            else
-                yOffset = (tileMatrixSet.maxY.doubleValue - projMinY) / ySridUnitsPerTile;
-            if (xOffset < 1.0)
-                xOffset = 0.0;
-            if (yOffset < 1.0)
-                yOffset = 0.0;
+            double yOffset = (projMaxY - tileMatrixSet.maxY.doubleValue ) / ySridUnitsPerTile;
             NSLog(@"units per tile %f %f", xSridUnitsPerTile, ySridUnitsPerTile);
             NSLog(@"min x y %f %f", tileMatrixSet.minX.doubleValue, tileMatrixSet.minY.doubleValue);
             NSLog(@"offset %i %f %f", z, xOffset, yOffset);
@@ -163,11 +155,7 @@
                        int yOffset = ((NSNumber *)offsets[1]).intValue;
                        
                        int newX = tileID.x - xOffset;
-                       int newY;
-                       if (gpkgTestMode == kRiverTilesTest)
-                           newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
-                       else
-                           newY = yOffset - (tileID.y + 1);
+                       int newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
                        
                        NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, newX, newY);
                        GPKGGeoPackageTile *gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
