@@ -61,8 +61,6 @@
               gpkgBBox.maxLongitude.doubleValue,
               gpkgBBox.maxLatitude.doubleValue);
         
-        CLLocationCoordinate2D center = [gpkgBBox getCenter];
-        _center = MaplyCoordinateMakeWithDegrees(center.longitude, center.latitude);
 
         double projMinX, projMaxY;
         NSArray *bounds = _bounds[ [srs.organizationCoordsysId stringValue] ];
@@ -117,6 +115,18 @@
         
         [cs setBounds:bbox];
         _coordSys = cs;
+        
+        if (isDegree) {
+            MaplyCoordinate p;
+            p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
+            p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
+            _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
+        } else {
+            MaplyCoordinate p;
+            p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
+            p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
+            _center = [_coordSys localToGeo:p];
+        }
         
         _tileOffsets = [NSMutableDictionary dictionary];
         int n = -1;
