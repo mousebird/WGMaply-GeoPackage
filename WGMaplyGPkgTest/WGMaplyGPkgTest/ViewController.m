@@ -11,6 +11,7 @@
 #import "GPKGGeoPackageFactory.h"
 #import "GPKGTileSource.h"
 #import "MaplyWMSTileSource.h"
+#import "GPKGIOUtils.h"
 
 @interface ViewController ()
 
@@ -46,6 +47,12 @@
     } else if (gpkgTestMode == kRiverTilesTest) {
         gpkgFilename = @"rivers";
         gpkgTablename = @"rivers_tiles";
+    } else if (gpkgTestMode == kDNCNorfolkTest) {
+        gpkgFilename = @"dnc-norfolk-withfeatures";
+        gpkgTablename = @"DNCBASEMAP12_16";
+    } else if (gpkgTestMode == kBlueMarbleTest) {
+        gpkgFilename = @"bluemarble_3395_0-5";
+        gpkgTablename = @"bluemarble";
     }
     
     _manager = [GPKGGeoPackageFactory getManager];
@@ -55,7 +62,18 @@
         NSLog(@"Exception in importGeoPackageFromUrl %@", exception);
     }
     _geoPackage = [_manager open:gpkgFilename];
-    _gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:_geoPackage tableName:gpkgTablename];
+    
+    
+    NSString *boundsPath = [[NSBundle mainBundle] pathForResource:@"bounds" ofType:@"json"];
+    NSData *boundsData = [NSData dataWithContentsOfFile:boundsPath];
+    NSError *error = nil;
+    NSDictionary *bounds = [NSJSONSerialization JSONObjectWithData:boundsData
+                                                           options:kNilOptions
+                                                             error:&error];
+    
+    
+    
+    _gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:_geoPackage tableName:gpkgTablename bounds:bounds];
 
     
     if (gpkgTestDoGlobe) {
@@ -83,6 +101,10 @@
     else if (gpkgTestMode == kERDCWhitehorseTest)
         startCoord = MaplyCoordinateMakeWithDegrees(-135.18,60.85);
     else if (gpkgTestMode == kRiverTilesTest)
+        startCoord = MaplyCoordinateMakeWithDegrees( -74.0059,40.7127);
+    else if (gpkgTestMode == kDNCNorfolkTest)
+        startCoord = MaplyCoordinateMakeWithDegrees( -76.2,36.916667);
+    else if (gpkgTestMode == kBlueMarbleTest)
         startCoord = MaplyCoordinateMakeWithDegrees( -74.0059,40.7127);
     
     if (gpkgTestDoGlobe)

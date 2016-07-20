@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
+		E5B566AB1D3D273700DB0FD1 /* dnc-norfolk-withfeatures.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5B566A91D3D273700DB0FD1 /* dnc-norfolk-withfeatures.gpkg */; };
+		E5B566AF1D3D275300DB0FD1 /* bluemarble_3395_0-5.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5B566AE1D3D275300DB0FD1 /* bluemarble_3395_0-5.gpkg */; };
+		E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5B566B01D3D953E00DB0FD1 /* bounds.json */; };
 		E5BD7D791D380DD500519CB9 /* dnc-sandiego.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5BD7D761D380DD500519CB9 /* dnc-sandiego.gpkg */; };
 		E5BD7D7A1D380DD500519CB9 /* ERDC_Whitehorse_GeoPackage.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5BD7D771D380DD500519CB9 /* ERDC_Whitehorse_GeoPackage.gpkg */; };
 		E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5BD7D781D380DD500519CB9 /* rivers.gpkg */; };
@@ -48,6 +51,9 @@
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
+		E5B566A91D3D273700DB0FD1 /* dnc-norfolk-withfeatures.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dnc-norfolk-withfeatures.gpkg"; path = "../../sampleData/dnc-norfolk-withfeatures.gpkg"; sourceTree = "<group>"; };
+		E5B566AE1D3D275300DB0FD1 /* bluemarble_3395_0-5.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "bluemarble_3395_0-5.gpkg"; path = "../../sampleData/bluemarble_3395_0-5.gpkg"; sourceTree = "<group>"; };
+		E5B566B01D3D953E00DB0FD1 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bounds.json; sourceTree = "<group>"; };
 		E5BD7D761D380DD500519CB9 /* dnc-sandiego.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dnc-sandiego.gpkg"; path = "../../sampleData/dnc-sandiego.gpkg"; sourceTree = "<group>"; };
 		E5BD7D771D380DD500519CB9 /* ERDC_Whitehorse_GeoPackage.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = ERDC_Whitehorse_GeoPackage.gpkg; path = ../../sampleData/ERDC_Whitehorse_GeoPackage.gpkg; sourceTree = "<group>"; };
 		E5BD7D781D380DD500519CB9 /* rivers.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = rivers.gpkg; path = ../../sampleData/rivers.gpkg; sourceTree = "<group>"; };
@@ -148,6 +154,9 @@
 		E5D84F5C1D37F58300D5AF18 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E5B566B01D3D953E00DB0FD1 /* bounds.json */,
+				E5B566AE1D3D275300DB0FD1 /* bluemarble_3395_0-5.gpkg */,
+				E5B566A91D3D273700DB0FD1 /* dnc-norfolk-withfeatures.gpkg */,
 				E5BD7D761D380DD500519CB9 /* dnc-sandiego.gpkg */,
 				E5BD7D771D380DD500519CB9 /* ERDC_Whitehorse_GeoPackage.gpkg */,
 				E5BD7D781D380DD500519CB9 /* rivers.gpkg */,
@@ -257,11 +266,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5B566AB1D3D273700DB0FD1 /* dnc-norfolk-withfeatures.gpkg in Resources */,
 				E5BD7D791D380DD500519CB9 /* dnc-sandiego.gpkg in Resources */,
 				E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */,
+				E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */,
 				E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */,
 				E5BD7D7A1D380DD500519CB9 /* ERDC_Whitehorse_GeoPackage.gpkg in Resources */,
 				E5D84F671D37F58300D5AF18 /* Main.storyboard in Resources */,
+				E5B566AF1D3D275300DB0FD1 /* bluemarble_3395_0-5.gpkg in Resources */,
 				E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

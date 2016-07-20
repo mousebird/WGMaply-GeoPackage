@@ -13,6 +13,6 @@
 
 @interface GPKGTileSource : NSObject <MaplyTileSource>
 
-- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName;
+- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds;
 
 @end
