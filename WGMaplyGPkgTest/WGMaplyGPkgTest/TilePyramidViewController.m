@@ -72,6 +72,17 @@
     else
         [mapVC setPosition:startCoord height:0.002];
     
+    
+    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)  objectAtIndex:0];
+    // Add CartoDB positron basemap
+
+    MaplyRemoteTileSource *tileSource = [[MaplyRemoteTileSource alloc] initWithBaseURL:@"http://positron.basemaps.cartocdn.com/light_all/{z}/{x}/{y}" ext:@"png" minZoom:0 maxZoom:18];
+    tileSource.cacheDir = [NSString stringWithFormat:@"%@/positron/",cacheDir];
+    MaplyQuadImageTilesLayer *layer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:tileSource.coordSys tileSource:tileSource];
+    layer.drawPriority = kMaplyImageLayerDrawPriorityDefault;
+    layer.handleEdges = true;
+    [theViewC addLayer:layer];
+    
     _imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:_gpkgTileSource.coordSys tileSource:_gpkgTileSource];
     _imageLayer.numSimultaneousFetches = 2;
     _imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
