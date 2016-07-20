@@ -15,4 +15,6 @@
 
 - (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds;
 
+@property (nonatomic, readonly) MaplyCoordinate center;
+
 @end

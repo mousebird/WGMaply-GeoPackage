@@ -22,6 +22,7 @@
     NSMutableDictionary *_tileOffsets;
     int _tileSize;
     NSDictionary *_bounds;
+    MaplyCoordinate _center;
     
 }
 
@@ -59,6 +60,9 @@
               gpkgBBox.minLatitude.doubleValue,
               gpkgBBox.maxLongitude.doubleValue,
               gpkgBBox.maxLatitude.doubleValue);
+        
+        CLLocationCoordinate2D center = [gpkgBBox getCenter];
+        _center = MaplyCoordinateMakeWithDegrees(center.longitude, center.latitude);
 
         double projMinX, projMaxY;
         NSArray *bounds = _bounds[ [srs.organizationCoordsysId stringValue] ];
@@ -76,6 +80,8 @@
         if (!isDegree) {
             // The data on projection extents is lacking.  We will adjust the
             //   assumed projection bounds to harmonize them with the layer bounds.
+            // FIXME: We should not have to do this, and it may not be robust.
+            // https://github.com/mousebird/WGMaply-GeoPackage/issues/1
             
             GPKGTileMatrix *tileMatrix = [_tileDao getTileMatrixWithZoomLevel:_tileDao.minZoom];
             if (!tileMatrix) {
@@ -83,8 +89,6 @@
                 return nil;
             }
             
-            NSLog(@"Correction A %f %f %f %f %f %f", bbox.ll.x, bbox.ll.y, bbox.ur.x, bbox.ur.y, projMinX, projMaxY);
-
             double xSridUnitsPerTile = tileMatrix.tileWidth.intValue * tileMatrix.pixelXSize.doubleValue;
             double ySridUnitsPerTile = tileMatrix.tileHeight.intValue * tileMatrix.pixelYSize.doubleValue;
 
@@ -108,47 +112,11 @@
             projMinX = bbox.ll.x;
             projMaxY = bbox.ur.y;
 
-            NSLog(@"Correction B %f %f %f %f %f %f", bbox.ll.x, bbox.ll.y, bbox.ur.x, bbox.ur.y, projMinX, projMaxY);
         }
 
-//        bbox.ll.x = -20037508.3427892;
-//        bbox.ll.y = -20037508.3427892;
-//        bbox.ur.x = 20037508.3427892;
-//        bbox.ur.y = 20037508.3427892;
-//        projMinX = -20037508.3427892;
-//        projMaxY = 20037508.3427892;
         
         [cs setBounds:bbox];
         _coordSys = cs;
-        
-        NSLog(@"srs");
-        NSLog(@"%@", srs.organizationCoordsysId);
-        NSLog(@"%@", projStr);
-        NSLog(@"srs bbox %f %f %f %f %f %f", bbox.ll.x, bbox.ll.y, bbox.ur.x, bbox.ur.y, projMinX, projMaxY);
-
-        
-        //[cs localToGeo:]
-        
-//        if ([srs.organizationCoordsysId isEqualToNumber:@(4326)]) {
-//            NSLog(@"srs is EPSG 4326");
-//            projMinX = -180.0;
-//            projMaxY = 180.0;
-//            
-//            MaplyProj4CoordSystem *cs = [[MaplyProj4CoordSystem alloc] initWithString:@"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"];
-//            [cs setBounds:MaplyBoundingBoxMakeWithDegrees(-180.0, -180, 180.0, 180.0)];
-//            _coordSys = cs;
-//        } else if ([srs.organizationCoordsysId isEqualToNumber:@(3857)]) {
-//            NSLog(@"srs is EPSG 3857");
-//            projMinX = -20037508.3427892;
-//            projMaxY = 20037508.3427892;
-//            _coordSys = [[MaplySphericalMercator alloc] initWebStandard];
-//            
-//
-//        } else {
-//            NSLog(@"GPKGTileSource: Unexpected SRS.");
-//            return nil;
-//        }
-        
         
         _tileOffsets = [NSMutableDictionary dictionary];
         int n = -1;
@@ -170,7 +138,6 @@
                 return nil;
             }
             
-            
             double xSridUnitsPerTile = n * tileMatrix.pixelXSize.doubleValue;
             double ySridUnitsPerTile = n * tileMatrix.pixelYSize.doubleValue;
             double xOffset = (tileMatrixSet.minX.doubleValue - projMinX) / xSridUnitsPerTile;
@@ -179,7 +146,6 @@
             NSLog(@"min x y %f %f", tileMatrixSet.minX.doubleValue, tileMatrixSet.minY.doubleValue);
             NSLog(@"offset %i %f %f", z, xOffset, yOffset);
             _tileOffsets[@(z)] = @[@((int)round(xOffset)), @((int)round(yOffset))];
-            
             
         }
         if (n == -1) {
@@ -211,6 +177,10 @@
 
 - (nonnull MaplyCoordinateSystem *)coordSys {
     return _coordSys;
+}
+
+- (MaplyCoordinate)center {
+    return _center;
 }
 
 - (void)startFetchLayer:(id __nonnull)layer tile:(MaplyTileID)tileID {

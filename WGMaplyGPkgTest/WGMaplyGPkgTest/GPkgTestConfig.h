@@ -9,14 +9,6 @@
 #ifndef GPkgTestConfig_h
 #define GPkgTestConfig_h
 
-#define kDNCSanDiegoTest 0
-#define kERDCWhitehorseTest 1
-#define kRiverTilesTest 2
-#define kDNCNorfolkTest 3
-#define kBlueMarbleTest 4
-
-#define gpkgTestMode kDNCSanDiegoTest
 #define gpkgTestDoGlobe false
-
 
 #endif /* GPkgTestConfig_h */
