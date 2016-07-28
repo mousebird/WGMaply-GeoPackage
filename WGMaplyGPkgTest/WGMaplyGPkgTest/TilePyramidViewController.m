@@ -12,6 +12,7 @@
 #import "GPKGTileSource.h"
 #import "MaplyWMSTileSource.h"
 #import "GPKGIOUtils.h"
+#import "GPKGFeatureTileSource.h"
 
 @interface TilePyramidViewController ()
 
@@ -57,7 +58,8 @@
     } else {
         mapVC = [[MaplyViewController alloc] initWithMapType:MaplyMapTypeFlat];
         theViewC = mapVC;
-        mapVC.coordSys = _gpkgTileSource.coordSys;
+//        mapVC.coordSys = _gpkgTileSource.coordSys;
+        mapVC.coordSys = [[MaplySphericalMercator alloc] initWebStandard];
         mapVC.delegate = self;
         
         [self.view addSubview:mapVC.view];
@@ -76,19 +78,42 @@
     NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)  objectAtIndex:0];
     // Add CartoDB positron basemap
 
-    MaplyRemoteTileSource *tileSource = [[MaplyRemoteTileSource alloc] initWithBaseURL:@"http://positron.basemaps.cartocdn.com/light_all/{z}/{x}/{y}" ext:@"png" minZoom:0 maxZoom:18];
+    MaplyRemoteTileSource *tileSource = [[MaplyRemoteTileSource alloc] initWithBaseURL:@"http://dark_all.basemaps.cartocdn.com/dark_all/" ext:@"png" minZoom:0 maxZoom:18];
     tileSource.cacheDir = [NSString stringWithFormat:@"%@/positron/",cacheDir];
     MaplyQuadImageTilesLayer *layer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:tileSource.coordSys tileSource:tileSource];
     layer.drawPriority = kMaplyImageLayerDrawPriorityDefault;
     layer.handleEdges = true;
     [theViewC addLayer:layer];
     
-    _imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:_gpkgTileSource.coordSys tileSource:_gpkgTileSource];
-    _imageLayer.numSimultaneousFetches = 2;
-    _imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
-    _imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
+//    _imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:_gpkgTileSource.coordSys tileSource:_gpkgTileSource];
+//    _imageLayer.numSimultaneousFetches = 2;
+//    _imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
+//    _imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
+//    
+//    [theViewC addLayer:_imageLayer];
     
-    [theViewC addLayer:_imageLayer];
+    
+    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_HARBOR_hyd_hydline" bounds:bounds];
+    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_HARBOR_hyd_soundp" bounds:bounds];
+    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_APPROACH_hyd_soundp" bounds:bounds];
+    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_COASTAL_hyd_soundp" bounds:bounds];
+    GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_HARBOR_lim_limbndya" bounds:bounds];
+    //
+    MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:theViewC.coordSystem delegate:gpkgFeatureTileSource];
+    vecLayer.numSimultaneousFetches = 1;
+    vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
+    [theViewC addLayer:vecLayer];
+    
+//    NSDictionary *vecDesc = @{
+//                 kMaplyColor: [UIColor yellowColor],
+//                 kMaplyEnable: @(NO),
+//                 kMaplyFilled: @(NO),
+//                 kMaplyVecWidth: @(5.0),
+//                 kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200)
+//                 };
+//    MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:coords attributes:nil];
+//    
+//    MaplyComponentObject *vecCompObj = [theViewC addVectors:@[vecObj] desc:vecDesc mode:MaplyThreadCurrent];
     
 }
 

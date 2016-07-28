@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
+		E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = E5190A5E1D49B5A7003130E2 /* map_pin.png */; };
 		E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5B566B01D3D953E00DB0FD1 /* bounds.json */; };
 		E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */; };
 		E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */; };
@@ -48,6 +49,7 @@
 /* Begin PBXFileReference section */
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5190A5E1D49B5A7003130E2 /* map_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_pin.png; sourceTree = "<group>"; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
 		E5B566B01D3D953E00DB0FD1 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bounds.json; sourceTree = "<group>"; };
 		E5B566B21D3FD29400DB0FD1 /* StartupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartupViewController.h; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 		E5D84F5C1D37F58300D5AF18 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E5190A5E1D49B5A7003130E2 /* map_pin.png */,
 				E5B566B01D3D953E00DB0FD1 /* bounds.json */,
 				E5BD7D781D380DD500519CB9 /* rivers.gpkg */,
 				E5D84F5D1D37F58300D5AF18 /* main.m */,
@@ -266,6 +269,7 @@
 			files = (
 				E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */,
 				E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */,
+				E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */,
 				E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */,
 				E5D84F671D37F58300D5AF18 /* Main.storyboard in Resources */,
 				E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */,

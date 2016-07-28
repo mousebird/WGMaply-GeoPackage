@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import "MaplyComponent.h"
+#import "GPKGProgress.h"
 
 @class GPKGGeoPackage;
 
-@interface GPKGFeatureTileSource : NSObject <MaplyPagingDelegate>
+@interface GPKGFeatureTileSource : NSObject <MaplyPagingDelegate, GPKGProgress>
 
-- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage;
+- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds;
 
 @end

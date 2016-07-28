@@ -207,7 +207,7 @@
                        int newX = tileID.x - xOffset;
                        int newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
                        
-                       NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, newX, newY);
+                       //NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, newX, newY);
                        GPKGGeoPackageTile *gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
 
                        dispatch_async(dispatch_get_main_queue(),

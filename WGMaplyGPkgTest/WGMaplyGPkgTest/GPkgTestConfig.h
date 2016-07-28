@@ -9,6 +9,6 @@
 #ifndef GPkgTestConfig_h
 #define GPkgTestConfig_h
 
-#define gpkgTestDoGlobe false
+#define gpkgTestDoGlobe true
 
 #endif /* GPkgTestConfig_h */
