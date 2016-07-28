@@ -44,7 +44,6 @@
                                                              error:&error];
     
     
-    _gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:self.geoPackage tableName:self.tableName bounds:bounds];
 
     
     if (gpkgTestDoGlobe) {
@@ -67,12 +66,6 @@
         [self addChildViewController:mapVC];
     }
     
-    MaplyCoordinate startCoord = [_gpkgTileSource center];
-    
-    if (gpkgTestDoGlobe)
-        [globeVC setPosition:startCoord height:0.002];
-    else
-        [mapVC setPosition:startCoord height:0.002];
     
     
     NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)  objectAtIndex:0];
@@ -85,36 +78,38 @@
     layer.handleEdges = true;
     [theViewC addLayer:layer];
     
-//    _imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:_gpkgTileSource.coordSys tileSource:_gpkgTileSource];
-//    _imageLayer.numSimultaneousFetches = 2;
-//    _imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
-//    _imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
-//    
-//    [theViewC addLayer:_imageLayer];
+    MaplyCoordinate startCoord;
+    
+    if (self.tileTableName) {
+    
+        _gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:self.geoPackage tableName:self.tileTableName bounds:bounds];
+        
+        _imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:_gpkgTileSource.coordSys tileSource:_gpkgTileSource];
+        _imageLayer.numSimultaneousFetches = 2;
+        _imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
+        _imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
+        [theViewC addLayer:_imageLayer];
+        
+        startCoord = [_gpkgTileSource center];
+    } else if (self.featureTableName) {
+        
+        GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:self.featureTableName bounds:bounds];
+        
+        MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:theViewC.coordSystem delegate:gpkgFeatureTileSource];
+        vecLayer.numSimultaneousFetches = 1;
+        vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
+        [theViewC addLayer:vecLayer];
+        
+        startCoord = [gpkgFeatureTileSource center];
+    }
     
     
-    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_HARBOR_hyd_hydline" bounds:bounds];
-    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_HARBOR_hyd_soundp" bounds:bounds];
-    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_APPROACH_hyd_soundp" bounds:bounds];
-    //GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_COASTAL_hyd_soundp" bounds:bounds];
-    GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:@"DNC_HARBOR_lim_limbndya" bounds:bounds];
-    //
-    MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:theViewC.coordSystem delegate:gpkgFeatureTileSource];
-    vecLayer.numSimultaneousFetches = 1;
-    vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
-    [theViewC addLayer:vecLayer];
     
-//    NSDictionary *vecDesc = @{
-//                 kMaplyColor: [UIColor yellowColor],
-//                 kMaplyEnable: @(NO),
-//                 kMaplyFilled: @(NO),
-//                 kMaplyVecWidth: @(5.0),
-//                 kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200)
-//                 };
-//    MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:coords attributes:nil];
-//    
-//    MaplyComponentObject *vecCompObj = [theViewC addVectors:@[vecObj] desc:vecDesc mode:MaplyThreadCurrent];
-    
+    if (gpkgTestDoGlobe)
+        [globeVC setPosition:startCoord height:0.002];
+    else
+        [mapVC setPosition:startCoord height:0.002];
+
 }
 
 - (void)globeViewController:(WhirlyGlobeViewController *__nonnull)viewC didTapAt:(MaplyCoordinate)coord {

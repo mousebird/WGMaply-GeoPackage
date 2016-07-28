@@ -24,6 +24,7 @@
     UIImage *_markerImage;
     
     NSDictionary *_bounds;
+    MaplyCoordinate _center;
 }
 
 - (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds {
@@ -77,17 +78,20 @@
         else if (geomType == WKB_POLYGON)
             _maxFeaturesPerTile = 100;
 
-    
         
         _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
         [_indexer setProgress:self];
         NSLog(@"starting index");
         int n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
         NSLog(@"finished index %i", n);
-        NSLog(@"in bbox: %i", [_indexer countWithBoundingBox:[[GPKGBoundingBox alloc] initWithMinLongitudeDouble:-117.26 andMaxLongitudeDouble:-117.14 andMinLatitudeDouble:-90.0 andMaxLatitudeDouble:90.0]]);
         
+        GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
+        NSLog(@"gpkgBBox: %f %f %f %f", gpkgBBox.minLongitude.doubleValue, gpkgBBox.maxLongitude.doubleValue, gpkgBBox.minLatitude.doubleValue, gpkgBBox.maxLatitude.doubleValue);
         
-        
+        MaplyCoordinate p;
+        p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
+        p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
+        _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
         
         
         if (!_featureDao) {
@@ -106,6 +110,11 @@
 - (int)maxZoom {
     return 20;
 }
+
+- (MaplyCoordinate)center {
+    return _center;
+}
+
 
 - (void)startFetchForTile:(MaplyTileID)tileID forLayer:(MaplyQuadPagingLayer *__nonnull)layer {
     

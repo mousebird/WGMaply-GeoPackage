@@ -19,7 +19,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Choose Tile Table";
+    self.title = @"Choose Tile or Feature Table";
     
     
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
@@ -50,25 +50,34 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.tableNames.count;
+    if (section == 0)
+        return self.tileTableNames.count;
+    else
+        return self.featureTableNames.count;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSString *title = nil;
-    return title;
+    if (section == 0)
+        return @"Tile Tables";
+    else
+        return @"Feature Tables";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     
-    cell.textLabel.text = self.tableNames[indexPath.row];
+    
+    if (indexPath.section == 0)
+        cell.textLabel.text = self.tileTableNames[indexPath.row];
+    else
+        cell.textLabel.text = self.featureTableNames[indexPath.row];
     
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.backgroundColor = [UIColor grayColor];
@@ -83,7 +92,10 @@
     TilePyramidViewController *viewC = [[TilePyramidViewController alloc] initWithNibName:nil bundle:nil];
     
     viewC.geoPackage = self.geoPackage;
-    viewC.tableName = self.tableNames[indexPath.row];
+    if (indexPath.section == 0)
+        viewC.tileTableName = self.tileTableNames[indexPath.row];
+    else
+        viewC.featureTableName = self.featureTableNames[indexPath.row];
     
     [self.navigationController pushViewController:viewC animated:YES];
 

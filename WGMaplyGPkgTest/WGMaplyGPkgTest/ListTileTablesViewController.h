@@ -14,6 +14,7 @@
 @interface ListTileTablesViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) GPKGGeoPackage *geoPackage;
-@property (nonatomic, strong) NSArray *tableNames;
+@property (nonatomic, strong) NSArray *tileTableNames;
+@property (nonatomic, strong) NSArray *featureTableNames;
 
 @end

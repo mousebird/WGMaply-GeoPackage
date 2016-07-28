@@ -14,7 +14,8 @@
 @interface TilePyramidViewController : UIViewController <WhirlyGlobeViewControllerDelegate, MaplyViewControllerDelegate>
 
 @property (nonatomic, strong) GPKGGeoPackage *geoPackage;
-@property (nonatomic, strong) NSString *tableName;
+@property (nonatomic, strong) NSString *tileTableName;
+@property (nonatomic, strong) NSString *featureTableName;
 
 @end
 

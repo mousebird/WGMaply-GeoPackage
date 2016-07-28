@@ -159,14 +159,18 @@
     GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
     NSArray *tileTables = [tmsd getTileTables];
     
-    if (!tileTables || tileTables.count < 1) {
-        NSLog(@"No tile pyramids found in this geopackage.");
+    GPKGGeometryColumnsDao *gcd = [gpkg getGeometryColumnsDao];
+    NSArray *featureTables = [gcd getFeatureTables];
+    
+    if ((!tileTables || tileTables.count < 1) && (!featureTables || featureTables.count < 1)) {
+        NSLog(@"No tile pyramids or geometry features found in this geopackage.");
         return;
     }
     
     ListTileTablesViewController *lttvc = [[ListTileTablesViewController alloc] initWithNibName:nil bundle:nil];
     lttvc.geoPackage = gpkg;
-    lttvc.tableNames = tileTables;
+    lttvc.tileTableNames = tileTables;
+    lttvc.featureTableNames = featureTables;
     [self.navigationController pushViewController:lttvc animated:YES];
 }
 
