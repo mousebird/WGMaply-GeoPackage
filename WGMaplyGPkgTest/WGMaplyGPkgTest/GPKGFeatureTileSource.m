@@ -129,10 +129,7 @@
         MaplyCoordinate p;
         p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
         p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
-        if (_isDegree) {
-            _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
-        } else
-            _center = p;
+        _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
         
         
         _loadedTiles = [NSMutableDictionary dictionary];
