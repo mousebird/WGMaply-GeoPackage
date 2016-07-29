@@ -12,6 +12,10 @@
 #import "GPKGFeatureIndexManager.h"
 #import "GPKGMapShapeConverter.h"
 #import "WKBGeometryJSONCompatible.h"
+#import "GPKGProjectionRetriever.h"
+#import "GPKGProjectionFactory.h"
+#import "GPKGProjectionTransform.h"
+#import "GPKGGeometryProjectionTransform.h"
 
 @implementation GPKGFeatureTileSource {
     GPKGGeoPackage *_geoPackage;
@@ -27,6 +31,11 @@
     MaplyCoordinate _center;
     
     NSMutableDictionary *_loadedTiles;
+    
+    BOOL _isDegree;
+    GPKGProjection *_proj4326;
+    
+    GPKGGeometryProjectionTransform *_geomProjTransform;
 }
 
 - (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds {
@@ -86,17 +95,45 @@
             _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
 
         
+        GPKGSpatialReferenceSystemDao * srsDao = [_geoPackage getSpatialReferenceSystemDao];
+        GPKGSpatialReferenceSystem * srs = (GPKGSpatialReferenceSystem *)[srsDao queryForIdObject:_featureDao.projection.epsg];
+        if (!srs || !srs.organization || !srs.organizationCoordsysId) {
+            NSLog(@"GPKGFeatureTileSource: Error accessing SRS.");
+            return nil;
+        }
+        NSArray *bounds = _bounds[ [srs.organizationCoordsysId stringValue] ];
+        _isDegree = [(NSNumber *)bounds[6] boolValue];
+        _proj4326 = [GPKGProjectionFactory getProjectionWithInt:4326];
+        
+        GPKGProjectionTransform *projTransform = [[GPKGProjectionTransform alloc] initWithFromSrs:srs andToEpsg:4326];
+        _geomProjTransform = [[GPKGGeometryProjectionTransform alloc] initWithProjectionTransform:projTransform];
+
+        
         _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
         [_indexer setProgress:self];
         NSLog(@"starting index");
-        int n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
+        int n = 0;
+        @try {
+            n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
+        } @catch (NSException *exception) {
+            NSLog(@"Error in GPKGFeatureTileSource init");
+            NSLog(@"%@", exception);
+            return nil;
+            
+        }
         NSLog(@"finished index %i", n);
         
         GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
+        if (!_isDegree)
+            gpkgBBox = [projTransform transformWithBoundingBox:gpkgBBox];
         MaplyCoordinate p;
         p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
         p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
-        _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
+        if (_isDegree) {
+            _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
+        } else
+            _center = p;
+        
         
         _loadedTiles = [NSMutableDictionary dictionary];
         
@@ -124,6 +161,7 @@
     MaplyBoundingBox geoBbox = [layer geoBoundsForTile:tileID];
     
     
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         if ([self isParentLoaded:tileID]) {
@@ -131,10 +169,12 @@
             return;
         }
         
+        
         double llLonDeg = geoBbox.ll.x*180.0/M_PI;
         double llLatDeg = geoBbox.ll.y*180.0/M_PI;
         double urLonDeg = geoBbox.ur.x*180.0/M_PI;
         double urLatDeg = geoBbox.ur.y*180.0/M_PI;
+        
         
         NSMutableArray *linestringObjs = [NSMutableArray array];
         NSMutableArray *polygonObjs = [NSMutableArray array];
@@ -144,7 +184,7 @@
                                                 initWithMinLongitudeDouble:llLonDeg
                                                 andMaxLongitudeDouble:urLonDeg
                                                 andMinLatitudeDouble:llLatDeg
-                                                andMaxLatitudeDouble:urLatDeg]];
+                                                andMaxLatitudeDouble:urLatDeg] andProjection:_proj4326];
         
         
         if (n > 0 && n < _maxFeaturesPerTile) {
@@ -153,7 +193,7 @@
                                             initWithMinLongitudeDouble:llLonDeg
                                             andMaxLongitudeDouble:urLonDeg
                                             andMinLatitudeDouble:llLatDeg
-                                            andMaxLatitudeDouble:urLatDeg]];
+                                            andMaxLatitudeDouble:urLatDeg] andProjection:_proj4326];
             
             GPKGResultSet *results = [indexResults getResults];
             while([results moveToNext]) {
@@ -165,6 +205,8 @@
                     
                     WKBGeometry * geometry = geometryData.geometry;
                     if(geometry != nil) {
+                        
+                        geometry = [_geomProjTransform transformGeometry:geometry];
                         
                         if (geometry.geometryType == WKB_LINESTRING) {
                             

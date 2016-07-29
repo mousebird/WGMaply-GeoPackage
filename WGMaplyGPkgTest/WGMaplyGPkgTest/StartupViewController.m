@@ -157,15 +157,31 @@
         return;
     }
     GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
-    NSArray *tileTables = [tmsd getTileTables];
+    NSArray *tileTables;
+    @try {
+        tileTables = [tmsd getTileTables];
+    } @catch (NSException *exception) {
+        tileTables = nil;
+    }
+    tmsd = nil;
     
     GPKGGeometryColumnsDao *gcd = [gpkg getGeometryColumnsDao];
-    NSArray *featureTables = [gcd getFeatureTables];
+    NSArray *featureTables;
+    @try {
+        featureTables = [gcd getFeatureTables];
+        NSLog(@"featureTables: %@", featureTables);
+    } @catch (NSException *exception) {
+        featureTables = nil;
+    }
+    gcd = nil;
     
     if ((!tileTables || tileTables.count < 1) && (!featureTables || featureTables.count < 1)) {
         NSLog(@"No tile pyramids or geometry features found in this geopackage.");
         return;
     }
+    
+    [gpkg close];
+    gpkg = [_gpkgGeoPackageManager open:selectedFilename];
     
     ListTileTablesViewController *lttvc = [[ListTileTablesViewController alloc] initWithNibName:nil bundle:nil];
     lttvc.geoPackage = gpkg;
