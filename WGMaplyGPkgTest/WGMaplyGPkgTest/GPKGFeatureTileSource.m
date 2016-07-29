@@ -25,6 +25,8 @@
     
     NSDictionary *_bounds;
     MaplyCoordinate _center;
+    
+    NSMutableDictionary *_loadedTiles;
 }
 
 - (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds {
@@ -34,6 +36,11 @@
         _featureDao = [_geoPackage getFeatureDaoWithTableName:tableName];
         _bounds = bounds;
         
+        if (!_featureDao) {
+            NSLog(@"GPKGFeatureTileSource: Error accessing Feature DAO.");
+            return nil;
+        }
+
         
         _labelDesc = @{
                         kMaplyJustify           : @"left",
@@ -72,11 +79,11 @@
         
         enum WKBGeometryType geomType = [_featureDao getGeometryType];
         if (geomType == WKB_POINT)
-            _maxFeaturesPerTile = 100;
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
         else if (geomType == WKB_LINESTRING)
-            _maxFeaturesPerTile = 20;
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
         else if (geomType == WKB_POLYGON)
-            _maxFeaturesPerTile = 100;
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
 
         
         _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
@@ -86,18 +93,12 @@
         NSLog(@"finished index %i", n);
         
         GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
-        NSLog(@"gpkgBBox: %f %f %f %f", gpkgBBox.minLongitude.doubleValue, gpkgBBox.maxLongitude.doubleValue, gpkgBBox.minLatitude.doubleValue, gpkgBBox.maxLatitude.doubleValue);
-        
         MaplyCoordinate p;
         p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
         p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
         _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
         
-        
-        if (!_featureDao) {
-            NSLog(@"GPKGFeatureTileSource: Error accessing Feature DAO.");
-            return nil;
-        }
+        _loadedTiles = [NSMutableDictionary dictionary];
         
     }
     return self;
@@ -118,12 +119,17 @@
 
 - (void)startFetchForTile:(MaplyTileID)tileID forLayer:(MaplyQuadPagingLayer *__nonnull)layer {
     
-    static MaplyCoordinate staticCoords[4096];
+    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     
     MaplyBoundingBox geoBbox = [layer geoBoundsForTile:tileID];
     
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        if ([self isParentLoaded:tileID]) {
+            [layer tileFailedToLoad:tileID];
+            return;
+        }
         
         double llLonDeg = geoBbox.ll.x*180.0/M_PI;
         double llLatDeg = geoBbox.ll.y*180.0/M_PI;
@@ -142,6 +148,7 @@
         
         
         if (n > 0 && n < _maxFeaturesPerTile) {
+            GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
             GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
                                             initWithMinLongitudeDouble:llLonDeg
                                             andMaxLongitudeDouble:urLonDeg
@@ -151,23 +158,19 @@
             GPKGResultSet *results = [indexResults getResults];
             while([results moveToNext]) {
                 
-                GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
                 GPKGFeatureRow *row = [tableIndex getFeatureRowWithResultSet:results];
-                
                 GPKGGeometryData *geometryData = [row getGeometry];
                 
                 if(geometryData != nil && !geometryData.empty){
                     
                     WKBGeometry * geometry = geometryData.geometry;
-                    
-                    
                     if(geometry != nil) {
                         
                         if (geometry.geometryType == WKB_LINESTRING) {
                             
                             WKBLineString *lineString = (WKBLineString *)geometry;
                             
-                            if ([lineString.numPoints intValue] > 0 && [lineString.numPoints intValue] < 4096) {
+                            if ([lineString.numPoints intValue] > 0 && [lineString.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
                                 
                                 for (int i=0; i<[lineString.numPoints intValue]; i++) {
                                     WKBPoint *point = lineString.points[i];
@@ -182,71 +185,45 @@
                         } else if (geometry.geometryType == WKB_POLYGON) {
                             
                             WKBPolygon *polygon = (WKBPolygon *)geometry;
-                            MaplyVectorObject *vecObj;
+                            MaplyVectorObject *polyVecObj;
+                            NSMutableArray *lineVecObjs = [NSMutableArray array];
+                            
                             for (WKBLineString *ring in polygon.rings) {
-                                if ([ring.numPoints intValue] < 4096) {
-                                    //NSLog(@"------------");
+                                if ([ring.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
                                     for (int i=0; i<[ring.numPoints intValue]; i++) {
                                         WKBPoint *point = ring.points[i];
                                         staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
-//                                        if (i==0 || i==[ring.numPoints intValue]-1)
-//                                            NSLog(@"(%f, %f)", [point.x doubleValue], [point.y doubleValue]);
                                     }
                                     if (ring == polygon.rings[0]) {
-                                        vecObj = [[MaplyVectorObject alloc] initWithAreal:staticCoords numCoords:[ring.numPoints intValue] attributes:nil];
-                                        MaplyCoordinate centroid = [vecObj centroid];
-                                        
-                                        MaplyCoordinate cen, ll, ur;
-                                        bool success = [vecObj largestLoopCenter:&cen mbrLL:&ll mbrUR:&ur];
-                                        
-                                        if (!success ||
-                                            geoBbox.ll.x > cen.x ||
-                                            geoBbox.ur.x <= cen.x ||
-                                            geoBbox.ll.y > cen.y ||
-                                            geoBbox.ur.y <= cen.y) {
-
-                                            NSLog(@"tossing poly %f %f %f %f ; %f %f", geoBbox.ll.x, geoBbox.ur.x, geoBbox.ll.y, geoBbox.ur.y, centroid.x, centroid.y);
-                                            vecObj = nil;
-                                            n -= 1;
-                                            break;
-                                        }
-//                                        else
-//                                            NSLog(@"keeping poly %f %f %f %f ; %f %f", geoBbox.ll.x, geoBbox.ur.x, geoBbox.ll.y, geoBbox.ur.y, centroid.x, centroid.y);
-
-
-                                        
-//                                        if (centroid.x == kMaplyNullCoordinate.x ||
-//                                            centroid.y == kMaplyNullCoordinate.y ||
-//                                            geoBbox.ll.x > centroid.x ||
-//                                            geoBbox.ur.x <= centroid.x ||
-//                                            geoBbox.ll.y > centroid.y ||
-//                                            geoBbox.ur.y <= centroid.y) {
-//                                            
-//                                            NSLog(@"tossing poly %f %f %f %f ; %f %f", geoBbox.ll.x, geoBbox.ur.x, geoBbox.ll.y, geoBbox.ur.y, centroid.x, centroid.y);
-//                                            vecObj = nil;
-//                                            break;
-//                                        } else
-//                                            NSLog(@"keeping poly %f %f %f %f ; %f %f", geoBbox.ll.x, geoBbox.ur.x, geoBbox.ll.y, geoBbox.ur.y, centroid.x, centroid.y);
-                                        
-                                        
-                                        
-                                        
+                                        polyVecObj = [[MaplyVectorObject alloc] initWithAreal:staticCoords numCoords:[ring.numPoints intValue] attributes:nil];
                                     } else
-                                        [vecObj addHole:staticCoords numCoords:[ring.numPoints intValue]];
-                                    
-                                    
+                                        [polyVecObj addHole:staticCoords numCoords:[ring.numPoints intValue]];
+                                    [lineVecObjs addObject:[[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[ring.numPoints intValue] attributes:nil]];
                                 } else {
                                     NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [ring.numPoints intValue]);
-                                    vecObj = nil;
-                                    n -= 1;
+                                    polyVecObj = nil;
                                     break;
                                 }
+                            }
+                            if (polyVecObj) {
                                 
+                                MaplyVectorObject *clipped = [polyVecObj clipToMbr:MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg) upperRight:MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg)];
+                                
+                                if (clipped && clipped.vectorType == MaplyVectorArealType) {
+                                    [polygonObjs addObject:clipped];
+                                    for (MaplyVectorObject *lineVecObj in lineVecObjs) {
+                                        clipped = [lineVecObj clipToMbr:MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg) upperRight:MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg)];
+                                        [linestringObjs addObject:clipped];
+                                    }
+                                    
+                                } else {
+                                    n -= 1;
+                                }
+                                
+                                
+                            } else {
+                                n -= 1;
                             }
-                            if (vecObj) {
-                                [polygonObjs addObject:vecObj];
-                            }
-                            
                             
                         } else if (geometry.geometryType == WKB_POINT) {
                             WKBPoint *point = (WKBPoint *)geometry;
@@ -271,63 +248,118 @@
         }
         
         
-        
-        
-        
-//        NSLog(@"tile %i %i %i %i", tileID.level, tileID.x, tileID.y, n);
-        
-        
-        
         NSMutableArray *compObjs = [NSMutableArray array];
+        bool complete = true;
 
-        if (linestringObjs.count > 0) {
-            MaplyComponentObject *lsCompObj = [layer.viewC addVectors:linestringObjs desc:_linestringDesc mode:MaplyThreadCurrent];
-            [compObjs addObject:lsCompObj];
-        } else if (polygonObjs.count > 0) {
-            MaplyComponentObject *fillCompObj = [layer.viewC addVectors:polygonObjs desc:_polygonDesc mode:MaplyThreadCurrent];
-            [compObjs addObject:fillCompObj];
-            MaplyComponentObject *outlineCompObj = [layer.viewC addVectors:polygonObjs desc:_linestringDesc mode:MaplyThreadCurrent];
-            [compObjs addObject:outlineCompObj];
-        } else if (markerObjs.count > 0) {
-            MaplyComponentObject *markerCompObj = [layer.viewC addScreenMarkers:markerObjs desc:_markerDesc mode:MaplyThreadCurrent];
-            [compObjs addObject:markerCompObj];
-        } else if (n > 0) {
-        
-            MaplyScreenLabel *label = [[MaplyScreenLabel alloc] init];
-            label.loc = MaplyCoordinateMakeWithDegrees(
-                                                       (llLonDeg + urLonDeg) / 2.0,
-                                                       (llLatDeg + urLatDeg) / 2.0);
-            label.text = [@(n) stringValue];
-            //label.text = [NSString stringWithFormat:@"%i %i %i", tileID.x, tileID.y, n];
-            label.layoutPlacement = kMaplyLayoutRight;
+        if (linestringObjs.count > 0 || polygonObjs.count > 0 || markerObjs.count > 0) {
+            if (linestringObjs.count > 0) {
+                MaplyComponentObject *lsCompObj = [layer.viewC addVectors:linestringObjs desc:_linestringDesc mode:MaplyThreadCurrent];
+                [compObjs addObject:lsCompObj];
+            }
+            if (polygonObjs.count > 0) {
+                MaplyComponentObject *fillCompObj = [layer.viewC addVectors:polygonObjs desc:_polygonDesc mode:MaplyThreadCurrent];
+                [compObjs addObject:fillCompObj];
+            }
+            if (markerObjs.count > 0) {
+                MaplyComponentObject *markerCompObj = [layer.viewC addScreenMarkers:markerObjs desc:_markerDesc mode:MaplyThreadCurrent];
+                [compObjs addObject:markerCompObj];
+            }
+        } else {
             
-            MaplyComponentObject *labelCompObj = [layer.viewC addScreenLabels:@[label] desc:_labelDesc mode:MaplyThreadCurrent];
+            complete = false;
             
-            MaplyCoordinate coords[5];
-            coords[0] = MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg);
-            coords[1] = MaplyCoordinateMakeWithDegrees(urLonDeg, llLatDeg);
-            coords[2] = MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg);
-            coords[3] = MaplyCoordinateMakeWithDegrees(llLonDeg, urLatDeg);
-            coords[4] = MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg);
-            MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:coords numCoords:5 attributes:nil];
+            if (n > 0) {
             
-            MaplyComponentObject *vecCompObj = [layer.viewC addVectors:@[vecObj] desc:_gridDesc mode:MaplyThreadCurrent];
-            
-            compObjs = [NSMutableArray arrayWithArray:@[labelCompObj, vecCompObj]];
-            
+                MaplyScreenLabel *label = [[MaplyScreenLabel alloc] init];
+                label.loc = MaplyCoordinateMakeWithDegrees(
+                                                           (llLonDeg + urLonDeg) / 2.0,
+                                                           (llLatDeg + urLatDeg) / 2.0);
+                label.text = [@(n) stringValue];
+                label.layoutPlacement = kMaplyLayoutRight;
+                
+                MaplyComponentObject *labelCompObj = [layer.viewC addScreenLabels:@[label] desc:_labelDesc mode:MaplyThreadCurrent];
+                
+                MaplyCoordinate coords[5];
+                coords[0] = MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg);
+                coords[1] = MaplyCoordinateMakeWithDegrees(urLonDeg, llLatDeg);
+                coords[2] = MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg);
+                coords[3] = MaplyCoordinateMakeWithDegrees(llLonDeg, urLatDeg);
+                coords[4] = MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg);
+                MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:coords numCoords:5 attributes:nil];
+                
+                MaplyComponentObject *vecCompObj = [layer.viewC addVectors:@[vecObj] desc:_gridDesc mode:MaplyThreadCurrent];
+                
+                compObjs = [NSMutableArray arrayWithArray:@[labelCompObj, vecCompObj]];
+            }
         }
         
-//        dispatch_async(dispatch_get_main_queue(), ^{
-        if (n > 0) {
+        if (n > 0)
             [layer addData:compObjs forTile:tileID style:MaplyDataStyleReplace];
-        }
-        [layer tileDidLoad:tileID];
         
-            
-            
-//        });
+        if (complete) {
+            [self setLoaded:tileID];
+        }
+        
+        [layer tileDidLoad:tileID];
     });
     
+}
+
+- (void)tileDidUnload:(MaplyTileID)tileID {
+    [self clearLoaded:tileID];
+}
+
+- (void)setLoaded:(MaplyTileID)tileID {
+    @synchronized (self) {
+        if (!_loadedTiles[@(tileID.level)])
+            _loadedTiles[@(tileID.level)] = [NSMutableDictionary dictionary];
+        NSMutableDictionary *levelDict = _loadedTiles[@(tileID.level)];
+
+        if (!levelDict[@(tileID.x)])
+            levelDict[@(tileID.x)] = [NSMutableDictionary dictionary];
+        NSMutableDictionary *columnDict = levelDict[@(tileID.x)];
+        
+        columnDict[@(tileID.y)] = @(true);
+    }
+}
+
+- (void)clearLoaded:(MaplyTileID)tileID {
+    @synchronized (self) {
+        if (!_loadedTiles[@(tileID.level)])
+            return;
+        NSMutableDictionary *levelDict = _loadedTiles[@(tileID.level)];
+        if (!levelDict[@(tileID.x)])
+            return;
+        NSMutableDictionary *columnDict = levelDict[@(tileID.x)];
+        
+        if (columnDict[@(tileID.y)])
+            [columnDict removeObjectForKey:@(tileID.y)];
+        if (columnDict.count == 0)
+            [levelDict removeObjectForKey:@(tileID.x)];
+        if (levelDict.count == 0)
+            [_loadedTiles removeObjectForKey:@(tileID.level)];
+    }
+}
+
+- (bool)isParentLoaded:(MaplyTileID)tileID {
+    @synchronized (self) {
+        MaplyTileID parentTileID;
+        parentTileID.level = tileID.level-1;
+        parentTileID.x = tileID.x/2;
+        parentTileID.y = tileID.y/2;
+        
+        if (!_loadedTiles[@(parentTileID.level)])
+            return false;
+        NSMutableDictionary *levelDict = _loadedTiles[@(parentTileID.level)];
+        
+        if (!levelDict[@(parentTileID.x)])
+            return false;
+        NSMutableDictionary *columnDict = levelDict[@(parentTileID.x)];
+        
+        if (columnDict[@(parentTileID.y)])
+            return true;
+        return false;
+    }
 }
 
 
@@ -353,6 +385,5 @@
 -(void) failureWithError: (NSString *) error {
     
 }
-
 
 @end

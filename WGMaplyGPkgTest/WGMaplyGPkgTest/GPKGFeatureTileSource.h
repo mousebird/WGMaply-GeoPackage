@@ -10,6 +10,12 @@
 #import "MaplyComponent.h"
 #import "GPKGProgress.h"
 
+
+#define GPKG_FEATURE_TILE_SOURCE_MAX_POINTS 4096
+#define GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT 100
+#define GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING 20
+#define GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON 100
+
 @class GPKGGeoPackage;
 
 @interface GPKGFeatureTileSource : NSObject <MaplyPagingDelegate, GPKGProgress>
