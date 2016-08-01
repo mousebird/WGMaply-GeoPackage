@@ -21,6 +21,8 @@
     UITableView *_tableView;
     NSArray *_directoryContent;
     
+    GPKGGeoPackage *_gpkg;
+    
 }
 
 - (void)viewDidLoad {
@@ -58,8 +60,14 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    
     [self reloadDirectoryContent];
     [_tableView reloadData];
+    
+    if (_gpkg) {
+        [_gpkg close];
+        _gpkg = nil;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -148,15 +156,15 @@
 }
 
 -(void) completed {
-    GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:selectedFilename];
-    if (!gpkg) {
-        gpkg = [_gpkgGeoPackageManager open:selectedFilename];
+    _gpkg = [_gpkgGeoPackageManager open:selectedFilename];
+    if (!_gpkg) {
+        _gpkg = [_gpkgGeoPackageManager open:selectedFilename];
     }
-    if (!gpkg) {
+    if (!_gpkg) {
         NSLog(@"Error: GeoPackage is nil.");
         return;
     }
-    GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
+    GPKGTileMatrixSetDao *tmsd = [_gpkg getTileMatrixSetDao];
     NSArray *tileTables;
     @try {
         tileTables = [tmsd getTileTables];
@@ -165,7 +173,7 @@
     }
     tmsd = nil;
     
-    GPKGGeometryColumnsDao *gcd = [gpkg getGeometryColumnsDao];
+    GPKGGeometryColumnsDao *gcd = [_gpkg getGeometryColumnsDao];
     NSArray *featureTables;
     @try {
         featureTables = [gcd getFeatureTables];
@@ -180,11 +188,11 @@
         return;
     }
     
-    [gpkg close];
-    gpkg = [_gpkgGeoPackageManager open:selectedFilename];
+    [_gpkg close];
+    _gpkg = [_gpkgGeoPackageManager open:selectedFilename];
     
     ListTileTablesViewController *lttvc = [[ListTileTablesViewController alloc] initWithNibName:nil bundle:nil];
-    lttvc.geoPackage = gpkg;
+    lttvc.geoPackage = _gpkg;
     lttvc.tileTableNames = tileTables;
     lttvc.featureTableNames = featureTables;
     [self.navigationController pushViewController:lttvc animated:YES];

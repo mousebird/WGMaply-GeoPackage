@@ -93,6 +93,10 @@
             _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
         else if (geomType == WKB_POLYGON)
             _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+        else {
+            NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
+            return nil;
+        }
 
         
         GPKGSpatialReferenceSystemDao * srsDao = [_geoPackage getSpatialReferenceSystemDao];
@@ -111,17 +115,17 @@
         
         _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
         [_indexer setProgress:self];
-        NSLog(@"starting index");
+        NSLog(@"GPKGFeatureTileSource: Starting index.");
         int n = 0;
         @try {
             n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
         } @catch (NSException *exception) {
-            NSLog(@"Error in GPKGFeatureTileSource init");
+            NSLog(@"GPKGFeatureTileSource: Error indexing geometry.");
             NSLog(@"%@", exception);
             return nil;
             
         }
-        NSLog(@"finished index %i", n);
+        NSLog(@"GPKGFeatureTileSource: Finished index.");
         
         GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
         if (!_isDegree)
@@ -130,7 +134,6 @@
         p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
         p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
         _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
-        
         
         _loadedTiles = [NSMutableDictionary dictionary];
         
