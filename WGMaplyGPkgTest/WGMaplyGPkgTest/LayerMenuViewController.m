@@ -8,7 +8,7 @@
 
 #import "LayerMenuViewController.h"
 #import <WhirlyGlobeComponent.h>
-
+#import "GPKGGeoPackageFactory.h"
 
 @interface LayerMenuViewItem : NSObject
 @property (nonatomic, strong) NSString *displayText;
@@ -42,19 +42,68 @@
 
 
 @interface LayerMenuViewGeopackageItem : LayerMenuViewItem
+
 @property (nonatomic, strong) NSString *filename;
-- (id) initWithDisplayText:(NSString *)displayText andFilename:(NSString *)filename;
+@property (nonatomic, assign) BOOL loaded;
+@property (nonatomic, strong) NSArray <NSString *> *tileTableItems;
+@property (nonatomic, strong) NSArray <NSString *> *featureTableItems;
+
+- (id) initWithFilename:(NSString *)filename;
 @end
 
 @implementation LayerMenuViewGeopackageItem
-- (id) initWithDisplayText:(NSString *)displayText andFilename:(NSString *)filename {
-    self = [super initWithDisplayText:displayText];
+- (id) initWithFilename:(NSString *)filename {
+    self = [super initWithDisplayText:filename];
     if (self) {
         self.filename = filename;
     }
     return self;
 }
 @end
+
+
+
+
+@interface LayerMenuViewTileTableItem : LayerMenuViewItem
+@property (nonatomic, weak) LayerMenuViewGeopackageItem *geopackageItem;
+@property (nonatomic, strong) NSString *tileTableName;
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andTileTableName:(NSString *)tileTableName;
+@end
+
+@implementation LayerMenuViewTileTableItem
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andTileTableName:(NSString *)tileTableName {
+    self = [super initWithDisplayText:tileTableName];
+    if (self) {
+        self.geopackageItem = parent;
+        self.tileTableName = tileTableName;
+    }
+    return self;
+}
+@end
+
+
+
+
+
+
+@interface LayerMenuViewFeatureTableItem : LayerMenuViewItem
+@property (nonatomic, weak) LayerMenuViewGeopackageItem *geopackageItem;
+@property (nonatomic, strong) NSString *featureTableName;
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName;
+@end
+
+@implementation LayerMenuViewFeatureTableItem
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName {
+    self = [super initWithDisplayText:featureTableName];
+    if (self) {
+        self.geopackageItem = parent;
+        self.featureTableName = featureTableName;
+    }
+    return self;
+}
+@end
+
+
 
 
 
@@ -66,6 +115,8 @@
     NSArray<LayerMenuViewGeopackageItem *> *_geopackageEntries;
     int _firstBasemapLayerIndex, _lastBasemapLayerIndex, _firstGeopackageIndex, _lastGeopackageIndex;
     NSArray *_directoryContent;
+    GPKGGeoPackageManager *_gpkgGeoPackageManager;
+    LayerMenuViewGeopackageItem *_importingGeopackageItem;
 
 }
 
@@ -94,6 +145,8 @@
         
         _firstBasemapLayerIndex = 1;
         _lastBasemapLayerIndex = (int)(_firstBasemapLayerIndex + _basemapLayerEntries.count) - 1;
+        
+        _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
     }
     return self;
     
@@ -115,7 +168,7 @@
     
     NSMutableArray <LayerMenuViewGeopackageItem *> *geopackageEntries = [NSMutableArray <LayerMenuViewGeopackageItem *> array];
     for (NSString *filename in _directoryContent) {
-        [geopackageEntries addObject:[[LayerMenuViewGeopackageItem alloc] initWithDisplayText:filename andFilename:filename]];
+        [geopackageEntries addObject:[[LayerMenuViewGeopackageItem alloc] initWithFilename:filename]];
     }
     _geopackageEntries = geopackageEntries;
     
@@ -183,9 +236,18 @@
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark RATreeView Delegate and Data Source methods
+
 - (NSInteger)treeView:(RATreeView *)treeView numberOfChildrenOfItem:(nullable id)item {
     if (!item && _basemapLayerEntries)
         return _basemapLayerEntries.count + _directoryContent.count + 2;
+    
+    if ([item isKindOfClass:[LayerMenuViewGeopackageItem class]]) {
+        LayerMenuViewGeopackageItem *geopackageItem = (LayerMenuViewGeopackageItem *)item;
+        if (!geopackageItem.loaded)
+            return 0;
+        return geopackageItem.tileTableItems.count + geopackageItem.featureTableItems.count;
+    }
     return 0;
 }
 
@@ -218,6 +280,16 @@
             return _geopackageEntries[geopackageIdx];
         }
     }
+    if ([item isKindOfClass:[LayerMenuViewGeopackageItem class]]) {
+        LayerMenuViewGeopackageItem *geopackageItem = (LayerMenuViewGeopackageItem *)item;
+        if (!geopackageItem.loaded)
+            return nil;
+        if (index < geopackageItem.tileTableItems.count)
+            return geopackageItem.tileTableItems[index];
+        else
+            return geopackageItem.featureTableItems[index-geopackageItem.tileTableItems.count];
+    }
+
     return nil;
 }
 
@@ -239,11 +311,126 @@
         
         LayerMenuViewGeopackageItem *geopackageItem = (LayerMenuViewGeopackageItem *)item;
         
+        if (geopackageItem.loaded) {
+            [self toggleGeopackageItem:geopackageItem];
+            return nil;
+        }
         
+        if (_importingGeopackageItem)
+            return nil;
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSURL *docsDir = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+        NSURL *url = [docsDir URLByAppendingPathComponent:geopackageItem.filename];
+
+        _importingGeopackageItem = geopackageItem;
+        @try {
+            NSLog(@"Importing GeoPackage...");
+            [_gpkgGeoPackageManager importGeoPackageFromUrl:url withName:geopackageItem.filename andProgress:self];
+            NSLog(@"GeoPackage imported.");
+        } @catch (NSException *exception) {
+            if (![exception.name isEqualToString:@"Database Exists"]) {
+                NSLog(@"Error: unexpected exception on importing GeoPackage.");
+                NSLog(@"%@", exception);
+                _importingGeopackageItem = nil;
+                [_gpkgGeoPackageManager close];
+                _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
+                return nil;
+            }
+            NSLog(@"GeoPackage already imported.");
+            [self completed];
+        }
         
         return nil;
     }
     return nil;
+}
+
+#pragma mark GPKGProgress methods
+
+-(void) setMax: (int) max {
+    
+}
+
+-(void) addProgress: (int) progress {
+    
+}
+
+-(BOOL) isActive {
+    return YES;
+}
+
+-(BOOL) cleanupOnCancel {
+    return YES;
+}
+
+-(void) completed {
+    GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:_importingGeopackageItem.filename];
+    if (!gpkg) {
+        NSLog(@"Error: GeoPackage is nil.");
+        _importingGeopackageItem = nil;
+        [_gpkgGeoPackageManager close];
+        _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
+        return;
+    }
+    
+    GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
+    NSArray *tileTables;
+    @try {
+        tileTables = [tmsd getTileTables];
+    } @catch (NSException *exception) {
+        tileTables = nil;
+    }
+    tmsd = nil;
+
+    GPKGGeometryColumnsDao *gcd = [gpkg getGeometryColumnsDao];
+    NSArray *featureTables;
+    @try {
+        featureTables = [gcd getFeatureTables];
+    } @catch (NSException *exception) {
+        featureTables = nil;
+    }
+    gcd = nil;
+    
+    [gpkg close];
+    
+    NSMutableArray *tileTableItems = [NSMutableArray array];
+    if (tileTables) {
+        for (NSString *tileTable in tileTables) {
+            [tileTableItems addObject:[[LayerMenuViewTileTableItem alloc] initWithParent:_importingGeopackageItem andTileTableName:tileTable]];
+        }
+    }
+    _importingGeopackageItem.tileTableItems = tileTableItems;
+    
+    NSMutableArray *featureTableItems = [NSMutableArray array];
+    if (featureTables) {
+        for (NSString *featureTable in featureTables) {
+            [featureTableItems addObject:[[LayerMenuViewFeatureTableItem alloc] initWithParent:_importingGeopackageItem andFeatureTableName:featureTable]];
+        }
+    }
+    _importingGeopackageItem.featureTableItems = featureTableItems;
+    
+    _importingGeopackageItem.loaded = TRUE;
+
+    [_treeView insertItemsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, tileTableItems.count + featureTableItems.count)] inParent:_importingGeopackageItem withAnimation:RATreeViewRowAnimationNone];
+    [self toggleGeopackageItem:_importingGeopackageItem];
+    _importingGeopackageItem = nil;
+}
+
+-(void) failureWithError: (NSString *) error {
+    NSLog(@"Error; GeoPackage import failed.");
+    NSLog(@"%@", error);
+    _importingGeopackageItem = nil;
+    [_gpkgGeoPackageManager close];
+    _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
+}
+
+- (void)toggleGeopackageItem:(LayerMenuViewGeopackageItem *)geopackageItem {
+    BOOL expanded = [_treeView isCellForItemExpanded:geopackageItem];
+    if (expanded)
+        [_treeView collapseRowForItem:geopackageItem withRowAnimation:RATreeViewRowAnimationLeft];
+    else
+        [_treeView expandRowForItem:geopackageItem withRowAnimation:RATreeViewRowAnimationLeft];
 }
 
 @end

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "RATreeView.h"
+#import "GPKGProgress.h"
+
 
 @class MaplyQuadImageTilesLayer;
 @class MaplyRemoteTileInfo;
@@ -18,7 +20,7 @@
 
 @end
 
-@interface LayerMenuViewController : UIViewController <RATreeViewDataSource, RATreeViewDelegate>
+@interface LayerMenuViewController : UIViewController <RATreeViewDataSource, RATreeViewDelegate, GPKGProgress>
 
 - (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict;
 
