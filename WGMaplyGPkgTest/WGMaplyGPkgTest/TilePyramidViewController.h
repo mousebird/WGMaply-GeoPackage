@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <WhirlyGlobeComponent.h>
+#import "LayerMenuViewController.h"
 
 @class GPKGGeoPackage;
 
-@interface TilePyramidViewController : UIViewController <WhirlyGlobeViewControllerDelegate, MaplyViewControllerDelegate>
+@interface TilePyramidViewController : UIViewController <WhirlyGlobeViewControllerDelegate, MaplyViewControllerDelegate, UIPopoverControllerDelegate, LayerMenuViewControllerDelegate>
 
 @property (nonatomic, strong) GPKGGeoPackage *geoPackage;
 @property (nonatomic, strong) NSString *tileTableName;

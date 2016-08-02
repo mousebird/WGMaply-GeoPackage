@@ -1,3 +1,6 @@
 [submodule "libs/WhirlyGlobe"]
 	path = libs/WhirlyGlobe
 	url = https://github.com/mousebird/WhirlyGlobe.git
+[submodule "libs/RATreeView"]
+	path = libs/RATreeView
+	url = https://github.com/etresoft/RATreeView.git

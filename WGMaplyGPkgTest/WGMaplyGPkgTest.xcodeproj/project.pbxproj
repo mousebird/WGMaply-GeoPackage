@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
 		E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = E5190A5E1D49B5A7003130E2 /* map_pin.png */; };
+		E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */; };
+		E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */; };
+		E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
+		E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
+		E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5B566B01D3D953E00DB0FD1 /* bounds.json */; };
 		E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */; };
 		E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */; };
@@ -30,6 +35,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E56862721D4F096A00761466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A50D0BE21CA34E3F00EC9402;
+			remoteInfo = "RATreeView OSX";
+		};
+		E56862741D4F096A00761466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0626D5571BF7E81E00CD3B04;
+			remoteInfo = "RATreeView iOS";
+		};
+		E56862761D4F096A00761466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0626D6941BF8A37800CD3B04;
+			remoteInfo = RATreeViewTests;
+		};
+		E568627D1D4F127A00761466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0626D5561BF7E81E00CD3B04;
+			remoteInfo = "RATreeView iOS";
+		};
 		E5D84F801D38010200D5AF18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */;
@@ -46,10 +79,28 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		E568627F1D4F127A00761466 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5190A5E1D49B5A7003130E2 /* map_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_pin.png; sourceTree = "<group>"; };
+		E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerMenuViewController.h; sourceTree = "<group>"; };
+		E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerMenuViewController.m; sourceTree = "<group>"; };
+		E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerMenuViewController.xib; sourceTree = "<group>"; };
+		E568626C1D4F096A00761466 /* RATreeView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RATreeView.xcodeproj; path = ../libs/RATreeView/RATreeView/RATreeView.xcodeproj; sourceTree = "<group>"; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
 		E5B566B01D3D953E00DB0FD1 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bounds.json; sourceTree = "<group>"; };
 		E5B566B21D3FD29400DB0FD1 /* StartupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartupViewController.h; sourceTree = "<group>"; };
@@ -85,7 +136,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */,
+				E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */,
 				E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */,
 				E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */,
@@ -101,6 +154,7 @@
 		5877722F8265A0C7942B11C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E568626C1D4F096A00761466 /* RATreeView.xcodeproj */,
 				E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */,
 				E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */,
 				E5D84F891D38016400D5AF18 /* libz.tbd */,
@@ -110,6 +164,16 @@
 				7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E568626D1D4F096A00761466 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E56862731D4F096A00761466 /* RATreeView.framework */,
+				E56862751D4F096A00761466 /* RATreeView.framework */,
+				E56862771D4F096A00761466 /* RATreeViewTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		E5D84F501D37F58300D5AF18 = {
@@ -151,6 +215,9 @@
 				E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */,
 				E5B566B51D3FE33C00DB0FD1 /* ListTileTablesViewController.h */,
 				E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */,
+				E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */,
+				E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */,
+				E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */,
 			);
 			path = WGMaplyGPkgTest;
 			sourceTree = "<group>";
@@ -197,10 +264,12 @@
 				E5D84F571D37F58300D5AF18 /* Resources */,
 				9AA11281737963984E258681 /* [CP] Embed Pods Frameworks */,
 				16472AD0E9FB84B62A9F567E /* [CP] Copy Pods Resources */,
+				E568627F1D4F127A00761466 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E568627E1D4F127A00761466 /* PBXTargetDependency */,
 			);
 			name = WGMaplyGPkgTest;
 			productName = WGMaplyGPkgTest;
@@ -234,6 +303,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = E568626D1D4F096A00761466 /* Products */;
+					ProjectRef = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
+				},
+				{
 					ProductGroup = E5D84F7B1D38010100D5AF18 /* Products */;
 					ProjectRef = E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */;
 				},
@@ -246,6 +319,27 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		E56862731D4F096A00761466 /* RATreeView.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RATreeView.framework;
+			remoteRef = E56862721D4F096A00761466 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E56862751D4F096A00761466 /* RATreeView.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RATreeView.framework;
+			remoteRef = E56862741D4F096A00761466 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E56862771D4F096A00761466 /* RATreeViewTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RATreeViewTests.xctest;
+			remoteRef = E56862761D4F096A00761466 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E5D84F811D38010200D5AF18 /* WhirlyGlobeMaplyComponent.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -268,6 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */,
+				E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */,
 				E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */,
 				E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */,
 				E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */,
@@ -336,12 +431,21 @@
 				E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */,
 				E5D84F611D37F58300D5AF18 /* AppDelegate.m in Sources */,
 				E5D84F781D37FF4100D5AF18 /* GPKGFeatureTileSource.m in Sources */,
+				E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */,
 				E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */,
 				E5D84F5E1D37F58300D5AF18 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E568627E1D4F127A00761466 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "RATreeView iOS";
+			targetProxy = E568627D1D4F127A00761466 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		E5D84F651D37F58300D5AF18 /* Main.storyboard */ = {
@@ -460,6 +564,7 @@
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include\"",
+					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -482,6 +587,7 @@
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include\"",
+					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

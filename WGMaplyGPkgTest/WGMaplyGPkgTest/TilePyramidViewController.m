@@ -14,6 +14,7 @@
 #import "GPKGIOUtils.h"
 #import "GPKGFeatureTileSource.h"
 
+
 @interface TilePyramidViewController ()
 
 @end
@@ -29,6 +30,11 @@
     
     GPKGTileSource *_gpkgTileSource;
     MaplyQuadImageTilesLayer *_imageLayer;
+    
+    LayerMenuViewController *_layerMenuVC;
+    UIPopoverController *_popControl;
+    
+    MaplyQuadImageTilesLayer *_basemapLayer;
     
 }
 
@@ -67,17 +73,6 @@
     }
     
     
-    
-    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)  objectAtIndex:0];
-    // Add CartoDB positron basemap
-
-    MaplyRemoteTileSource *tileSource = [[MaplyRemoteTileSource alloc] initWithBaseURL:@"http://dark_all.basemaps.cartocdn.com/dark_all/" ext:@"png" minZoom:0 maxZoom:18];
-    tileSource.cacheDir = [NSString stringWithFormat:@"%@/positron/",cacheDir];
-    MaplyQuadImageTilesLayer *layer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:tileSource.coordSys tileSource:tileSource];
-    layer.drawPriority = kMaplyImageLayerDrawPriorityDefault;
-    layer.handleEdges = true;
-    [theViewC addLayer:layer];
-    
     MaplyCoordinate startCoord;
     
     if (self.tileTableName) {
@@ -103,7 +98,9 @@
         startCoord = [gpkgFeatureTileSource center];
     }
     
-    
+    _layerMenuVC = [[LayerMenuViewController alloc] initWithBasemapLayerTileInfoDict:[self getBasemapLayerTileInfoDict]];
+    _layerMenuVC.delegate = self;
+    [_layerMenuVC view];
     
     if (gpkgTestDoGlobe)
         [globeVC setPosition:startCoord height:0.002];
@@ -112,14 +109,39 @@
 
 }
 
+- (NSDictionary <NSString *, MaplyRemoteTileInfo *> *) getBasemapLayerTileInfoDict {
+    
+    return @{
+             @"Positron" :    [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://light_all.basemaps.cartocdn.com/light_all/" ext:@"png" minZoom:0 maxZoom:18],
+             @"Dark Matter" : [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://dark_all.basemaps.cartocdn.com/dark_all/" ext:@"png" minZoom:0 maxZoom:18],
+             };
+}
+
 - (void)globeViewController:(WhirlyGlobeViewController *__nonnull)viewC didTapAt:(MaplyCoordinate)coord {
     
      NSLog(@"didTapAt %f %f", coord.x * RAD_TO_DEG, coord.y * RAD_TO_DEG);
+    [self showPopover];
 }
 
 - (void)maplyViewController:(MaplyViewController *__nonnull)viewC didTapAt:(MaplyCoordinate)coord {
 
     NSLog(@"didTapAt %f %f", coord.x * RAD_TO_DEG, coord.y * RAD_TO_DEG);
+    [self showPopover];
+}
+
+- (void)showPopover {
+    _popControl = [[UIPopoverController alloc] initWithContentViewController:_layerMenuVC];
+    _popControl.delegate = self;
+    [_popControl setPopoverContentSize:CGSizeMake(400.0,4.0/5.0*self.view.bounds.size.height)];
+    [_popControl presentPopoverFromRect:CGRectMake(0, 0, 10, 10) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+- (void) setBasemapLayer:(MaplyQuadImageTilesLayer *)basemapLayer {
+    if (_basemapLayer) {
+        [theViewC removeLayer:_basemapLayer];
+    }
+    _basemapLayer = basemapLayer;
+    [theViewC addLayer:_basemapLayer];
 }
 
 @end
