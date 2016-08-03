@@ -98,7 +98,7 @@
         startCoord = [gpkgFeatureTileSource center];
     }
     
-    _layerMenuVC = [[LayerMenuViewController alloc] initWithBasemapLayerTileInfoDict:[self getBasemapLayerTileInfoDict]];
+    _layerMenuVC = [[LayerMenuViewController alloc] initWithBasemapLayerTileInfoDict:[self getBasemapLayerTileInfoDict] bounds:bounds coordSys:theViewC.coordSystem];
     _layerMenuVC.delegate = self;
     [_layerMenuVC view];
     
@@ -134,6 +134,8 @@
     _popControl.delegate = self;
     [_popControl setPopoverContentSize:CGSizeMake(400.0,4.0/5.0*self.view.bounds.size.height)];
     [_popControl presentPopoverFromRect:CGRectMake(0, 0, 10, 10) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    
+    _layerMenuVC.view.frame = CGRectMake(0, 0, 400.0,4.0/5.0*self.view.bounds.size.height);
 }
 
 - (void) setBasemapLayer:(MaplyQuadImageTilesLayer *)basemapLayer {
@@ -143,5 +145,22 @@
     _basemapLayer = basemapLayer;
     [theViewC addLayer:_basemapLayer];
 }
+
+- (void) addTileLayer:(MaplyQuadImageTilesLayer *)tileLayer {
+    [theViewC addLayer:tileLayer];
+}
+
+- (void) removeTileLayer:(MaplyQuadImageTilesLayer *)tileLayer {
+    [theViewC removeLayer:tileLayer];
+}
+
+- (void) addFeatureLayer:(MaplyQuadPagingLayer *)featureLayer {
+    [theViewC addLayer:featureLayer];
+}
+
+- (void) removeFeatureLayer:(MaplyQuadPagingLayer *)featureLayer {
+    [theViewC removeLayer:featureLayer];
+}
+
 
 @end

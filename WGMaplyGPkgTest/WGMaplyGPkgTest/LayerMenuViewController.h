@@ -12,17 +12,30 @@
 
 
 @class MaplyQuadImageTilesLayer;
+@class MaplyQuadPagingLayer;
 @class MaplyRemoteTileInfo;
+@class MaplyCoordinateSystem;
 
 @protocol LayerMenuViewControllerDelegate <NSObject>
-
 - (void) setBasemapLayer:(MaplyQuadImageTilesLayer *)basemapLayer;
 
+- (void) addTileLayer:(MaplyQuadImageTilesLayer *)tileLayer;
+- (void) removeTileLayer:(MaplyQuadImageTilesLayer *)tileLayer;
+
+- (void) addFeatureLayer:(MaplyQuadPagingLayer *)featureLayer;
+- (void) removeFeatureLayer:(MaplyQuadPagingLayer *)featureLayer;
 @end
 
-@interface LayerMenuViewController : UIViewController <RATreeViewDataSource, RATreeViewDelegate, GPKGProgress>
 
-- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict;
+@protocol LayerMenuViewItemDelegate <NSObject>
+- (void)toggleLayer:(id)layer;
+@end
+
+
+
+@interface LayerMenuViewController : UIViewController <RATreeViewDataSource, RATreeViewDelegate, GPKGProgress, LayerMenuViewItemDelegate>
+
+- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys;
 
 @property (nonatomic, weak) NSObject<LayerMenuViewControllerDelegate> *delegate;
 

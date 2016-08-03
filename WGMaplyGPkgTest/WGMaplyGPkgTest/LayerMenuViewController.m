@@ -9,10 +9,15 @@
 #import "LayerMenuViewController.h"
 #import <WhirlyGlobeComponent.h>
 #import "GPKGGeoPackageFactory.h"
+#import "GPKGTileSource.h"
+#import "GPKGFeatureTileSource.h"
+#import "GPKGFeatureIndexManager.h"
+#import "LayerTableViewCell.h"
 
 @interface LayerMenuViewItem : NSObject
 @property (nonatomic, strong) NSString *displayText;
 - (id) initWithDisplayText:(NSString *)displayText;
+- (UITableViewCell *)cellForTreeView:(RATreeView *)treeView;
 @end
 
 @implementation LayerMenuViewItem
@@ -23,10 +28,20 @@
     }
     return self;
 }
+
+- (UITableViewCell *)cellForTreeView:(RATreeView *)treeView {
+    static NSString *cellIdentifier = @"LayerMenuViewItemCell";
+    UITableViewCell *cell = [treeView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+    }
+    cell.textLabel.text = self.displayText;
+    return cell;
+}
 @end
 
 @interface LayerMenuViewBasemapItem : LayerMenuViewItem
-@property (nonatomic, strong) NSNumber *basemapLayerIndex;
+@property (nonatomic, assign) unsigned int basemapLayerIndex;
 - (id) initWithDisplayText:(NSString *)displayText andBasemapLayerIndex:(int)basemapLayerIndex;
 @end
 
@@ -34,7 +49,7 @@
 - (id) initWithDisplayText:(NSString *)displayText andBasemapLayerIndex:(int)basemapLayerIndex {
     self = [super initWithDisplayText:displayText];
     if (self) {
-        self.basemapLayerIndex = @(basemapLayerIndex);
+        self.basemapLayerIndex = basemapLayerIndex;
     }
     return self;
 }
@@ -65,8 +80,15 @@
 
 
 @interface LayerMenuViewTileTableItem : LayerMenuViewItem
+
 @property (nonatomic, weak) LayerMenuViewGeopackageItem *geopackageItem;
 @property (nonatomic, strong) NSString *tileTableName;
+
+@property (nonatomic, strong) GPKGTileSource *tileSource;
+@property (nonatomic, strong) MaplyQuadImageTilesLayer *imageLayer;
+
+@property (nonatomic, weak) NSObject<LayerMenuViewItemDelegate> *delegate;
+
 - (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andTileTableName:(NSString *)tileTableName;
 @end
 
@@ -79,6 +101,37 @@
     }
     return self;
 }
+
+- (UITableViewCell *)cellForTreeView:(RATreeView *)treeView {
+    static bool nibRegistered = false;
+    static NSString *cellIdentifier = @"LayerMenuViewTileTableItemCell";
+    
+    if (!nibRegistered) {
+        nibRegistered = true;
+        [treeView registerNib:[UINib nibWithNibName:@"LayerTableViewCell" bundle:nil] forCellReuseIdentifier:cellIdentifier];
+    }
+    
+    LayerTableViewCell *cell = [treeView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.txtLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+
+    cell.txtLabel.text = self.tileTableName;
+    cell.typeImage.image = [UIImage imageNamed:@"ic_tiles"];
+    
+    cell.idxImage.image = nil;
+    
+    cell.enabledSwitch.on = (self.imageLayer != nil);
+    
+    [cell.enabledSwitch removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
+    [cell.enabledSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
+    
+    return cell;
+}
+- (void) switchChanged:(id)sender {
+    if (self.delegate)
+        [self.delegate toggleLayer:self];
+}
 @end
 
 
@@ -87,19 +140,75 @@
 
 
 @interface LayerMenuViewFeatureTableItem : LayerMenuViewItem
+
 @property (nonatomic, weak) LayerMenuViewGeopackageItem *geopackageItem;
 @property (nonatomic, strong) NSString *featureTableName;
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName;
+
+@property (nonatomic, strong) GPKGFeatureTileSource *featureSource;
+@property (nonatomic, strong) MaplyQuadPagingLayer *pagingLayer;
+
+@property (nonatomic, weak) NSObject<LayerMenuViewItemDelegate> *delegate;
+
+@property (nonatomic, assign) enum WKBGeometryType geometryType;
+@property (nonatomic, assign) unsigned int count;
+@property (nonatomic, assign) BOOL indexed;
+
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed;
 @end
 
 @implementation LayerMenuViewFeatureTableItem
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName {
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed {
     self = [super initWithDisplayText:featureTableName];
     if (self) {
         self.geopackageItem = parent;
         self.featureTableName = featureTableName;
+        self.geometryType = geometryType;
+        self.count = count;
+        self.indexed = indexed;
+        //self.displayText = [NSString stringWithFormat:@"%@ - %@ (%i) %@", featureTableName, geometryType, count, (indexed ? @"(i)" : @"")];
     }
     return self;
+}
+
+- (UITableViewCell *)cellForTreeView:(RATreeView *)treeView {
+    
+    static bool nibRegistered = false;
+    static NSString *cellIdentifier = @"LayerMenuViewFeatureTableItemCell";
+    
+    if (!nibRegistered) {
+        nibRegistered = true;
+        [treeView registerNib:[UINib nibWithNibName:@"LayerTableViewCell" bundle:nil] forCellReuseIdentifier:cellIdentifier];
+    }
+    
+    LayerTableViewCell *cell = [treeView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.txtLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    
+    cell.txtLabel.text = [NSString stringWithFormat:@"%@ (%i)", self.featureTableName, self.count];
+    if (self.geometryType == WKB_POINT)
+        cell.typeImage.image = [UIImage imageNamed:@"ic_point"];
+    else if (self.geometryType == WKB_LINESTRING)
+        cell.typeImage.image = [UIImage imageNamed:@"ic_linestring"];
+    else if (self.geometryType == WKB_POLYGON)
+        cell.typeImage.image = [UIImage imageNamed:@"ic_polygon"];
+    
+    if (self.indexed)
+        cell.idxImage.image = [UIImage imageNamed:@"indexed"];
+    else
+        cell.idxImage.image = nil;
+        
+    cell.enabledSwitch.on = (self.pagingLayer != nil);
+    [cell.enabledSwitch removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
+    [cell.enabledSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
+    
+    
+    return cell;
+
+}
+- (void) switchChanged:(id)sender {
+    if (self.delegate)
+        [self.delegate toggleLayer:self];
 }
 @end
 
@@ -117,7 +226,8 @@
     NSArray *_directoryContent;
     GPKGGeoPackageManager *_gpkgGeoPackageManager;
     LayerMenuViewGeopackageItem *_importingGeopackageItem;
-
+    NSDictionary *_bounds;
+    MaplyCoordinateSystem *_coordSys;
 }
 
 @end
@@ -125,11 +235,14 @@
 @implementation LayerMenuViewController
 
 
-- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict {
+- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys {
     
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _basemapLayerTileInfoDict = basemapLayerTileInfoDict;
+        _bounds = bounds;
+        _coordSys = coordSys;
+        
         NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)  objectAtIndex:0];
         
         NSMutableArray <LayerMenuViewBasemapItem *> *basemapLayerEntries = [NSMutableArray <LayerMenuViewBasemapItem *> array];
@@ -187,6 +300,7 @@
     _treeView.allowsMultipleSelection = true;
     [self.view addSubview:_treeView];
     
+   
     [self reloadDirectoryContent];
     [_treeView reloadData];
     
@@ -195,6 +309,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     
+    _treeView.frame = self.view.bounds;
     LayerMenuViewBasemapItem *selBasemapItem;
     for (id selItem in [_treeView itemsForSelectedRows]) {
         if ([selItem isKindOfClass:[LayerMenuViewBasemapItem class]]) {
@@ -202,8 +317,9 @@
         }
     }
     
-    [self reloadDirectoryContent];
-    [_treeView reloadData];
+    // FIXME: reloading is buggy
+    //[self reloadDirectoryContent];
+    //[_treeView reloadData];
     
     if (selBasemapItem)
         [_treeView selectRowForItem:selBasemapItem animated:NO scrollPosition:RATreeViewScrollPositionNone];
@@ -222,7 +338,7 @@
     for (id selItem in [_treeView itemsForSelectedRows]) {
         if ([selItem isKindOfClass:[LayerMenuViewBasemapItem class]]) {
             LayerMenuViewBasemapItem *basemapItem = (LayerMenuViewBasemapItem *)selItem;
-            if (![basemapItem.basemapLayerIndex isEqualToNumber:@(basemapLayerIndex)])
+            if (basemapItem.basemapLayerIndex != basemapLayerIndex)
                 [_treeView deselectRowForItem:selItem animated:NO];
         } else
             [_treeView deselectRowForItem:selItem animated:NO];
@@ -253,17 +369,11 @@
 
 - (UITableViewCell *)treeView:(RATreeView *)treeView cellForItem:(nullable id)item {
     
-    static NSString *cellIdentifier = @"BasemapCell";
-    UITableViewCell *cell = [treeView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-    }
+    if (![item isKindOfClass:[LayerMenuViewItem class]])
+        return nil;
     
-    if ([item isKindOfClass:[LayerMenuViewItem class]]) {
-        cell.textLabel.text = ((LayerMenuViewItem *)item).displayText;
-    }
-    
-    return cell;
+    LayerMenuViewItem *layerMenuViewItem = (LayerMenuViewItem *)item;
+    return [layerMenuViewItem cellForTreeView:treeView];
 }
 
 - (id)treeView:(RATreeView *)treeView child:(NSInteger)index ofItem:(nullable id)item {
@@ -299,7 +409,7 @@
     
     if ([item isKindOfClass:[LayerMenuViewBasemapItem class]]) {
         LayerMenuViewBasemapItem *layerMenuViewItem = (LayerMenuViewBasemapItem *)item;
-        [self setBasemapLayerIndex:layerMenuViewItem.basemapLayerIndex.intValue];
+        [self setBasemapLayerIndex:layerMenuViewItem.basemapLayerIndex];
     }
     
 }
@@ -310,7 +420,7 @@
     } else if ([item isKindOfClass:[LayerMenuViewGeopackageItem class]]) {
         
         LayerMenuViewGeopackageItem *geopackageItem = (LayerMenuViewGeopackageItem *)item;
-        
+        NSLog(@"willSelect geopackageItem %@", geopackageItem);
         if (geopackageItem.loaded) {
             [self toggleGeopackageItem:geopackageItem];
             return nil;
@@ -385,28 +495,55 @@
 
     GPKGGeometryColumnsDao *gcd = [gpkg getGeometryColumnsDao];
     NSArray *featureTables;
+    NSMutableArray <NSNumber *> *featureCounts = [NSMutableArray array];
+    NSMutableArray <NSNumber *> *geometryTypes = [NSMutableArray array];
+    NSMutableArray <NSNumber *> *indexedStates = [NSMutableArray array];
     @try {
         featureTables = [gcd getFeatureTables];
+        
+        for (NSString *tableName in featureTables) {
+            GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:tableName];
+            [featureCounts addObject:@([featureDao count])];
+            GPKGGeometryColumns *geometryColumns = [featureDao geometryColumns];
+            [geometryTypes addObject:@(geometryColumns.getGeometryType)];
+            GPKGFeatureIndexManager *indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:gpkg andFeatureDao:featureDao];
+            [indexedStates addObject:@([indexer isIndexedWithFeatureIndexType:GPKG_FIT_GEOPACKAGE])];
+            [indexer close];
+        }
+        
+        
+        
     } @catch (NSException *exception) {
         featureTables = nil;
     }
     gcd = nil;
-    
     [gpkg close];
     
     NSMutableArray *tileTableItems = [NSMutableArray array];
     if (tileTables) {
         for (NSString *tileTable in tileTables) {
-            [tileTableItems addObject:[[LayerMenuViewTileTableItem alloc] initWithParent:_importingGeopackageItem andTileTableName:tileTable]];
+            LayerMenuViewTileTableItem *tileTableItem = [[LayerMenuViewTileTableItem alloc] initWithParent:_importingGeopackageItem andTileTableName:tileTable];
+            tileTableItem.delegate = self;
+            [tileTableItems addObject:tileTableItem];
+            //[tileTableItems addObject:[[LayerMenuViewTileTableItem alloc] initWithParent:_importingGeopackageItem andTileTableName:tileTable]];
         }
     }
     _importingGeopackageItem.tileTableItems = tileTableItems;
     
     NSMutableArray *featureTableItems = [NSMutableArray array];
     if (featureTables) {
-        for (NSString *featureTable in featureTables) {
-            [featureTableItems addObject:[[LayerMenuViewFeatureTableItem alloc] initWithParent:_importingGeopackageItem andFeatureTableName:featureTable]];
+        for (int i=0; i<featureTables.count; i++) {
+            NSString *featureTable = featureTables[i];
+            int count = featureCounts[i].intValue;
+            bool indexed = indexedStates[i].boolValue;
+            enum WKBGeometryType geometryType = geometryTypes[i].intValue;
+            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:_importingGeopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andCount:count andIndexed:indexed];
+            featureTableItem.delegate = self;
+            [featureTableItems addObject:featureTableItem];
         }
+//        for (NSString *featureTable in featureTables) {
+//            [featureTableItems addObject:[[LayerMenuViewFeatureTableItem alloc] initWithParent:_importingGeopackageItem andFeatureTableName:featureTable]];
+//        }
     }
     _importingGeopackageItem.featureTableItems = featureTableItems;
     
@@ -431,6 +568,62 @@
         [_treeView collapseRowForItem:geopackageItem withRowAnimation:RATreeViewRowAnimationLeft];
     else
         [_treeView expandRowForItem:geopackageItem withRowAnimation:RATreeViewRowAnimationLeft];
+}
+
+- (void)toggleLayer:(id)layerItem {
+    if (!self.delegate)
+        return;
+    
+    if ([layerItem isKindOfClass:[LayerMenuViewTileTableItem class]]) {
+        
+        LayerMenuViewTileTableItem *tileTableItem = (LayerMenuViewTileTableItem *)layerItem;
+        if (tileTableItem.imageLayer) {
+            [self.delegate removeTileLayer:tileTableItem.imageLayer];
+            tileTableItem.imageLayer = nil;
+            tileTableItem.tileSource = nil;
+        } else {
+            LayerMenuViewGeopackageItem *geopackageItem = tileTableItem.geopackageItem;
+            GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
+            
+            GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
+            
+            MaplyQuadImageTilesLayer *imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:gpkgTileSource.coordSys tileSource:gpkgTileSource];
+            
+            imageLayer.numSimultaneousFetches = 2;
+            imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
+            imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
+            
+            tileTableItem.tileSource = gpkgTileSource;
+            tileTableItem.imageLayer = imageLayer;
+            [self.delegate addTileLayer:imageLayer];
+            
+        }
+        
+        
+    } else if ([layerItem isKindOfClass:[LayerMenuViewFeatureTableItem class]]) {
+        
+        LayerMenuViewFeatureTableItem *featureTableItem = (LayerMenuViewFeatureTableItem *)layerItem;
+        if (featureTableItem.pagingLayer) {
+            [self.delegate removeFeatureLayer:featureTableItem.pagingLayer];
+            featureTableItem.pagingLayer = nil;
+            featureTableItem.featureSource = nil;
+        } else {
+            LayerMenuViewGeopackageItem *geopackageItem = featureTableItem.geopackageItem;
+            GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
+
+            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:gpkg tableName:featureTableItem.featureTableName bounds:_bounds];
+            
+            MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
+            vecLayer.numSimultaneousFetches = 1;
+            vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
+            
+            featureTableItem.featureSource = featureTileSource;
+            featureTableItem.pagingLayer = vecLayer;
+            [self.delegate addFeatureLayer:vecLayer];
+        }
+        
+    }
+    
 }
 
 @end
