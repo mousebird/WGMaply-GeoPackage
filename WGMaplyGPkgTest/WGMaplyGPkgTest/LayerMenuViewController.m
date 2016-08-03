@@ -36,9 +36,35 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     cell.textLabel.text = self.displayText;
+
     return cell;
 }
 @end
+
+
+@interface LayerMenuViewHeaderItem : LayerMenuViewItem
+@end
+
+@implementation LayerMenuViewHeaderItem
+
+- (UITableViewCell *)cellForTreeView:(RATreeView *)treeView {
+    static NSString *cellIdentifier = @"LayerMenuViewHeaderItemCell";
+    UITableViewCell *cell = [treeView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+    }
+    cell.textLabel.text = self.displayText;
+    
+    UIFont *font = cell.textLabel.font;
+    UIFont *boldFont = [UIFont fontWithDescriptor:[[font fontDescriptor] fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold] size:font.pointSize];
+    cell.textLabel.font = boldFont;
+    
+    return cell;
+}
+
+@end
+
+
 
 @interface LayerMenuViewBasemapItem : LayerMenuViewItem
 @property (nonatomic, assign) unsigned int basemapLayerIndex;
@@ -379,12 +405,12 @@
 - (id)treeView:(RATreeView *)treeView child:(NSInteger)index ofItem:(nullable id)item {
     if (!item) {
         if (index == 0)
-            return  [[LayerMenuViewItem alloc] initWithDisplayText:@"BASEMAPS"];
+            return  [[LayerMenuViewHeaderItem alloc] initWithDisplayText:@"BASEMAPS"];
         else if (index >= _firstBasemapLayerIndex && index <= _lastBasemapLayerIndex) {
             int basemapIdx = (int)index - _firstBasemapLayerIndex;
             return _basemapLayerEntries[basemapIdx];
         } else if (index == _lastBasemapLayerIndex + 1) {
-            return  [[LayerMenuViewItem alloc] initWithDisplayText:@"GEOPACKAGES"];
+            return  [[LayerMenuViewHeaderItem alloc] initWithDisplayText:@"GEOPACKAGES"];
         } else if (index >= _firstGeopackageIndex && index <= _lastGeopackageIndex) {
             int geopackageIdx = (int)index - _firstGeopackageIndex;
             return _geopackageEntries[geopackageIdx];
@@ -619,7 +645,11 @@
             
             featureTableItem.featureSource = featureTileSource;
             featureTableItem.pagingLayer = vecLayer;
+            featureTableItem.indexed = YES;
             [self.delegate addFeatureLayer:vecLayer];
+            [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
+            
+            
         }
         
     }

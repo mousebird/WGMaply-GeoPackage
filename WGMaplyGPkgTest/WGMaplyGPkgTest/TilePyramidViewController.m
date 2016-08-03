@@ -73,39 +73,19 @@
     }
     
     
-    MaplyCoordinate startCoord;
+    MaplyCoordinate startCoord = MaplyCoordinateMakeWithDegrees(-98.5795, 39.828175);
     
-    if (self.tileTableName) {
-    
-        _gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:self.geoPackage tableName:self.tileTableName bounds:bounds];
-        
-        _imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:_gpkgTileSource.coordSys tileSource:_gpkgTileSource];
-        _imageLayer.numSimultaneousFetches = 2;
-        _imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
-        _imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
-        [theViewC addLayer:_imageLayer];
-        
-        startCoord = [_gpkgTileSource center];
-    } else if (self.featureTableName) {
-        
-        GPKGFeatureTileSource *gpkgFeatureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:self.geoPackage tableName:self.featureTableName bounds:bounds];
-        
-        MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:theViewC.coordSystem delegate:gpkgFeatureTileSource];
-        vecLayer.numSimultaneousFetches = 1;
-        vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
-        [theViewC addLayer:vecLayer];
-        
-        startCoord = [gpkgFeatureTileSource center];
-    }
+    UIBarButtonItem *layerMenuButton = [[UIBarButtonItem alloc] initWithTitle:@"Layer Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showPopover)];
+    self.navigationItem.rightBarButtonItem = layerMenuButton;
     
     _layerMenuVC = [[LayerMenuViewController alloc] initWithBasemapLayerTileInfoDict:[self getBasemapLayerTileInfoDict] bounds:bounds coordSys:theViewC.coordSystem];
     _layerMenuVC.delegate = self;
     [_layerMenuVC view];
     
     if (gpkgTestDoGlobe)
-        [globeVC setPosition:startCoord height:0.002];
+        [globeVC setPosition:startCoord height:0.5];
     else
-        [mapVC setPosition:startCoord height:0.002];
+        [mapVC setPosition:startCoord height:0.5];
 
 }
 
@@ -119,14 +99,12 @@
 
 - (void)globeViewController:(WhirlyGlobeViewController *__nonnull)viewC didTapAt:(MaplyCoordinate)coord {
     
-     NSLog(@"didTapAt %f %f", coord.x * RAD_TO_DEG, coord.y * RAD_TO_DEG);
-    [self showPopover];
+    NSLog(@"didTapAt %f %f", coord.x * RAD_TO_DEG, coord.y * RAD_TO_DEG);
 }
 
 - (void)maplyViewController:(MaplyViewController *__nonnull)viewC didTapAt:(MaplyCoordinate)coord {
 
     NSLog(@"didTapAt %f %f", coord.x * RAD_TO_DEG, coord.y * RAD_TO_DEG);
-    [self showPopover];
 }
 
 - (void)showPopover {
