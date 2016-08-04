@@ -93,6 +93,16 @@
             _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
         else if (geomType == WKB_POLYGON)
             _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+        else if (geomType == WKB_GEOMETRY)
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+        else if (geomType == WKB_MULTIPOINT)
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+        else if (geomType == WKB_MULTILINESTRING)
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
+        else if (geomType == WKB_MULTIPOLYGON)
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+        else if (geomType == WKB_GEOMETRYCOLLECTION)
+            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
         else {
             NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
             return nil;
@@ -154,13 +164,182 @@
 }
 
 
-- (void)startFetchForTile:(MaplyTileID)tileID forLayer:(MaplyQuadPagingLayer *__nonnull)layer {
+
+- (bool) processLinestring:(WKBLineString *)lineString withTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs {
+    
+    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
+    bool processed = true;
+    
+    if ([lineString.numPoints intValue] > 0 && [lineString.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
+        
+        for (int i=0; i<[lineString.numPoints intValue]; i++) {
+            WKBPoint *point = lineString.points[i];
+            staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
+        }
+        MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[lineString.numPoints intValue] attributes:nil];
+        
+        MaplyVectorObject *clipped = [vecObj clipToMbr:geoBbox.ll upperRight:geoBbox.ur];
+        
+        [linestringObjs addObject:clipped];
+        
+    } else if ([lineString.numPoints intValue] > 0) {
+        NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [lineString.numPoints intValue]);
+        processed = false;
+    }
+    
+    return processed;
+}
+
+
+
+- (bool) processPolygon:(WKBPolygon *)polygon withTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs  andPolygonObjs:(NSMutableArray *)polygonObjs {
+    
+    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
+    bool processed = true;
+    
+    MaplyVectorObject *polyVecObj;
+    NSMutableArray *lineVecObjs = [NSMutableArray array];
+    
+    for (WKBLineString *ring in polygon.rings) {
+        if ([ring.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
+            for (int i=0; i<[ring.numPoints intValue]; i++) {
+                WKBPoint *point = ring.points[i];
+                staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
+            }
+            if (ring == polygon.rings[0]) {
+                polyVecObj = [[MaplyVectorObject alloc] initWithAreal:staticCoords numCoords:[ring.numPoints intValue] attributes:nil];
+            } else
+                [polyVecObj addHole:staticCoords numCoords:[ring.numPoints intValue]];
+            [lineVecObjs addObject:[[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[ring.numPoints intValue] attributes:nil]];
+        } else {
+            NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [ring.numPoints intValue]);
+            polyVecObj = nil;
+            break;
+        }
+    }
+    if (polyVecObj) {
+        
+        MaplyVectorObject *clipped = [polyVecObj clipToMbr:geoBbox.ll upperRight:geoBbox.ur];
+        
+        if (clipped && clipped.vectorType == MaplyVectorArealType) {
+            [polygonObjs addObject:clipped];
+            for (MaplyVectorObject *lineVecObj in lineVecObjs) {
+                clipped = [lineVecObj clipToMbr:geoBbox.ll upperRight:geoBbox.ur];
+                [linestringObjs addObject:clipped];
+            }
+            
+        } else {
+            processed = false;
+        }
+        
+        
+    } else {
+        processed = false;
+    }
+    
+    return processed;
+}
+
+
+- (int) processGeometriesWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs  andPolygonObjs:(NSMutableArray *)polygonObjs andMarkerObjs:(NSMutableArray *)markerObjs {
     
     static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     
+    int n = [_indexer countWithBoundingBox:[[GPKGBoundingBox alloc]
+                                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
+                                            andMaxLongitudeDouble:geoBboxDeg.ur.x
+                                            andMinLatitudeDouble:geoBboxDeg.ll.y
+                                            andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+    
+    
+    if (n > 0 && n < _maxFeaturesPerTile) {
+        GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
+        GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
+                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
+                                 andMaxLongitudeDouble:geoBboxDeg.ur.x
+                                  andMinLatitudeDouble:geoBboxDeg.ll.y
+                                  andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+        
+        GPKGResultSet *results = [indexResults getResults];
+        while([results moveToNext]) {
+            
+            GPKGFeatureRow *row = [tableIndex getFeatureRowWithResultSet:results];
+            GPKGGeometryData *geometryData = [row getGeometry];
+            
+            if(geometryData != nil && !geometryData.empty){
+                
+                WKBGeometry * geometry = geometryData.geometry;
+                if(geometry != nil) {
+                    
+                    geometry = [_geomProjTransform transformGeometry:geometry];
+                    
+                    
+                    if (geometry.geometryType == WKB_LINESTRING) {
+                        
+                        WKBLineString *lineString = (WKBLineString *)geometry;
+                        if (![self processLinestring:lineString withTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs])
+                            n -= 1;
+                        
+                    } else if (geometry.geometryType == WKB_POLYGON) {
+                        
+                        WKBPolygon *polygon = (WKBPolygon *)geometry;
+                        if (![self processPolygon:polygon withTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs andPolygonObjs:polygonObjs])
+                            n -= 1;
+                        
+                    } else if (geometry.geometryType == WKB_POINT) {
+                        WKBPoint *point = (WKBPoint *)geometry;
+                        
+                        MaplyScreenMarker *marker = [[MaplyScreenMarker alloc] init];
+                        marker.loc = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
+                        marker.image = _markerImage;
+                        marker.size = CGSizeMake( _markerImage.size.width/2.0, _markerImage.size.height/2.0);
+                        [markerObjs addObject:marker];
+                        
+                    } else if (geometry.geometryType == WKB_MULTIPOINT) {
+                        
+                        WKBMultiPoint *multiPoint = (WKBMultiPoint *)geometry;
+                        for (WKBPoint *point in [multiPoint getPoints]) {
+                            MaplyScreenMarker *marker = [[MaplyScreenMarker alloc] init];
+                            marker.loc = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
+                            marker.image = _markerImage;
+                            marker.size = CGSizeMake( _markerImage.size.width/2.0, _markerImage.size.height/2.0);
+                            [markerObjs addObject:marker];
+                        }
+                    } else if (geometry.geometryType == WKB_MULTILINESTRING) {
+                        WKBMultiLineString *multiLineString = (WKBMultiLineString *)geometry;
+                        for (WKBLineString *lineString in [multiLineString getLineStrings]) {
+                            // TODO: limit # of features ?
+                            [self processLinestring:lineString withTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs];
+                        }
+                    } else if (geometry.geometryType == WKB_MULTIPOLYGON) {
+                        WKBMultiPolygon *multiPolygon = (WKBMultiPolygon *)geometry;
+                        for (WKBPolygon *polygon in [multiPolygon getPolygons]) {
+                            // TODO: limit # of features ?
+                            [self processPolygon:polygon withTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs andPolygonObjs:polygonObjs];
+                        }
+                    } else {
+                        NSLog(@"geometryType %i", geometry.geometryType);
+                        n -= 1;
+                    }
+                }
+            }
+            
+        }
+        [results close];
+        [indexResults close];
+    }
+    
+    return n;
+    
+}
+
+
+
+
+
+- (void)startFetchForTile:(MaplyTileID)tileID forLayer:(MaplyQuadPagingLayer *__nonnull)layer {
+    
     MaplyBoundingBox geoBbox = [layer geoBoundsForTile:tileID];
-    
-    
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
@@ -169,125 +348,18 @@
             return;
         }
         
-        
-        double llLonDeg = geoBbox.ll.x*180.0/M_PI;
-        double llLatDeg = geoBbox.ll.y*180.0/M_PI;
-        double urLonDeg = geoBbox.ur.x*180.0/M_PI;
-        double urLatDeg = geoBbox.ur.y*180.0/M_PI;
+        MaplyBoundingBox geoBboxDeg;
+        geoBboxDeg.ll.x = geoBbox.ll.x*180.0/M_PI;
+        geoBboxDeg.ll.y = geoBbox.ll.y*180.0/M_PI;
+        geoBboxDeg.ur.x = geoBbox.ur.x*180.0/M_PI;
+        geoBboxDeg.ur.y = geoBbox.ur.y*180.0/M_PI;
         
         
         NSMutableArray *linestringObjs = [NSMutableArray array];
         NSMutableArray *polygonObjs = [NSMutableArray array];
         NSMutableArray *markerObjs = [NSMutableArray array];
         
-        int n = [_indexer countWithBoundingBox:[[GPKGBoundingBox alloc]
-                                                initWithMinLongitudeDouble:llLonDeg
-                                                andMaxLongitudeDouble:urLonDeg
-                                                andMinLatitudeDouble:llLatDeg
-                                                andMaxLatitudeDouble:urLatDeg] andProjection:_proj4326];
-        
-        
-        if (n > 0 && n < _maxFeaturesPerTile) {
-            GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
-            GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
-                                            initWithMinLongitudeDouble:llLonDeg
-                                            andMaxLongitudeDouble:urLonDeg
-                                            andMinLatitudeDouble:llLatDeg
-                                            andMaxLatitudeDouble:urLatDeg] andProjection:_proj4326];
-            
-            GPKGResultSet *results = [indexResults getResults];
-            while([results moveToNext]) {
-                
-                GPKGFeatureRow *row = [tableIndex getFeatureRowWithResultSet:results];
-                GPKGGeometryData *geometryData = [row getGeometry];
-                
-                if(geometryData != nil && !geometryData.empty){
-                    
-                    WKBGeometry * geometry = geometryData.geometry;
-                    if(geometry != nil) {
-                        
-                        geometry = [_geomProjTransform transformGeometry:geometry];
-                        
-                        if (geometry.geometryType == WKB_LINESTRING) {
-                            
-                            WKBLineString *lineString = (WKBLineString *)geometry;
-                            
-                            if ([lineString.numPoints intValue] > 0 && [lineString.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
-                                
-                                for (int i=0; i<[lineString.numPoints intValue]; i++) {
-                                    WKBPoint *point = lineString.points[i];
-                                    staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
-                                }
-                                MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[lineString.numPoints intValue] attributes:nil];
-                                [linestringObjs addObject:vecObj];
-                            } else if ([lineString.numPoints intValue] > 0) {
-                                NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [lineString.numPoints intValue]);
-                                n -= 1;
-                            }
-                        } else if (geometry.geometryType == WKB_POLYGON) {
-                            
-                            WKBPolygon *polygon = (WKBPolygon *)geometry;
-                            MaplyVectorObject *polyVecObj;
-                            NSMutableArray *lineVecObjs = [NSMutableArray array];
-                            
-                            for (WKBLineString *ring in polygon.rings) {
-                                if ([ring.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
-                                    for (int i=0; i<[ring.numPoints intValue]; i++) {
-                                        WKBPoint *point = ring.points[i];
-                                        staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
-                                    }
-                                    if (ring == polygon.rings[0]) {
-                                        polyVecObj = [[MaplyVectorObject alloc] initWithAreal:staticCoords numCoords:[ring.numPoints intValue] attributes:nil];
-                                    } else
-                                        [polyVecObj addHole:staticCoords numCoords:[ring.numPoints intValue]];
-                                    [lineVecObjs addObject:[[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[ring.numPoints intValue] attributes:nil]];
-                                } else {
-                                    NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [ring.numPoints intValue]);
-                                    polyVecObj = nil;
-                                    break;
-                                }
-                            }
-                            if (polyVecObj) {
-                                
-                                MaplyVectorObject *clipped = [polyVecObj clipToMbr:MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg) upperRight:MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg)];
-                                
-                                if (clipped && clipped.vectorType == MaplyVectorArealType) {
-                                    [polygonObjs addObject:clipped];
-                                    for (MaplyVectorObject *lineVecObj in lineVecObjs) {
-                                        clipped = [lineVecObj clipToMbr:MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg) upperRight:MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg)];
-                                        [linestringObjs addObject:clipped];
-                                    }
-                                    
-                                } else {
-                                    n -= 1;
-                                }
-                                
-                                
-                            } else {
-                                n -= 1;
-                            }
-                            
-                        } else if (geometry.geometryType == WKB_POINT) {
-                            WKBPoint *point = (WKBPoint *)geometry;
-                            
-                            MaplyScreenMarker *marker = [[MaplyScreenMarker alloc] init];
-                            marker.loc = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
-                            marker.image = _markerImage;
-                            marker.size = CGSizeMake( _markerImage.size.width/2.0, _markerImage.size.height/2.0);
-                            
-                            
-                            [markerObjs addObject:marker];
-                        } else {
-                            NSLog(@"geometryType %i", geometry.geometryType);
-                            n -= 1;
-                        }
-                    }
-                }
-                
-            }
-            [results close];
-            [indexResults close];
-        }
+        int n = [self processGeometriesWithTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs andPolygonObjs:polygonObjs andMarkerObjs:markerObjs];
         
         
         NSMutableArray *compObjs = [NSMutableArray array];
@@ -314,19 +386,19 @@
             
                 MaplyScreenLabel *label = [[MaplyScreenLabel alloc] init];
                 label.loc = MaplyCoordinateMakeWithDegrees(
-                                                           (llLonDeg + urLonDeg) / 2.0,
-                                                           (llLatDeg + urLatDeg) / 2.0);
+                                                           (geoBboxDeg.ll.x + geoBboxDeg.ur.x) / 2.0,
+                                                           (geoBboxDeg.ll.y + geoBboxDeg.ur.y) / 2.0);
                 label.text = [@(n) stringValue];
                 label.layoutPlacement = kMaplyLayoutRight;
                 
                 MaplyComponentObject *labelCompObj = [layer.viewC addScreenLabels:@[label] desc:_labelDesc mode:MaplyThreadCurrent];
                 
                 MaplyCoordinate coords[5];
-                coords[0] = MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg);
-                coords[1] = MaplyCoordinateMakeWithDegrees(urLonDeg, llLatDeg);
-                coords[2] = MaplyCoordinateMakeWithDegrees(urLonDeg, urLatDeg);
-                coords[3] = MaplyCoordinateMakeWithDegrees(llLonDeg, urLatDeg);
-                coords[4] = MaplyCoordinateMakeWithDegrees(llLonDeg, llLatDeg);
+                coords[0] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ll.y);
+                coords[1] = MaplyCoordinateMake(geoBbox.ur.x, geoBbox.ll.y);
+                coords[2] = MaplyCoordinateMake(geoBbox.ur.x, geoBbox.ur.y);
+                coords[3] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ur.y);
+                coords[4] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ll.y);
                 MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:coords numCoords:5 attributes:nil];
                 
                 MaplyComponentObject *vecCompObj = [layer.viewC addVectors:@[vecObj] desc:_gridDesc mode:MaplyThreadCurrent];
