@@ -237,11 +237,13 @@
     cell.txtLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     
     cell.txtLabel.text = [NSString stringWithFormat:@"%@ (%i)", self.featureTableName, self.count];
-    if (self.geometryType == WKB_POINT)
+    if (self.geometryType == WKB_GEOMETRY || self.geometryType == WKB_GEOMETRYCOLLECTION)
+        cell.typeImage.image = [UIImage imageNamed:@"ic_geometry"];
+    else if (self.geometryType == WKB_POINT || self.geometryType == WKB_MULTIPOINT)
         cell.typeImage.image = [UIImage imageNamed:@"ic_point"];
-    else if (self.geometryType == WKB_LINESTRING)
+    else if (self.geometryType == WKB_LINESTRING || self.geometryType == WKB_MULTILINESTRING)
         cell.typeImage.image = [UIImage imageNamed:@"ic_linestring"];
-    else if (self.geometryType == WKB_POLYGON)
+    else if (self.geometryType == WKB_POLYGON || self.geometryType == WKB_MULTIPOLYGON)
         cell.typeImage.image = [UIImage imageNamed:@"ic_polygon"];
     else
         NSLog(@"Surprise geom type: %i", self.geometryType);

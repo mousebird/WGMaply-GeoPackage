@@ -21,6 +21,7 @@
 		E56E10FC1D51CA51004B47F7 /* indexed.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F71D51CA51004B47F7 /* indexed.png */; };
 		E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */; };
 		E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */; };
+		E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E11061D53DB95004B47F7 /* ic_geometry.png */; };
 		E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5B566B01D3D953E00DB0FD1 /* bounds.json */; };
 		E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */; };
 		E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */; };
@@ -116,6 +117,7 @@
 		E56E11011D51D4E3004B47F7 /* LayerTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerTableViewCell.h; sourceTree = "<group>"; };
 		E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerTableViewCell.m; sourceTree = "<group>"; };
 		E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerTableViewCell.xib; sourceTree = "<group>"; };
+		E56E11061D53DB95004B47F7 /* ic_geometry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_geometry.png; path = icons/ic_geometry.png; sourceTree = "<group>"; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
 		E5B566B01D3D953E00DB0FD1 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bounds.json; sourceTree = "<group>"; };
 		E5B566B21D3FD29400DB0FD1 /* StartupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartupViewController.h; sourceTree = "<group>"; };
@@ -230,10 +232,10 @@
 				E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */,
 				E5B566B51D3FE33C00DB0FD1 /* ListTileTablesViewController.h */,
 				E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */,
-				E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */,
 				E56E11011D51D4E3004B47F7 /* LayerTableViewCell.h */,
 				E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */,
 				E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */,
+				E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */,
 				E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */,
 				E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */,
 			);
@@ -243,6 +245,7 @@
 		E5D84F5C1D37F58300D5AF18 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E56E11061D53DB95004B47F7 /* ic_geometry.png */,
 				E56E10F31D51CA51004B47F7 /* ic_linestring.png */,
 				E56E10F41D51CA51004B47F7 /* ic_point.png */,
 				E56E10F51D51CA51004B47F7 /* ic_polygon.png */,
@@ -393,6 +396,7 @@
 				E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */,
 				E56E10F91D51CA51004B47F7 /* ic_point.png in Resources */,
 				E5D84F671D37F58300D5AF18 /* Main.storyboard in Resources */,
+				E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */,
 				E56E10FB1D51CA51004B47F7 /* ic_tiles.png in Resources */,
 				E56E10F81D51CA51004B47F7 /* ic_linestring.png in Resources */,
 				E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */,
