@@ -274,6 +274,7 @@
 
 @property (nonatomic, weak) LayerMenuViewFeatureTableItem *featureTableItem;
 @property (nonatomic, assign) BOOL cancel;
+@property (nonatomic, strong) GPKGGeoPackage *gpkg;
 
 
 - (id) initWithParent:(LayerMenuViewFeatureTableItem *)featureTableItem;
@@ -690,12 +691,11 @@
         featureTableItem.indexing = NO;
         [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
         
-        if (!_indexingItem.cancel) {
+        if (_indexingItem.cancel) {
+            [_indexingItem.gpkg close];
+        } else {
         
-            LayerMenuViewGeopackageItem *geopackageItem = featureTableItem.geopackageItem;
-            GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
-            
-            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:gpkg tableName:featureTableItem.featureTableName bounds:_bounds];
+            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds];
             
             MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
             vecLayer.numSimultaneousFetches = 1;
@@ -709,6 +709,7 @@
         
         [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
         
+        _indexingItem.gpkg = nil;
         _indexingItem = nil;
     });
 }
@@ -728,6 +729,13 @@
         NSLog(@"%@", error);
         LayerMenuViewFeatureTableItem *featureTableItem = _indexingItem.featureTableItem;
         featureTableItem.indexing = NO;
+        if (_indexingItem.gpkg) {
+            @try {
+                [_indexingItem.gpkg close];
+            } @catch (NSException *exception) {
+            }
+            _indexingItem.gpkg = nil;
+        }
         _indexingItem = nil;
         [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
 //        [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
@@ -754,6 +762,7 @@
         if (tileTableItem.imageLayer) {
             [self.delegate removeTileLayer:tileTableItem.imageLayer];
             tileTableItem.imageLayer = nil;
+            [tileTableItem.tileSource close];
             tileTableItem.tileSource = nil;
         } else {
             LayerMenuViewGeopackageItem *geopackageItem = tileTableItem.geopackageItem;
@@ -808,6 +817,7 @@
             
             LayerMenuViewGeopackageItem *geopackageItem = featureTableItem.geopackageItem;
             GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
+            _indexingItem.gpkg = gpkg;
             
             GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:featureTableItem.featureTableName];
             
@@ -823,9 +833,10 @@
                 } @catch (NSException *exception) {
                     NSLog(@"LayerMenuViewController: Error indexing geometry.");
                     NSLog(@"%@", exception);
-                    
                     dispatch_async(dispatch_get_main_queue(), ^{
                         featureTableItem.indexing = NO;
+                        [gpkg close];
+                        _indexingItem.gpkg = nil;
                         _indexingItem = nil;
                         [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
 //                        [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
@@ -836,7 +847,6 @@
                     
                 }
                 NSLog(@"LayerMenuViewController: Finished index.");
-                
                 [self completedIndexing];
                     
                 

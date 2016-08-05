@@ -164,9 +164,17 @@
         }
         _tileSize = n;
         
-        
     }
     return self;
+}
+
+- (void)close {
+    @synchronized (self) {
+        _retriever = nil;
+        _tileDao = nil;
+        [_geoPackage close];
+        _geoPackage = nil;
+    }
 }
 
 - (bool)tileIsLocal:(MaplyTileID)tileID frame:(int)frame {
@@ -207,8 +215,14 @@
                        int newX = tileID.x - xOffset;
                        int newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
                        
+                       
                        //NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, newX, newY);
-                       GPKGGeoPackageTile *gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
+                       GPKGGeoPackageTile *gpkgTile;
+                       @synchronized (self) {
+                           if (_retriever)
+                               gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
+                       }
+                       
 
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
