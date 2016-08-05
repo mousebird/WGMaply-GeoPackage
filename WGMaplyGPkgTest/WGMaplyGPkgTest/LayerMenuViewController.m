@@ -514,7 +514,14 @@
     
 }
 
+- (id)treeView:(RATreeView *)treeView willDeselectRowForItem:(id)item {
+    if ([_treeView itemsForSelectedRows].count == 1)
+        return nil;
+    return item;
+}
+
 - (id)treeView:(RATreeView *)treeView willSelectRowForItem:(id)item {
+    
     if ([item isKindOfClass:[LayerMenuViewBasemapItem class]]) {
         return item;
     } else if ([item isKindOfClass:[LayerMenuViewGeopackageItem class]]) {
