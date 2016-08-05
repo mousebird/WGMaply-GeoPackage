@@ -152,6 +152,15 @@
     return self;
 }
 
+- (void)close {
+    @synchronized (_geoPackage) {
+        _indexer = nil;
+        _featureDao = nil;
+        [_geoPackage close];
+        _geoPackage = nil;
+    }
+}
+
 - (int)minZoom {
     return 1;
 }

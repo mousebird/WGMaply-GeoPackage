@@ -789,6 +789,7 @@
         if (featureTableItem.pagingLayer) {
             [self.delegate removeFeatureLayer:featureTableItem.pagingLayer];
             featureTableItem.pagingLayer = nil;
+            [featureTableItem.featureSource close];
             featureTableItem.featureSource = nil;
         } else {
             
