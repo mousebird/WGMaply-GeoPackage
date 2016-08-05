@@ -42,111 +42,112 @@
     self = [super init];
     if (self) {
         _geoPackage = geoPackage;
-        _featureDao = [_geoPackage getFeatureDaoWithTableName:tableName];
-        _bounds = bounds;
-        
-        if (!_featureDao) {
-            NSLog(@"GPKGFeatureTileSource: Error accessing Feature DAO.");
-            return nil;
-        }
-
-        
-        _labelDesc = @{
-                        kMaplyJustify           : @"left",
-                        kMaplyDrawPriority      : @(kMaplyImageLayerDrawPriorityDefault + 230),
-                        kMaplyFont              :
-                            [UIFont systemFontOfSize:24.0],
-                        kMaplyTextColor         : [UIColor greenColor],
-                        kMaplyTextOutlineColor  : [UIColor blackColor],
-                        kMaplyTextOutlineSize   : @(1.0),
-                        kMaplyEnable            : @(NO)};
-        _linestringDesc = @{
-                     kMaplyColor: [UIColor yellowColor],
-                     kMaplyEnable: @(NO),
-                     kMaplyFilled: @(NO),
-                     kMaplyVecWidth: @(5.0),
-                     kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 210)
-                     };
-        _polygonDesc = @{
-                            kMaplyColor: [UIColor purpleColor],
-                            kMaplyEnable: @(NO),
-                            kMaplyFilled: @(YES),
-                            kMaplyVecWidth: @(5.0),
-                            kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200)
-                            };
-        _gridDesc = @{
-                     kMaplyColor: [UIColor greenColor],
-                     kMaplyEnable: @(NO),
-                     kMaplyFilled: @(NO),
-                     kMaplyVecWidth: @(5.0),
-                     kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 220)
-                     };
-        
-        _markerDesc = @{kMaplyMinVis: @(0.0), kMaplyMaxVis: @(1.0), kMaplyFade: @(0.0), kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200), kMaplyEnable: @(NO)};
-        _markerImage = [UIImage imageNamed:@"map_pin"];
-        
-        
-        enum WKBGeometryType geomType = [_featureDao getGeometryType];
-        if (geomType == WKB_POINT)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-        else if (geomType == WKB_LINESTRING)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
-        else if (geomType == WKB_POLYGON)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
-        else if (geomType == WKB_GEOMETRY)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-        else if (geomType == WKB_MULTIPOINT)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-        else if (geomType == WKB_MULTILINESTRING)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
-        else if (geomType == WKB_MULTIPOLYGON)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
-        else if (geomType == WKB_GEOMETRYCOLLECTION)
-            _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-        else {
-            NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
-            return nil;
-        }
-
-        
-        GPKGSpatialReferenceSystemDao * srsDao = [_geoPackage getSpatialReferenceSystemDao];
-        GPKGSpatialReferenceSystem * srs = (GPKGSpatialReferenceSystem *)[srsDao queryForIdObject:_featureDao.projection.epsg];
-        if (!srs || !srs.organization || !srs.organizationCoordsysId) {
-            NSLog(@"GPKGFeatureTileSource: Error accessing SRS.");
-            return nil;
-        }
-        NSArray *bounds = _bounds[ [srs.organizationCoordsysId stringValue] ];
-        _isDegree = [(NSNumber *)bounds[6] boolValue];
-        _proj4326 = [GPKGProjectionFactory getProjectionWithInt:4326];
-        
-        GPKGProjectionTransform *projTransform = [[GPKGProjectionTransform alloc] initWithFromSrs:srs andToEpsg:4326];
-        _geomProjTransform = [[GPKGGeometryProjectionTransform alloc] initWithProjectionTransform:projTransform];
-
-        
-        _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
-        [_indexer setProgress:self];
-        NSLog(@"GPKGFeatureTileSource: Starting index.");
-        int n = 0;
-        @try {
-            n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
-        } @catch (NSException *exception) {
-            NSLog(@"GPKGFeatureTileSource: Error indexing geometry.");
-            NSLog(@"%@", exception);
-            return nil;
+        @synchronized (_geoPackage) {
+            _featureDao = [_geoPackage getFeatureDaoWithTableName:tableName];
+            _bounds = bounds;
             
+            if (!_featureDao) {
+                NSLog(@"GPKGFeatureTileSource: Error accessing Feature DAO.");
+                return nil;
+            }
+
+            
+            _labelDesc = @{
+                            kMaplyJustify           : @"left",
+                            kMaplyDrawPriority      : @(kMaplyImageLayerDrawPriorityDefault + 230),
+                            kMaplyFont              :
+                                [UIFont systemFontOfSize:24.0],
+                            kMaplyTextColor         : [UIColor greenColor],
+                            kMaplyTextOutlineColor  : [UIColor blackColor],
+                            kMaplyTextOutlineSize   : @(1.0),
+                            kMaplyEnable            : @(NO)};
+            _linestringDesc = @{
+                         kMaplyColor: [UIColor yellowColor],
+                         kMaplyEnable: @(NO),
+                         kMaplyFilled: @(NO),
+                         kMaplyVecWidth: @(5.0),
+                         kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 210)
+                         };
+            _polygonDesc = @{
+                                kMaplyColor: [UIColor purpleColor],
+                                kMaplyEnable: @(NO),
+                                kMaplyFilled: @(YES),
+                                kMaplyVecWidth: @(5.0),
+                                kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200)
+                                };
+            _gridDesc = @{
+                         kMaplyColor: [UIColor greenColor],
+                         kMaplyEnable: @(NO),
+                         kMaplyFilled: @(NO),
+                         kMaplyVecWidth: @(5.0),
+                         kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 220)
+                         };
+            
+            _markerDesc = @{kMaplyMinVis: @(0.0), kMaplyMaxVis: @(1.0), kMaplyFade: @(0.0), kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200), kMaplyEnable: @(NO)};
+            _markerImage = [UIImage imageNamed:@"map_pin"];
+            
+            
+            enum WKBGeometryType geomType = [_featureDao getGeometryType];
+            if (geomType == WKB_POINT)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+            else if (geomType == WKB_LINESTRING)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
+            else if (geomType == WKB_POLYGON)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+            else if (geomType == WKB_GEOMETRY)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+            else if (geomType == WKB_MULTIPOINT)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+            else if (geomType == WKB_MULTILINESTRING)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
+            else if (geomType == WKB_MULTIPOLYGON)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+            else if (geomType == WKB_GEOMETRYCOLLECTION)
+                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+            else {
+                NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
+                return nil;
+            }
+
+            
+            GPKGSpatialReferenceSystemDao * srsDao = [_geoPackage getSpatialReferenceSystemDao];
+            GPKGSpatialReferenceSystem * srs = (GPKGSpatialReferenceSystem *)[srsDao queryForIdObject:_featureDao.projection.epsg];
+            if (!srs || !srs.organization || !srs.organizationCoordsysId) {
+                NSLog(@"GPKGFeatureTileSource: Error accessing SRS.");
+                return nil;
+            }
+            NSArray *bounds = _bounds[ [srs.organizationCoordsysId stringValue] ];
+            _isDegree = [(NSNumber *)bounds[6] boolValue];
+            _proj4326 = [GPKGProjectionFactory getProjectionWithInt:4326];
+            
+            GPKGProjectionTransform *projTransform = [[GPKGProjectionTransform alloc] initWithFromSrs:srs andToEpsg:4326];
+            _geomProjTransform = [[GPKGGeometryProjectionTransform alloc] initWithProjectionTransform:projTransform];
+
+            
+            _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
+            [_indexer setProgress:self];
+            NSLog(@"GPKGFeatureTileSource: Starting index.");
+            int n = 0;
+            @try {
+                n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
+            } @catch (NSException *exception) {
+                NSLog(@"GPKGFeatureTileSource: Error indexing geometry.");
+                NSLog(@"%@", exception);
+                return nil;
+                
+            }
+            NSLog(@"GPKGFeatureTileSource: Finished index.");
+            
+            GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
+            if (!_isDegree)
+                gpkgBBox = [projTransform transformWithBoundingBox:gpkgBBox];
+            MaplyCoordinate p;
+            p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
+            p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
+            _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
+            
+            _loadedTiles = [NSMutableDictionary dictionary];
         }
-        NSLog(@"GPKGFeatureTileSource: Finished index.");
-        
-        GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
-        if (!_isDegree)
-            gpkgBBox = [projTransform transformWithBoundingBox:gpkgBBox];
-        MaplyCoordinate p;
-        p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
-        p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
-        _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
-        
-        _loadedTiles = [NSMutableDictionary dictionary];
-        
     }
     return self;
 }
@@ -359,8 +360,10 @@
         NSMutableArray *polygonObjs = [NSMutableArray array];
         NSMutableArray *markerObjs = [NSMutableArray array];
         
-        int n = [self processGeometriesWithTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs andPolygonObjs:polygonObjs andMarkerObjs:markerObjs];
-        
+        int n;
+        @synchronized (_geoPackage) {
+            n = [self processGeometriesWithTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs andPolygonObjs:polygonObjs andMarkerObjs:markerObjs];
+        }
         
         NSMutableArray *compObjs = [NSMutableArray array];
         bool complete = true;
