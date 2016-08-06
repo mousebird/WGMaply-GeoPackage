@@ -275,6 +275,7 @@
 @property (nonatomic, weak) LayerMenuViewFeatureTableItem *featureTableItem;
 @property (nonatomic, assign) BOOL cancel;
 @property (nonatomic, strong) GPKGGeoPackage *gpkg;
+@property (nonatomic, strong) GPKGFeatureDao *featureDao;
 
 
 - (id) initWithParent:(LayerMenuViewFeatureTableItem *)featureTableItem;
@@ -692,9 +693,10 @@
         [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
         
         if (_indexingItem.cancel) {
+            [_indexingItem.featureDao rollbackTransaction];
             [_indexingItem.gpkg close];
         } else {
-        
+            [_indexingItem.featureDao commitTransaction];
             GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds];
             
             MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
@@ -709,6 +711,7 @@
         
         [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
         
+        _indexingItem.featureDao = nil;
         _indexingItem.gpkg = nil;
         _indexingItem = nil;
     });
@@ -729,6 +732,13 @@
         NSLog(@"%@", error);
         LayerMenuViewFeatureTableItem *featureTableItem = _indexingItem.featureTableItem;
         featureTableItem.indexing = NO;
+        if (_indexingItem.featureDao) {
+            @try {
+                [_indexingItem.featureDao rollbackTransaction];
+            } @catch (NSException *exception) {
+            }
+            _indexingItem.featureDao = nil;
+        }
         if (_indexingItem.gpkg) {
             @try {
                 [_indexingItem.gpkg close];
@@ -821,6 +831,7 @@
             _indexingItem.gpkg = gpkg;
             
             GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:featureTableItem.featureTableName];
+            _indexingItem.featureDao = featureDao;
             
             GPKGFeatureIndexManager *indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:gpkg andFeatureDao:featureDao];
             [indexer setProgress:self];
@@ -830,12 +841,16 @@
                 
                 NSLog(@"LayerMenuViewController: Starting index.");
                 @try {
+                    [featureDao beginTransaction];
                     [indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
+                    // Commit the transaction in completedIndexing method.
                 } @catch (NSException *exception) {
                     NSLog(@"LayerMenuViewController: Error indexing geometry.");
                     NSLog(@"%@", exception);
+                    [featureDao rollbackTransaction];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         featureTableItem.indexing = NO;
+                        _indexingItem.featureDao = nil;
                         [gpkg close];
                         _indexingItem.gpkg = nil;
                         _indexingItem = nil;
