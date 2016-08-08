@@ -39,7 +39,16 @@
 }
 
 -(BOOL) moveToNext{
-    return sqlite3_step(self.statement) == SQLITE_ROW;
+    int result;
+    while (true) {
+        result = sqlite3_step(self.statement);
+        if (result == SQLITE_BUSY) {
+            [NSThread sleepForTimeInterval:0.0001];
+        } else
+            break;
+    }
+    //return sqlite3_step(self.statement) == SQLITE_ROW;
+    return (result == SQLITE_ROW);
 }
 
 -(BOOL) moveToFirst{

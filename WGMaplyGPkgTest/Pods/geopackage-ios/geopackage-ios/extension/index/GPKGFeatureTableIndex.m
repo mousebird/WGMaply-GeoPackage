@@ -186,7 +186,6 @@ NSString * const GPKG_PROP_EXTENSION_GEOMETRY_INDEX_DEFINITION = @"geopackage.ex
     BOOL indexed = false;
     GPKGExtensions * extension = [self getExtension];
     if(extension != nil){
-        
         GPKGContentsDao * contentsDao = [self.geoPackage getContentsDao];
         GPKGContents * contents = (GPKGContents *)[contentsDao queryForIdObject:self.tableName];
         if(contents != nil){

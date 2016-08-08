@@ -404,7 +404,6 @@
 -(enum GPKGFeatureIndexType) getIndexedType{
     
     enum GPKGFeatureIndexType indexType = GPKG_FIT_NONE;
-    
     // Check for an indexed type
     for (NSString * typeName in self.indexLocationQueryOrder) {
         enum GPKGFeatureIndexType type = [GPKGFeatureIndexTypes fromName: typeName];

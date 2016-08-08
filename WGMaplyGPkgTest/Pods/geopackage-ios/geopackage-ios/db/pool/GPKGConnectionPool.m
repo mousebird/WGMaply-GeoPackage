@@ -246,7 +246,19 @@ static BOOL maintainStackTraces = false;
             [NSException raise:@"Begin Transaction Failure" format:@"Can not begin a transaction while write connection is already open on database: %@", self.filename];
         }
         GPKGDbConnection * connection = [self getWriteConnection];
-        int result = sqlite3_exec([connection getConnection], "BEGIN EXCLUSIVE TRANSACTION", 0, 0, 0);
+        int result;
+//        do
+//            result = sqlite3_exec([connection getConnection], "BEGIN EXCLUSIVE TRANSACTION", 0, 0, 0);
+//        while (result == SQLITE_BUSY);
+        
+        while (true) {
+            result = sqlite3_exec([connection getConnection], "BEGIN EXCLUSIVE TRANSACTION", 0, 0, 0);
+            if (result == SQLITE_BUSY) {
+                [NSThread sleepForTimeInterval:0.0001];
+            } else
+                break;
+        }
+        
         if(result != SQLITE_OK){
             [NSException raise:@"Begin Transaction Failure" format:@"Failed to begin exclusive transaction on database: %@, Error: %s", self.filename, sqlite3_errmsg([connection getConnection])];
         }

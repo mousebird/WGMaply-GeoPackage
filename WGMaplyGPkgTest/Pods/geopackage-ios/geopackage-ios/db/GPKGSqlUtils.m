@@ -120,10 +120,36 @@
     int result = 0;
     
     sqlite3_stmt *compiledStatement;
-    int prepareStatementResult = sqlite3_prepare_v2([connection getConnection], [statement UTF8String], -1, &compiledStatement, NULL);
+    int prepareStatementResult;
+//    do
+//        prepareStatementResult = sqlite3_prepare_v2([connection getConnection], [statement UTF8String], -1, &compiledStatement, NULL);
+//    while (prepareStatementResult == SQLITE_BUSY);
+    
+    while (true) {
+        prepareStatementResult = sqlite3_prepare_v2([connection getConnection], [statement UTF8String], -1, &compiledStatement, NULL);
+        if (prepareStatementResult == SQLITE_BUSY) {
+            [NSThread sleepForTimeInterval:0.0001];
+        } else
+            break;
+    }
+        
     if(prepareStatementResult == SQLITE_OK) {
         [self setArguments:args inStatement:compiledStatement];
-        if(sqlite3_step(compiledStatement) == SQLITE_ROW){
+        
+        int executeStatementResult;
+//        do
+//            executeStatementResult = sqlite3_step(compiledStatement);
+//        while (executeStatementResult == SQLITE_BUSY);
+        
+        while (true) {
+            executeStatementResult = sqlite3_step(compiledStatement);
+            if (executeStatementResult == SQLITE_BUSY) {
+                [NSThread sleepForTimeInterval:0.0001];
+            } else
+                break;
+        }
+        
+        if (executeStatementResult == SQLITE_ROW){
             result = sqlite3_column_int(compiledStatement, 0);
         } else{
             [NSException raise:@"SQL Failed" format:@"Failed to query for single result. SQL: %@, Error: %s", statement, sqlite3_errmsg([connection getConnection])];
