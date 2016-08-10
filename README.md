@@ -2,6 +2,7 @@
 WhirlyGlobe-Maply GeoPackage Support
 
 To build and run:
+---
 
 (1) In a terminal, cd to the desired directory and run these commands:
 
@@ -20,7 +21,7 @@ pod install
 (3) Build and run in XCode
 
 How to upload gpkg files:
-
+---
 (1) Run the app at least once
 
 (2) In iTunes, select the appropriate device.
@@ -33,3 +34,4 @@ How to upload gpkg files:
 
 (6) Drag the desired gpkg files to the "WGMaplyGPkgTest Documents" area.
 
+---
