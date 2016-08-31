@@ -92,8 +92,8 @@
 - (NSDictionary <NSString *, MaplyRemoteTileInfo *> *) getBasemapLayerTileInfoDict {
     
     return @{
-             @"Positron" :    [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://light_all.basemaps.cartocdn.com/light_all/" ext:@"png" minZoom:0 maxZoom:18],
-             @"Dark Matter" : [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://dark_all.basemaps.cartocdn.com/dark_all/" ext:@"png" minZoom:0 maxZoom:18],
+             @"Positron" :    [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://light_all.basemaps.cartocdn.com/light_all/" ext:@"png" minZoom:0 maxZoom:20],
+             @"Dark Matter" : [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://dark_all.basemaps.cartocdn.com/dark_all/" ext:@"png" minZoom:0 maxZoom:20],
              };
 }
 

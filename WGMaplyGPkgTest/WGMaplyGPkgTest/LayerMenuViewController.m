@@ -332,7 +332,7 @@
         for (int idx=0; idx<allKeys.count; idx++) {
             NSString *displayText = allKeys[idx];
             
-            _basemapLayerTileInfoDict[displayText].cacheDir = [NSString stringWithFormat:@"%@/%@/",cacheDir, displayText];
+            _basemapLayerTileInfoDict[displayText].cacheDir = [NSString stringWithFormat:@"%@/foo_%@/",cacheDir, displayText];
             
             [basemapLayerEntries addObject:[[LayerMenuViewBasemapItem alloc] initWithDisplayText:displayText andBasemapLayerIndex:idx]];
         }
