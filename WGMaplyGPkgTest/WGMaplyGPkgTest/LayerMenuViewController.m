@@ -783,7 +783,8 @@
             MaplyQuadImageTilesLayer *imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:gpkgTileSource.coordSys tileSource:gpkgTileSource];
             
             imageLayer.numSimultaneousFetches = 2;
-            imageLayer.color = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.5];
+            // This fades in the image layer
+//            imageLayer.color = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.5];
             imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
             
             tileTableItem.tileSource = gpkgTileSource;
