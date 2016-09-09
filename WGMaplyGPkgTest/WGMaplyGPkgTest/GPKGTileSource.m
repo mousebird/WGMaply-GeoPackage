@@ -47,7 +47,7 @@
                 NSLog(@"GPKGTileSource: Error accessing SRS.");
                 return nil;
             }
-            if (![srs.organization isEqualToString:@"EPSG"]) {
+            if ([srs.organization caseInsensitiveCompare:@"EPSG"] != NSOrderedSame) {
                 NSLog(@"GPKGTileSource: Unexpected SRS organization.");
                 return nil;
             }
