@@ -316,6 +316,9 @@
     
     static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     
+    if (tileID.level > _targetLevel)
+        return 0;
+    
     GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
     GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
                                                                             initWithMinLongitudeDouble:geoBboxDeg.ll.x
@@ -393,8 +396,6 @@
             
         }
         [results close];
-    } else if (tileID.level > _targetLevel) {
-        n = 0;
     }
     
     [indexResults close];
