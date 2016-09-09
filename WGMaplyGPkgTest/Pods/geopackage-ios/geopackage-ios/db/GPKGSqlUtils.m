@@ -30,7 +30,16 @@
     int count = [self countWithDatabase:connection andStatement:statement andArgs:args];
     
     sqlite3_stmt *compiledStatement;
-    int prepareStatementResult = sqlite3_prepare_v2([connection getConnection], [statement UTF8String], -1, &compiledStatement, NULL);
+    
+    int prepareStatementResult;
+    while (true) {
+        prepareStatementResult = sqlite3_prepare_v2([connection getConnection], [statement UTF8String], -1, &compiledStatement, NULL);
+        if (prepareStatementResult == SQLITE_BUSY)
+            [NSThread sleepForTimeInterval:0.0001];
+        else
+            break;
+    }
+    
     if(prepareStatementResult == SQLITE_OK) {
         [self setArguments:args inStatement:compiledStatement];
         resultSet = [[GPKGResultSet alloc] initWithStatement: compiledStatement andCount:count andConnection:connection];

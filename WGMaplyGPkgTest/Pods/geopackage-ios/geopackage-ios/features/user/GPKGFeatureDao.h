@@ -85,4 +85,6 @@
  */
 -(enum WKBGeometryType) getGeometryType;
 
+-(long) getTotalFeaturesSize;
+
 @end

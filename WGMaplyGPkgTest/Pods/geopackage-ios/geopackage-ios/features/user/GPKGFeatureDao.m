@@ -82,4 +82,22 @@
     return boundingBox;
 }
 
+-(long) getTotalFeaturesSize {
+    
+    NSString *queryString = [NSString stringWithFormat:@"SELECT SUM(LENGTH(%@)) FROM %@;", [self getGeometryColumnName], self.tableName];
+    
+    GPKGResultSet *results = [self rawQuery:queryString];
+    NSNumber *n = [NSNumber numberWithLong:-1];
+    @try{
+        if ([results moveToNext]) {
+            NSArray *result = [results getRow];
+            n = result[0];
+        }
+    } @finally {
+        [results close];
+    }
+
+    return [n longValue];
+}
+
 @end

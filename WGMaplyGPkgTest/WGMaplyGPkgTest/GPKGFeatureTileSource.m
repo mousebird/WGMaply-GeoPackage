@@ -21,8 +21,8 @@
     GPKGGeoPackage *_geoPackage;
     GPKGFeatureDao *_featureDao;
     GPKGFeatureIndexManager *_indexer;
-    
-    int _maxFeaturesPerTile;
+
+    int _targetLevel;
     
     NSDictionary *_labelDesc, *_linestringDesc, *_polygonDesc, *_markerDesc, *_gridDesc;
     UIImage *_markerImage;
@@ -87,27 +87,6 @@
             _markerImage = [UIImage imageNamed:@"map_pin"];
             
             
-            enum WKBGeometryType geomType = [_featureDao getGeometryType];
-            if (geomType == WKB_POINT)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-            else if (geomType == WKB_LINESTRING)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
-            else if (geomType == WKB_POLYGON)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
-            else if (geomType == WKB_GEOMETRY)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-            else if (geomType == WKB_MULTIPOINT)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-            else if (geomType == WKB_MULTILINESTRING)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
-            else if (geomType == WKB_MULTIPOLYGON)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
-            else if (geomType == WKB_GEOMETRYCOLLECTION)
-                _maxFeaturesPerTile = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-            else {
-                NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
-                return nil;
-            }
 
             
             GPKGSpatialReferenceSystemDao * srsDao = [_geoPackage getSpatialReferenceSystemDao];
@@ -117,11 +96,23 @@
                 return nil;
             }
             NSArray *bounds = _bounds[ [srs.organizationCoordsysId stringValue] ];
+            MaplyBoundingBox bbox;
+            bbox.ll.x = [(NSNumber *)bounds[0] floatValue];
+            bbox.ll.y = [(NSNumber *)bounds[1] floatValue];
+            bbox.ur.x = [(NSNumber *)bounds[2] floatValue];
+            bbox.ur.y = [(NSNumber *)bounds[3] floatValue];
             _isDegree = [(NSNumber *)bounds[6] boolValue];
             _proj4326 = [GPKGProjectionFactory getProjectionWithInt:4326];
             
             GPKGProjectionTransform *projTransform = [[GPKGProjectionTransform alloc] initWithFromSrs:srs andToEpsg:4326];
             _geomProjTransform = [[GPKGGeometryProjectionTransform alloc] initWithProjectionTransform:projTransform];
+            
+            if (_isDegree) {
+                bbox.ll.x = RAD_TO_DEG * bbox.ll.x;
+                bbox.ll.y = RAD_TO_DEG * bbox.ll.y;
+                bbox.ur.x = RAD_TO_DEG * bbox.ur.x;
+                bbox.ur.y = RAD_TO_DEG * bbox.ur.y;
+            }
 
             
             _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
@@ -139,14 +130,84 @@
             NSLog(@"GPKGFeatureTileSource: Finished index.");
             
             GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
+            GPKGBoundingBox *gpkgBBoxTransformed = gpkgBBox;
             if (!_isDegree)
-                gpkgBBox = [projTransform transformWithBoundingBox:gpkgBBox];
+                gpkgBBoxTransformed = [projTransform transformWithBoundingBox:gpkgBBox];
             MaplyCoordinate p;
-            p.x = (gpkgBBox.minLongitude.doubleValue + gpkgBBox.maxLongitude.doubleValue)/2.0;
-            p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
+            p.x = (gpkgBBoxTransformed.minLongitude.doubleValue + gpkgBBoxTransformed.maxLongitude.doubleValue)/2.0;
+            p.y = (gpkgBBoxTransformed.minLatitude.doubleValue + gpkgBBoxTransformed.maxLatitude.doubleValue)/2.0;
             _center = MaplyCoordinateMakeWithDegrees(p.x, p.y);
             
             _loadedTiles = [NSMutableDictionary dictionary];
+            
+            
+            long totalFeatureSizeBytes = [_featureDao getTotalFeaturesSize];
+            int numFeatures = [_featureDao count];
+            if (totalFeatureSizeBytes == -1 || numFeatures < 1) {
+                NSLog(@"GPKGFeatureTileSource: Error calculating display level.");
+                return nil;
+            }
+            float avgFeatureSizeBytes = (float)totalFeatureSizeBytes / (float)numFeatures;
+            
+            /*  This is just a heuristic calculation to approximate the number of points per geometry in the table.
+                The 43.0 offset is 40 + 3. 40 is the estimated GeoPackageBinaryHeader size. 3 is the approximate constant contribution to the WKB size.  And 18 is the approximate variable contribution to the WKB size.
+             */
+            float avgNumPoints = (avgFeatureSizeBytes - 43.0) / 18.0;
+            
+            NSLog(@"totalFeatureSizeBytes %ld numFeatures %i avgFeatureSizeBytes %f avgNumPoints %f _isDegree %i", totalFeatureSizeBytes, numFeatures, avgFeatureSizeBytes, avgNumPoints, _isDegree);
+            
+            enum WKBGeometryType geomType = [_featureDao getGeometryType];
+            int maxFeatures;
+            if (geomType == WKB_POINT || geomType == WKB_MULTIPOINT)
+                maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+            else if (geomType == WKB_LINESTRING || geomType == WKB_MULTILINESTRING)
+                maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
+            else if (geomType == WKB_POLYGON || geomType == WKB_MULTIPOLYGON)
+                maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+            else if (geomType == WKB_GEOMETRY || geomType == WKB_GEOMETRYCOLLECTION) {
+                if (avgNumPoints > 2.5)
+                    maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
+                else
+                    maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
+            } else {
+                NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
+                return nil;
+            }
+
+            float featuresPerTile = (float)maxFeatures / (float)GPKG_FEATURE_TILE_SOURCE_TARGET_TILE_COUNT * 0.5;
+            
+            NSLog(@"maxFeatures %i featuresPerTile %f", maxFeatures, featuresPerTile);
+            
+            NSLog(@"gpkgBBox %f %f %f %f", gpkgBBox.minLongitude.doubleValue, gpkgBBox.maxLongitude.doubleValue, gpkgBBox.minLatitude.doubleValue, gpkgBBox.maxLatitude.doubleValue);
+            NSLog(@"bbox %f %f %f %f", bbox.ll.x, bbox.ur.x, bbox.ll.y, bbox.ur.y);
+
+            
+            MaplySphericalMercator *mercProj = [[MaplySphericalMercator alloc] initWebStandard];
+            _targetLevel = self.maxZoom;
+            for (int level=self.minZoom; level<self.maxZoom; level++) {
+                double xSridUnitsPerTile = (bbox.ur.x - bbox.ll.x) / (1 << level);
+                double ySridUnitsPerTile = (bbox.ur.y - bbox.ll.y) / (1 << level);
+                
+                MaplyBoundingBox bboxSnapped;
+                bboxSnapped.ll.x = bbox.ll.x + round((gpkgBBox.minLongitude.doubleValue - bbox.ll.x) / xSridUnitsPerTile) * xSridUnitsPerTile;
+                bboxSnapped.ll.y = bbox.ll.y + round((gpkgBBox.minLatitude.doubleValue - bbox.ll.y) / ySridUnitsPerTile) * ySridUnitsPerTile;
+                
+                bboxSnapped.ur.x = bbox.ur.x - round((bbox.ur.x - gpkgBBox.maxLongitude.doubleValue) / xSridUnitsPerTile) * xSridUnitsPerTile;
+                bboxSnapped.ur.y = bbox.ur.y - round((bbox.ur.y - gpkgBBox.maxLatitude.doubleValue) / ySridUnitsPerTile) * ySridUnitsPerTile;
+                
+                NSLog(@"bboxSnapped %f %f %f %f", bboxSnapped.ll.x, bboxSnapped.ur.x, bboxSnapped.ll.y, bboxSnapped.ur.y);
+                
+                int numTiles = (int)((bboxSnapped.ur.x - bboxSnapped.ll.x) / xSridUnitsPerTile) * (int)((bboxSnapped.ur.y - bboxSnapped.ll.y) / ySridUnitsPerTile);
+                
+                NSLog(@"numTiles %i", numTiles);
+                
+                if ( ((float)numFeatures / (float)numTiles) < featuresPerTile ) {
+                    _targetLevel = level;
+                    break;
+                }
+            }
+            NSLog(@"_targetLevel %i", _targetLevel);
+            
         }
     }
     return self;
@@ -255,20 +316,16 @@
     
     static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     
-    int n = [_indexer countWithBoundingBox:[[GPKGBoundingBox alloc]
-                                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
-                                            andMaxLongitudeDouble:geoBboxDeg.ur.x
-                                            andMinLatitudeDouble:geoBboxDeg.ll.y
-                                            andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+    GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
+    GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
+                                                                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
+                                                                            andMaxLongitudeDouble:geoBboxDeg.ur.x
+                                                                            andMinLatitudeDouble:geoBboxDeg.ll.y
+                                                                            andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
     
+    int n = indexResults.count;
     
-    if (n > 0 && n < _maxFeaturesPerTile) {
-        GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
-        GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
-                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
-                                 andMaxLongitudeDouble:geoBboxDeg.ur.x
-                                  andMinLatitudeDouble:geoBboxDeg.ll.y
-                                  andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+    if (n > 0 && tileID.level == _targetLevel) {
         
         GPKGResultSet *results = [indexResults getResults];
         while([results moveToNext]) {
@@ -336,9 +393,11 @@
             
         }
         [results close];
-        [indexResults close];
+    } else if (tileID.level > _targetLevel) {
+        n = 0;
     }
     
+    [indexResults close];
     return n;
     
 }
@@ -395,15 +454,6 @@
             complete = false;
             
             if (n > 0) {
-            
-                MaplyScreenLabel *label = [[MaplyScreenLabel alloc] init];
-                label.loc = MaplyCoordinateMakeWithDegrees(
-                                                           (geoBboxDeg.ll.x + geoBboxDeg.ur.x) / 2.0,
-                                                           (geoBboxDeg.ll.y + geoBboxDeg.ur.y) / 2.0);
-                label.text = [@(n) stringValue];
-                label.layoutPlacement = kMaplyLayoutRight;
-                
-                MaplyComponentObject *labelCompObj = [layer.viewC addScreenLabels:@[label] desc:_labelDesc mode:MaplyThreadCurrent];
                 
                 MaplyCoordinate coords[5];
                 coords[0] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ll.y);
@@ -415,7 +465,7 @@
                 
                 MaplyComponentObject *vecCompObj = [layer.viewC addVectors:@[vecObj] desc:_gridDesc mode:MaplyThreadCurrent];
                 
-                compObjs = [NSMutableArray arrayWithArray:@[labelCompObj, vecCompObj]];
+                [compObjs addObject:vecCompObj];
             }
         }
         
