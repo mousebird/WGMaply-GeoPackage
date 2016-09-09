@@ -260,5 +260,6 @@ extern NSString * const GPKG_PROP_EXTENSION_GEOMETRY_INDEX_DEFINITION;
  */
 -(GPKGFeatureRow *) getFeatureRowWithGeometryIndex: (GPKGGeometryIndex *) geometryIndex;
 
+-(GPKGBoundingBox *)getMinimalBoundingBox;
 
 @end

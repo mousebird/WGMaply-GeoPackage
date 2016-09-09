@@ -439,4 +439,27 @@ NSString * const GPKG_PROP_EXTENSION_GEOMETRY_INDEX_DEFINITION = @"geopackage.ex
     return featureRow;
 }
 
+-(GPKGBoundingBox *)getMinimalBoundingBox {
+    NSString *queryString = [NSString stringWithFormat:@"SELECT MIN(min_x) AS min_x, MAX(max_x) AS max_x, MIN(min_y) AS min_y, MAX(max_y) AS max_y FROM nga_geometry_index WHERE table_name='%@';", self.tableName];
+    
+    GPKGResultSet *results = [self.featureDao rawQuery:queryString];
+    NSNumber *minX, *maxX, *minY, *maxY;
+    @try {
+        if ([results moveToNext]) {
+            NSArray *result = [results getRow];
+            minX = result[0];
+            maxX = result[1];
+            minY = result[2];
+            maxY = result[3];
+        }
+    } @finally {
+        [results close];
+    }
+    if (!minX || !maxX || !minY || !maxY)
+        return nil;
+    return [[GPKGBoundingBox alloc] initWithMinLongitudeDouble:minX.doubleValue andMaxLongitudeDouble:maxX.doubleValue andMinLatitudeDouble:minY.doubleValue andMaxLatitudeDouble:maxY.doubleValue];
+    
+}
+
+
 @end

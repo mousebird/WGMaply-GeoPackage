@@ -300,4 +300,6 @@
  */
 -(int) countWithBoundingBox: (GPKGBoundingBox *) boundingBox andProjection: (GPKGProjection *) projection;
 
+- (GPKGBoundingBox *) getMinimalBoundingBox;
+
 @end

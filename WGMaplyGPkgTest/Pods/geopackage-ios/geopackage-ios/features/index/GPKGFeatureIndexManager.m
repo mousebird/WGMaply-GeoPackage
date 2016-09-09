@@ -421,4 +421,11 @@
     return indexType;
 }
 
+- (GPKGBoundingBox *) getMinimalBoundingBox {
+    enum GPKGFeatureIndexType type = [self getIndexedType];
+    if (type != GPKG_FIT_GEOPACKAGE)
+        return nil;
+    return [self.featureTableIndex getMinimalBoundingBox];
+}
+
 @end

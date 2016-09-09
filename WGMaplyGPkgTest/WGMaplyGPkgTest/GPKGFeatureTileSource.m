@@ -129,7 +129,7 @@
             }
             NSLog(@"GPKGFeatureTileSource: Finished index.");
             
-            GPKGBoundingBox *gpkgBBox = [_featureDao getBoundingBox];
+            GPKGBoundingBox *gpkgBBox = [_indexer getMinimalBoundingBox];
             GPKGBoundingBox *gpkgBBoxTransformed = gpkgBBox;
             if (!_isDegree)
                 gpkgBBoxTransformed = [projTransform transformWithBoundingBox:gpkgBBox];
