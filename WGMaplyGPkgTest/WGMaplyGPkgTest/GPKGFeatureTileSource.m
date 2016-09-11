@@ -454,7 +454,7 @@
             
             complete = false;
             
-            if (n > 0) {
+            if (n > 0 && tileID.level > 5) {
                 
                 MaplyCoordinate coords[5];
                 coords[0] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ll.y);
