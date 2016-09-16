@@ -16,11 +16,14 @@
 #import "GPKGProjectionFactory.h"
 #import "GPKGProjectionTransform.h"
 #import "GPKGGeometryProjectionTransform.h"
+#import "GPKGRTreeIndex.h"
+#import "GPKGRTreeIndexResults.h"
 
 @implementation GPKGFeatureTileSource {
     GPKGGeoPackage *_geoPackage;
     GPKGFeatureDao *_featureDao;
-    GPKGFeatureIndexManager *_indexer;
+    //GPKGFeatureIndexManager *_indexer;
+    GPKGRTreeIndex *_rtreeIndex;
 
     int _targetLevel;
     
@@ -115,21 +118,24 @@
             }
 
             
-            _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
-            [_indexer setProgress:self];
-            NSLog(@"GPKGFeatureTileSource: Starting index.");
-            int n = 0;
-            @try {
-                n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
-            } @catch (NSException *exception) {
-                NSLog(@"GPKGFeatureTileSource: Error indexing geometry.");
-                NSLog(@"%@", exception);
-                return nil;
-                
-            }
-            NSLog(@"GPKGFeatureTileSource: Finished index.");
+//            _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
+//            [_indexer setProgress:self];
+//            NSLog(@"GPKGFeatureTileSource: Starting index.");
+//            int n = 0;
+//            @try {
+//                n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
+//            } @catch (NSException *exception) {
+//                NSLog(@"GPKGFeatureTileSource: Error indexing geometry.");
+//                NSLog(@"%@", exception);
+//                return nil;
+//                
+//            }
+//            NSLog(@"GPKGFeatureTileSource: Finished index.");
             
-            GPKGBoundingBox *gpkgBBox = [_indexer getMinimalBoundingBox];
+            _rtreeIndex = [[GPKGRTreeIndex alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
+            
+            //GPKGBoundingBox *gpkgBBox = [_indexer getMinimalBoundingBox];
+            GPKGBoundingBox *gpkgBBox = [_rtreeIndex getMinimalBoundingBox];
             GPKGBoundingBox *gpkgBBoxTransformed = gpkgBBox;
             if (!_isDegree)
                 gpkgBBoxTransformed = [projTransform transformWithBoundingBox:gpkgBBox];
@@ -215,7 +221,8 @@
 
 - (void)close {
     @synchronized (_geoPackage) {
-        _indexer = nil;
+        //_indexer = nil;
+        _rtreeIndex = nil;
         _featureDao = nil;
         [_geoPackage close];
         _geoPackage = nil;
@@ -247,6 +254,7 @@
             WKBPoint *point = lineString.points[i];
             staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
         }
+
         MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[lineString.numPoints intValue] attributes:nil];
         
         MaplyVectorObject *clipped = [vecObj clipToMbr:geoBbox.ll upperRight:geoBbox.ur];
@@ -314,26 +322,34 @@
 
 - (int) processGeometriesWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs  andPolygonObjs:(NSMutableArray *)polygonObjs andMarkerObjs:(NSMutableArray *)markerObjs {
     
-    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
+//    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     
     if (tileID.level > _targetLevel)
         return 0;
     
-    GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
-    GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
-                                                                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
-                                                                            andMaxLongitudeDouble:geoBboxDeg.ur.x
-                                                                            andMinLatitudeDouble:geoBboxDeg.ll.y
-                                                                            andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+//    GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
+//    GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
+//                                                                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
+//                                                                            andMaxLongitudeDouble:geoBboxDeg.ur.x
+//                                                                            andMinLatitudeDouble:geoBboxDeg.ll.y
+//                                                                            andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
     
-    int n = indexResults.count;
+    GPKGResultSet * geometryIndexResults = [_rtreeIndex queryWithBoundingBox:[[GPKGBoundingBox alloc]
+                                                                              initWithMinLongitudeDouble:geoBboxDeg.ll.x
+                                                                              andMaxLongitudeDouble:geoBboxDeg.ur.x
+                                                                              andMinLatitudeDouble:geoBboxDeg.ll.y
+                                                                              andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+    GPKGRTreeIndexResults *featureIndexResults = [[GPKGRTreeIndexResults alloc] initWithRTreeIndex:_rtreeIndex andResults:geometryIndexResults];
+    
+    int n = featureIndexResults.count;
+    
     
     if (n > 0 && tileID.level == _targetLevel) {
-        
-        GPKGResultSet *results = [indexResults getResults];
+        GPKGResultSet *results = [featureIndexResults getResults];
         while([results moveToNext]) {
             
-            GPKGFeatureRow *row = [tableIndex getFeatureRowWithResultSet:results];
+            //GPKGFeatureRow *row = [tableIndex getFeatureRowWithResultSet:results];
+            GPKGFeatureRow *row = [_rtreeIndex getFeatureRowWithResultSet:results];
             GPKGGeometryData *geometryData = [row getGeometry];
             
             if(geometryData != nil && !geometryData.empty){
@@ -398,7 +414,7 @@
         [results close];
     }
     
-    [indexResults close];
+    [featureIndexResults close];
     return n;
     
 }
