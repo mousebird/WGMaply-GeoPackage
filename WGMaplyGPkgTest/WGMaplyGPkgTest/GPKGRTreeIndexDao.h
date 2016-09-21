@@ -21,6 +21,10 @@ extern NSString * const GPKG_RT_COLUMN_MAX_Y;
 
 -(instancetype) initWithDatabase: (GPKGConnection *) database andFeatureDao: (GPKGFeatureDao *) featureDao;
 
+- (void) initializeColumnsWithQuery:(bool)query;
+
+-(GPKGGeometryIndex *) populateWithGeomId:(NSNumber *)geomId andGeometryEnvelope:(WKBGeometryEnvelope *) envelope;
+
 -(GPKGBoundingBox *)getMinimalBoundingBox;
 
 @end

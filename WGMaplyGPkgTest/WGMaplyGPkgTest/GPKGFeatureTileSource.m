@@ -115,6 +115,13 @@
                 bbox.ll.y = RAD_TO_DEG * bbox.ll.y;
                 bbox.ur.x = RAD_TO_DEG * bbox.ur.x;
                 bbox.ur.y = RAD_TO_DEG * bbox.ur.y;
+            } else {
+                GPKGBoundingBox *srsBBox = [[GPKGBoundingBox alloc] initWithMinLongitudeDouble:bbox.ll.x andMaxLongitudeDouble:bbox.ur.x andMinLatitudeDouble:bbox.ll.y andMaxLatitudeDouble:bbox.ur.y];
+                srsBBox = [projTransform transformWithBoundingBox:srsBBox];
+                bbox.ll.x = srsBBox.minLongitude.doubleValue;
+                bbox.ll.y = srsBBox.minLatitude.doubleValue;
+                bbox.ur.x = srsBBox.maxLongitude.doubleValue;
+                bbox.ur.y = srsBBox.maxLatitude.doubleValue;
             }
 
             
@@ -132,10 +139,12 @@
 //            }
 //            NSLog(@"GPKGFeatureTileSource: Finished index.");
             
-            _rtreeIndex = [[GPKGRTreeIndex alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
+            _rtreeIndex = [[GPKGRTreeIndex alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao andTransform:_geomProjTransform];
             
             //GPKGBoundingBox *gpkgBBox = [_indexer getMinimalBoundingBox];
+            
             GPKGBoundingBox *gpkgBBox = [_rtreeIndex getMinimalBoundingBox];
+            
             GPKGBoundingBox *gpkgBBoxTransformed = gpkgBBox;
             if (!_isDegree)
                 gpkgBBoxTransformed = [projTransform transformWithBoundingBox:gpkgBBox];
@@ -185,7 +194,7 @@
             NSLog(@"maxFeatures %i featuresPerTile %f", maxFeatures, featuresPerTile);
             
             NSLog(@"gpkgBBox %f %f %f %f", gpkgBBox.minLongitude.doubleValue, gpkgBBox.maxLongitude.doubleValue, gpkgBBox.minLatitude.doubleValue, gpkgBBox.maxLatitude.doubleValue);
-            NSLog(@"bbox %f %f %f %f", bbox.ll.x, bbox.ur.x, bbox.ll.y, bbox.ur.y);
+            NSLog(@"bbox %f %f %f %f %i", bbox.ll.x, bbox.ur.x, bbox.ll.y, bbox.ur.y, _isDegree);
 
             
             MaplySphericalMercator *mercProj = [[MaplySphericalMercator alloc] initWebStandard];
@@ -412,6 +421,7 @@
             
         }
         [results close];
+        NSLog(@"tile %i %i %i %i", tileID.level, tileID.x, tileID.y, n);
     }
     
     [featureIndexResults close];

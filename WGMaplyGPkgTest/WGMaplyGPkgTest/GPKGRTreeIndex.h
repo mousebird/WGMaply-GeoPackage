@@ -11,6 +11,8 @@
 #import "GPKGFeatureDao.h"
 #import "GPKGProgress.h"
 #import "GPKGBaseExtension.h"
+#import "GPKGGeometryProjectionTransform.h"
+
 
 extern NSString * const GPKG_EXTENSION_RTREE_INDEX_AUTHOR;
 extern NSString * const GPKG_EXTENSION_RTREE_INDEX_NAME_NO_AUTHOR;
@@ -19,7 +21,7 @@ extern NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION;
 
 @interface GPKGRTreeIndex : GPKGBaseExtension
 
--(instancetype) initWithGeoPackage: (GPKGGeoPackage *) geoPackage andFeatureDao: (GPKGFeatureDao *) featureDao;
+-(instancetype) initWithGeoPackage: (GPKGGeoPackage *) geoPackage andFeatureDao: (GPKGFeatureDao *) featureDao andTransform:(GPKGGeometryProjectionTransform *)transform;
 
 -(GPKGResultSet *) queryWithBoundingBox: (GPKGBoundingBox *) boundingBox;
 -(GPKGResultSet *) queryWithGeometryEnvelope: (WKBGeometryEnvelope *) envelope;

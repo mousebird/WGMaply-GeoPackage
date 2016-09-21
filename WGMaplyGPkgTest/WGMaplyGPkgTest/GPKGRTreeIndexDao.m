@@ -10,10 +10,10 @@
 #import "GPKGRTreeIndexDao.h"
 
 NSString * const GPKG_RT_COLUMN_GEOM_ID = @"id";
-NSString * const GPKG_RT_COLUMN_MIN_X = @"minX";
-NSString * const GPKG_RT_COLUMN_MAX_X = @"maxX";
-NSString * const GPKG_RT_COLUMN_MIN_Y = @"minY";
-NSString * const GPKG_RT_COLUMN_MAX_Y = @"maxY";
+NSString * const GPKG_RT_COLUMN_MIN_X = @"minx";
+NSString * const GPKG_RT_COLUMN_MAX_X = @"maxx";
+NSString * const GPKG_RT_COLUMN_MIN_Y = @"miny";
+NSString * const GPKG_RT_COLUMN_MAX_Y = @"maxy";
 
 @implementation GPKGRTreeIndexDao
 
@@ -24,12 +24,38 @@ NSString * const GPKG_RT_COLUMN_MAX_Y = @"maxY";
         
         self.idColumns = @[GPKG_RT_COLUMN_GEOM_ID];
         
-        self.columns = @[GPKG_RT_COLUMN_GEOM_ID, GPKG_RT_COLUMN_MIN_X, GPKG_RT_COLUMN_MAX_X, GPKG_RT_COLUMN_MIN_Y, GPKG_RT_COLUMN_MAX_Y];
-        
-        [self initializeColumnIndex];
+        [self initializeColumnsWithQuery:true];
     }
     return self;
 }
+
+- (NSArray *) getColumnNames {
+    GPKGResultSet * result = [self rawQuery:[NSString stringWithFormat:@"PRAGMA table_info(%@)", self.tableName]];
+    NSMutableArray *columnNames = [NSMutableArray array];
+    
+    @try{
+        while ([result moveToNext]){
+            [columnNames addObject:[result getString:[result getColumnIndexWithName:@"name"]]];
+        }
+    }@finally{
+        [result close];
+    }
+    return columnNames;
+    
+}
+
+- (void) initializeColumnsWithQuery:(bool)query {
+    if (query) {
+        NSArray *columnNames = [self getColumnNames];
+        if (columnNames.count == 0)
+            return;
+        self.columns = columnNames;
+    } else {
+        self.columns = @[GPKG_RT_COLUMN_GEOM_ID, GPKG_RT_COLUMN_MIN_X, GPKG_RT_COLUMN_MAX_X, GPKG_RT_COLUMN_MIN_Y, GPKG_RT_COLUMN_MAX_Y];
+    }
+    [self initializeColumnIndex];
+}
+
 
 -(NSObject *) createObject{
     return [[GPKGGeometryIndex alloc] init];
@@ -92,10 +118,28 @@ NSString * const GPKG_RT_COLUMN_MAX_Y = @"maxY";
     return value;
 }
 
+
+-(GPKGGeometryIndex *) populateWithGeomId:(NSNumber *)geomId andGeometryEnvelope:(WKBGeometryEnvelope *) envelope {
+    
+    GPKGGeometryIndex * geometryIndex = [[GPKGGeometryIndex alloc] init];
+    [geometryIndex setGeomId:geomId];
+    [geometryIndex setMinX:envelope.minX];
+    [geometryIndex setMaxX:envelope.maxX];
+    [geometryIndex setMinY:envelope.minY];
+    [geometryIndex setMaxY:envelope.maxY];
+    return geometryIndex;
+    
+}
+
 -(GPKGBoundingBox *)getMinimalBoundingBox {
     NSString *queryString = [NSString stringWithFormat:@"SELECT MIN(minx) AS minx, MAX(maxx) AS maxx, MIN(miny) AS miny, MAX(maxy) AS maxy FROM %@;", self.tableName];
     
-    GPKGResultSet *results = [self rawQuery:queryString];
+    GPKGResultSet *results;
+    @try {
+        results = [self rawQuery:queryString];
+    } @catch (NSException *e) {
+        return nil;
+    }
     NSNumber *minX, *maxX, *minY, *maxY;
     @try {
         if ([results moveToNext]) {
