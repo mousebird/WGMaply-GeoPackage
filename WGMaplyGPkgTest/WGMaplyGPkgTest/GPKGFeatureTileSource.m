@@ -22,7 +22,6 @@
 @implementation GPKGFeatureTileSource {
     GPKGGeoPackage *_geoPackage;
     GPKGFeatureDao *_featureDao;
-    //GPKGFeatureIndexManager *_indexer;
     GPKGRTreeIndex *_rtreeIndex;
 
     int _targetLevel;
@@ -125,23 +124,7 @@
             }
 
             
-//            _indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
-//            [_indexer setProgress:self];
-//            NSLog(@"GPKGFeatureTileSource: Starting index.");
-//            int n = 0;
-//            @try {
-//                n = [_indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
-//            } @catch (NSException *exception) {
-//                NSLog(@"GPKGFeatureTileSource: Error indexing geometry.");
-//                NSLog(@"%@", exception);
-//                return nil;
-//                
-//            }
-//            NSLog(@"GPKGFeatureTileSource: Finished index.");
-            
             _rtreeIndex = [[GPKGRTreeIndex alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao andTransform:_geomProjTransform];
-            
-            //GPKGBoundingBox *gpkgBBox = [_indexer getMinimalBoundingBox];
             
             GPKGBoundingBox *gpkgBBox = [_rtreeIndex getMinimalBoundingBox];
             
@@ -230,7 +213,6 @@
 
 - (void)close {
     @synchronized (_geoPackage) {
-        //_indexer = nil;
         _rtreeIndex = nil;
         _featureDao = nil;
         [_geoPackage close];
@@ -331,23 +313,14 @@
 
 - (int) processGeometriesWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs  andPolygonObjs:(NSMutableArray *)polygonObjs andMarkerObjs:(NSMutableArray *)markerObjs {
     
-//    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
-    
     if (tileID.level > _targetLevel)
         return 0;
-    
-//    GPKGFeatureTableIndex *tableIndex = [_indexer getFeatureTableIndex];
-//    GPKGFeatureIndexResults *indexResults = [_indexer queryWithBoundingBox:[[GPKGBoundingBox alloc]
-//                                                                            initWithMinLongitudeDouble:geoBboxDeg.ll.x
-//                                                                            andMaxLongitudeDouble:geoBboxDeg.ur.x
-//                                                                            andMinLatitudeDouble:geoBboxDeg.ll.y
-//                                                                            andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
     
     GPKGResultSet * geometryIndexResults = [_rtreeIndex queryWithBoundingBox:[[GPKGBoundingBox alloc]
                                                                               initWithMinLongitudeDouble:geoBboxDeg.ll.x
                                                                               andMaxLongitudeDouble:geoBboxDeg.ur.x
                                                                               andMinLatitudeDouble:geoBboxDeg.ll.y
-                                                                              andMaxLatitudeDouble:geoBboxDeg.ur.y] andProjection:_proj4326];
+                                                                              andMaxLatitudeDouble:geoBboxDeg.ur.y]];
     GPKGRTreeIndexResults *featureIndexResults = [[GPKGRTreeIndexResults alloc] initWithRTreeIndex:_rtreeIndex andResults:geometryIndexResults];
     
     int n = featureIndexResults.count;
@@ -357,7 +330,6 @@
         GPKGResultSet *results = [featureIndexResults getResults];
         while([results moveToNext]) {
             
-            //GPKGFeatureRow *row = [tableIndex getFeatureRowWithResultSet:results];
             GPKGFeatureRow *row = [_rtreeIndex getFeatureRowWithResultSet:results];
             GPKGGeometryData *geometryData = [row getGeometry];
             
@@ -421,7 +393,6 @@
             
         }
         [results close];
-        NSLog(@"tile %i %i %i %i", tileID.level, tileID.x, tileID.y, n);
     }
     
     [featureIndexResults close];
