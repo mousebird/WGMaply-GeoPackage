@@ -693,10 +693,10 @@
         [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
         
         if (_indexingItem.cancel) {
-            [_indexingItem.featureDao rollbackTransaction];
-            [_indexingItem.gpkg close];
+//            [_indexingItem.featureDao rollbackTransaction];
+//            [_indexingItem.gpkg close];
         } else {
-            [_indexingItem.featureDao commitTransaction];
+//            [_indexingItem.featureDao commitTransaction];
             GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds];
             
             MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
@@ -834,36 +834,36 @@
             GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:featureTableItem.featureTableName];
             _indexingItem.featureDao = featureDao;
             
-            GPKGFeatureIndexManager *indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:gpkg andFeatureDao:featureDao];
-            [indexer setProgress:self];
+//            GPKGFeatureIndexManager *indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:gpkg andFeatureDao:featureDao];
+//            [indexer setProgress:self];
 
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-                NSLog(@"LayerMenuViewController: Starting index.");
-                @try {
-                    [featureDao beginTransaction];
-                    [indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
-                    // Commit the transaction in completedIndexing method.
-                } @catch (NSException *exception) {
-                    NSLog(@"LayerMenuViewController: Error indexing geometry.");
-                    NSLog(@"%@", exception);
-                    [featureDao rollbackTransaction];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        featureTableItem.indexing = NO;
-                        _indexingItem.featureDao = nil;
-                        [gpkg close];
-                        _indexingItem.gpkg = nil;
-                        _indexingItem = nil;
-                        [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
-//                        [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
-                        [_gpkgGeoPackageManager close];
-                        _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
-
-                    });
-                    
-                }
-                NSLog(@"LayerMenuViewController: Finished index.");
+//                NSLog(@"LayerMenuViewController: Starting index.");
+//                @try {
+//                    [featureDao beginTransaction];
+//                    [indexer indexWithFeatureIndexType:GPKG_FIT_GEOPACKAGE];
+//                    // Commit the transaction in completedIndexing method.
+//                } @catch (NSException *exception) {
+//                    NSLog(@"LayerMenuViewController: Error indexing geometry.");
+//                    NSLog(@"%@", exception);
+//                    [featureDao rollbackTransaction];
+//                    dispatch_async(dispatch_get_main_queue(), ^{
+//                        featureTableItem.indexing = NO;
+//                        _indexingItem.featureDao = nil;
+//                        [gpkg close];
+//                        _indexingItem.gpkg = nil;
+//                        _indexingItem = nil;
+//                        [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
+////                        [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
+//                        [_gpkgGeoPackageManager close];
+//                        _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
+//
+//                    });
+//                    
+//                }
+//                NSLog(@"LayerMenuViewController: Finished index.");
                 [self completedIndexing];
                     
                 
