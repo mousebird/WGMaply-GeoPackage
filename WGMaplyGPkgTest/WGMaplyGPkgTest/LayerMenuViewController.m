@@ -13,6 +13,7 @@
 #import "GPKGFeatureTileSource.h"
 #import "GPKGFeatureIndexManager.h"
 #import "LayerTableViewCell.h"
+#import "GPKGUtils.h"
 
 @interface LayerMenuViewItem : NSObject
 @property (nonatomic, strong) NSString *displayText;
@@ -205,11 +206,16 @@
 @property (nonatomic, assign) BOOL indexed;
 @property (nonatomic, assign) BOOL indexing;
 
+@property (nonatomic, strong) NSString *sld;
+@property (nonatomic, strong) NSString *grouping;
+@property (nonatomic, strong) NSString *category;
+@property (nonatomic, strong) NSNumber *zorder;
+
 - (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed;
 @end
 
 @implementation LayerMenuViewFeatureTableItem
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed {
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed andSLD:(NSString *)sld andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder {
     self = [super initWithDisplayText:featureTableName];
     if (self) {
         self.geopackageItem = parent;
@@ -217,6 +223,10 @@
         self.geometryType = geometryType;
         self.count = count;
         self.indexed = indexed;
+        self.sld = sld;
+        self.grouping = grouping;
+        self.category = category;
+        self.zorder = zorder;
     }
     return self;
 }
@@ -248,9 +258,9 @@
     else
         NSLog(@"Surprise geom type: %i", self.geometryType);
     
-    if (self.indexed)
-        cell.idxImage.image = [UIImage imageNamed:@"indexed"];
-    else
+//    if (self.indexed)
+//        cell.idxImage.image = [UIImage imageNamed:@"indexed"];
+//    else
         cell.idxImage.image = nil;
         
     cell.enabledSwitch.on = (self.pagingLayer != nil || self.indexing);
@@ -332,7 +342,7 @@
         for (int idx=0; idx<allKeys.count; idx++) {
             NSString *displayText = allKeys[idx];
             
-            _basemapLayerTileInfoDict[displayText].cacheDir = [NSString stringWithFormat:@"%@/foo_%@/",cacheDir, displayText];
+            _basemapLayerTileInfoDict[displayText].cacheDir = [NSString stringWithFormat:@"%@/%@/",cacheDir, displayText];
             
             [basemapLayerEntries addObject:[[LayerMenuViewBasemapItem alloc] initWithDisplayText:displayText andBasemapLayerIndex:idx]];
         }
@@ -618,6 +628,36 @@
         return;
     }
     
+    NSMutableDictionary *extraContents = [NSMutableDictionary dictionary];
+    GPKGContentsDao *contentsDao = [gpkg getContentsDao];
+    GPKGResultSet *results;
+    @try {
+        results = [contentsDao rawQuery:@"SELECT table_name, sld, grouping, category, zorder FROM gpkg_contents;"];
+        while([results moveToNext]) {
+            NSArray *result = [results getRow];
+            NSString *tableName = result[0];
+            NSString *sld = result[1];
+            NSString *grouping = result[2];
+            NSString *category = result[3];
+            NSNumber *zorder = result[4];
+            NSMutableDictionary *tableInfo = [NSMutableDictionary dictionary];
+            [GPKGUtils setObject:sld forKey:@"sld" inDictionary:tableInfo];
+            [GPKGUtils setObject:grouping forKey:@"grouping" inDictionary:tableInfo];
+            [GPKGUtils setObject:category forKey:@"category" inDictionary:tableInfo];
+            [GPKGUtils setObject:zorder forKey:@"zorder" inDictionary:tableInfo];
+            extraContents[tableName] = tableInfo;
+        }
+    } @catch (NSException *exception) {
+    }
+    @try {
+        if (results)
+            [results close];
+    } @catch (NSException *exception) {
+    }
+    
+    
+    
+    
     GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
     NSArray *tileTables;
     @try {
@@ -670,7 +710,20 @@
             int count = featureCounts[i].intValue;
             bool indexed = indexedStates[i].boolValue;
             enum WKBGeometryType geometryType = geometryTypes[i].intValue;
-            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:geopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andCount:count andIndexed:indexed];
+            
+            NSDictionary *tableInfo = extraContents[featureTable];
+            NSString *sld, *grouping, *category;
+            NSNumber *zorder;
+            if (tableInfo) {
+                sld = tableInfo[@"sld"];
+                grouping = tableInfo[@"grouping"];
+                category = tableInfo[@"category"];
+                zorder = tableInfo[@"zorder"];
+            }
+            
+            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:geopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andCount:count andIndexed:indexed andSLD:sld andGrouping:grouping andCategory:category andZOrder:zorder];
+            
+            
             featureTableItem.delegate = self;
             [featureTableItems addObject:featureTableItem];
         }
@@ -697,7 +750,14 @@
 //            [_indexingItem.gpkg close];
         } else {
 //            [_indexingItem.featureDao commitTransaction];
-            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds];
+            
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSURL *docsDir = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+            NSURL *sldURL;
+            if (featureTableItem.sld && ![featureTableItem.sld isEqual:[NSNull null]])
+                sldURL = [NSURL URLWithString:featureTableItem.sld relativeToURL:docsDir];
+            
+            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL];
             
             MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
             vecLayer.numSimultaneousFetches = 1;

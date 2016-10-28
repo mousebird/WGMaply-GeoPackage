@@ -25,17 +25,26 @@
 		E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */; };
 		E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E11061D53DB95004B47F7 /* ic_geometry.png */; };
 		E59F825D1D860AFB00B02342 /* GPKGRTreeIndexDao.m in Sources */ = {isa = PBXBuildFile; fileRef = E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */; };
+		E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577D1DBDBA3400680149 /* mainNAVL.sld */; };
+		E5A357851DBEA18D00680149 /* DME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577F1DBEA18D00680149 /* DME.png */; };
+		E5A357861DBEA18D00680149 /* NDB.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357801DBEA18D00680149 /* NDB.png */; };
+		E5A357871DBEA18D00680149 /* VOR.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357811DBEA18D00680149 /* VOR.png */; };
+		E5A357881DBEA18D00680149 /* TACAN.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357821DBEA18D00680149 /* TACAN.png */; };
+		E5A357891DBEA18D00680149 /* VORDME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357831DBEA18D00680149 /* VORDME.png */; };
+		E5A3578A1DBEA18D00680149 /* VORTAC.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357841DBEA18D00680149 /* VORTAC.png */; };
+		E5A3578C1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */; };
+		E5A3578F1DC3D96000680149 /* default.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3578E1DC3D96000680149 /* default.sld */; };
 		E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5B566B01D3D953E00DB0FD1 /* bounds.json */; };
 		E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */; };
 		E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */; };
 		E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5BD7D781D380DD500519CB9 /* rivers.gpkg */; };
+		E5C11A621DBA4B62009FB1DA /* GPKGFeatureTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5C11A611DBA4B62009FB1DA /* GPKGFeatureTileSource.m */; };
 		E5D84F5E1D37F58300D5AF18 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F5D1D37F58300D5AF18 /* main.m */; };
 		E5D84F611D37F58300D5AF18 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F601D37F58300D5AF18 /* AppDelegate.m */; };
 		E5D84F641D37F58300D5AF18 /* TilePyramidViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F631D37F58300D5AF18 /* TilePyramidViewController.m */; };
 		E5D84F671D37F58300D5AF18 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F651D37F58300D5AF18 /* Main.storyboard */; };
 		E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F681D37F58300D5AF18 /* Assets.xcassets */; };
 		E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F6A1D37F58300D5AF18 /* LaunchScreen.storyboard */; };
-		E5D84F781D37FF4100D5AF18 /* GPKGFeatureTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F741D37FF4100D5AF18 /* GPKGFeatureTileSource.m */; };
 		E5D84F791D37FF4100D5AF18 /* GPKGTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */; };
 		E5D84F841D38010B00D5AF18 /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F811D38010200D5AF18 /* WhirlyGlobeMaplyComponent.framework */; };
 		E5D84F861D38015700D5AF18 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F851D38015700D5AF18 /* CoreLocation.framework */; };
@@ -127,6 +136,16 @@
 		E56E11061D53DB95004B47F7 /* ic_geometry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_geometry.png; path = icons/ic_geometry.png; sourceTree = "<group>"; };
 		E59F825B1D860AFB00B02342 /* GPKGRTreeIndexDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGRTreeIndexDao.h; sourceTree = "<group>"; };
 		E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGRTreeIndexDao.m; sourceTree = "<group>"; };
+		E5A3577D1DBDBA3400680149 /* mainNAVL.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainNAVL.sld; sourceTree = "<group>"; };
+		E5A3577F1DBEA18D00680149 /* DME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DME.png; sourceTree = "<group>"; };
+		E5A357801DBEA18D00680149 /* NDB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDB.png; sourceTree = "<group>"; };
+		E5A357811DBEA18D00680149 /* VOR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VOR.png; sourceTree = "<group>"; };
+		E5A357821DBEA18D00680149 /* TACAN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TACAN.png; sourceTree = "<group>"; };
+		E5A357831DBEA18D00680149 /* VORDME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VORDME.png; sourceTree = "<group>"; };
+		E5A357841DBEA18D00680149 /* VORTAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VORTAC.png; sourceTree = "<group>"; };
+		E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GPKGFeatureAttributeAccess.mm; sourceTree = "<group>"; };
+		E5A3578D1DC0589700680149 /* GPKGFeatureAttributeAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPKGFeatureAttributeAccess.h; sourceTree = "<group>"; };
+		E5A3578E1DC3D96000680149 /* default.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = default.sld; sourceTree = "<group>"; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
 		E5B566B01D3D953E00DB0FD1 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bounds.json; sourceTree = "<group>"; };
 		E5B566B21D3FD29400DB0FD1 /* StartupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartupViewController.h; sourceTree = "<group>"; };
@@ -134,6 +153,7 @@
 		E5B566B51D3FE33C00DB0FD1 /* ListTileTablesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListTileTablesViewController.h; sourceTree = "<group>"; };
 		E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListTileTablesViewController.m; sourceTree = "<group>"; };
 		E5BD7D781D380DD500519CB9 /* rivers.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = rivers.gpkg; path = ../../sampleData/rivers.gpkg; sourceTree = "<group>"; };
+		E5C11A611DBA4B62009FB1DA /* GPKGFeatureTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGFeatureTileSource.m; sourceTree = "<group>"; };
 		E5D84F591D37F58300D5AF18 /* WGMaplyGPkgTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WGMaplyGPkgTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5D84F5D1D37F58300D5AF18 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E5D84F5F1D37F58300D5AF18 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -145,7 +165,6 @@
 		E5D84F6B1D37F58300D5AF18 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E5D84F6D1D37F58300D5AF18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E5D84F731D37FF4100D5AF18 /* GPKGFeatureTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGFeatureTileSource.h; sourceTree = "<group>"; };
-		E5D84F741D37FF4100D5AF18 /* GPKGFeatureTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGFeatureTileSource.m; sourceTree = "<group>"; };
 		E5D84F751D37FF4100D5AF18 /* GPkgTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPkgTestConfig.h; sourceTree = "<group>"; };
 		E5D84F761D37FF4100D5AF18 /* GPKGTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGTileSource.h; sourceTree = "<group>"; };
 		E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGTileSource.m; sourceTree = "<group>"; };
@@ -224,7 +243,9 @@
 			isa = PBXGroup;
 			children = (
 				E5D84F731D37FF4100D5AF18 /* GPKGFeatureTileSource.h */,
-				E5D84F741D37FF4100D5AF18 /* GPKGFeatureTileSource.m */,
+				E5C11A611DBA4B62009FB1DA /* GPKGFeatureTileSource.m */,
+				E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */,
+				E5A3578D1DC0589700680149 /* GPKGFeatureAttributeAccess.h */,
 				E5D84F751D37FF4100D5AF18 /* GPkgTestConfig.h */,
 				E5D84F761D37FF4100D5AF18 /* GPKGTileSource.h */,
 				E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */,
@@ -260,6 +281,14 @@
 		E5D84F5C1D37F58300D5AF18 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E5A3578E1DC3D96000680149 /* default.sld */,
+				E5A3577D1DBDBA3400680149 /* mainNAVL.sld */,
+				E5A3577F1DBEA18D00680149 /* DME.png */,
+				E5A357801DBEA18D00680149 /* NDB.png */,
+				E5A357811DBEA18D00680149 /* VOR.png */,
+				E5A357821DBEA18D00680149 /* TACAN.png */,
+				E5A357831DBEA18D00680149 /* VORDME.png */,
+				E5A357841DBEA18D00680149 /* VORTAC.png */,
 				E56E11061D53DB95004B47F7 /* ic_geometry.png */,
 				E56E10F31D51CA51004B47F7 /* ic_linestring.png */,
 				E56E10F41D51CA51004B47F7 /* ic_point.png */,
@@ -328,6 +357,8 @@
 				TargetAttributes = {
 					E5D84F581D37F58300D5AF18 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = N36KFA45EM;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -402,19 +433,27 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5A357851DBEA18D00680149 /* DME.png in Resources */,
 				E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */,
 				E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */,
+				E5A357871DBEA18D00680149 /* VOR.png in Resources */,
 				E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */,
+				E5A3578F1DC3D96000680149 /* default.sld in Resources */,
+				E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */,
 				E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */,
 				E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */,
 				E56E10FA1D51CA51004B47F7 /* ic_polygon.png in Resources */,
+				E5A357881DBEA18D00680149 /* TACAN.png in Resources */,
 				E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */,
 				E56E10F91D51CA51004B47F7 /* ic_point.png in Resources */,
 				E5D84F671D37F58300D5AF18 /* Main.storyboard in Resources */,
+				E5A3578A1DBEA18D00680149 /* VORTAC.png in Resources */,
 				E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */,
 				E56E10FB1D51CA51004B47F7 /* ic_tiles.png in Resources */,
+				E5A357861DBEA18D00680149 /* NDB.png in Resources */,
 				E56E10F81D51CA51004B47F7 /* ic_linestring.png in Resources */,
 				E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */,
+				E5A357891DBEA18D00680149 /* VORDME.png in Resources */,
 				E56E10FC1D51CA51004B47F7 /* indexed.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -476,9 +515,10 @@
 			files = (
 				E5D84F641D37F58300D5AF18 /* TilePyramidViewController.m in Sources */,
 				E5D84F791D37FF4100D5AF18 /* GPKGTileSource.m in Sources */,
+				E5A3578C1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm in Sources */,
 				E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */,
 				E5D84F611D37F58300D5AF18 /* AppDelegate.m in Sources */,
-				E5D84F781D37FF4100D5AF18 /* GPKGFeatureTileSource.m in Sources */,
+				E5C11A621DBA4B62009FB1DA /* GPKGFeatureTileSource.m in Sources */,
 				E59F825D1D860AFB00B02342 /* GPKGRTreeIndexDao.m in Sources */,
 				E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */,
 				E536D0B01D87DA3C0062145D /* GPKGRTreeIndexResults.m in Sources */,
@@ -608,6 +648,8 @@
 			baseConfigurationReference = 58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = N36KFA45EM;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -616,7 +658,13 @@
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include\"",
-					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView",
+					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobeLib/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/private\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -631,6 +679,8 @@
 			baseConfigurationReference = E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = N36KFA45EM;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -639,7 +689,13 @@
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include\"",
-					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView",
+					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobeLib/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/private\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
