@@ -31,7 +31,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   geopackage-ios:
-    :commit: 8a17e43b3103a18808cb77089319b97b4cc09d4f
+    :commit: b15dab52f7f4e708aa5ac483c6579011d2c88ac5
     :git: https://github.com/mousebird/geopackage-ios.git
 
 SPEC CHECKSUMS:
