@@ -339,7 +339,7 @@
         
         NSMutableArray <LayerMenuViewBasemapItem *> *basemapLayerEntries = [NSMutableArray <LayerMenuViewBasemapItem *> array];
         NSArray <NSString *> *allKeys = _basemapLayerTileInfoDict.allKeys;
-        for (int idx=0; idx<allKeys.count; idx++) {
+        for (int idx=allKeys.count-1; idx>=0; idx--) {
             NSString *displayText = allKeys[idx];
             
             _basemapLayerTileInfoDict[displayText].cacheDir = [NSString stringWithFormat:@"%@/%@/",cacheDir, displayText];
