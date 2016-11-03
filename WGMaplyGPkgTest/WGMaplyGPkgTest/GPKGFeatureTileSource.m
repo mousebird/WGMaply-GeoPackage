@@ -242,7 +242,7 @@
 
 - (bool) processPolygon:(WKBPolygon *)polygon withTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs  andPolygonObjs:(NSMutableArray *)polygonObjs {
     
-    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
+    MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     bool processed = true;
     
     MaplyVectorObject *polyVecObj;
@@ -255,9 +255,9 @@
                 staticCoords[i] = MaplyCoordinateMakeWithDegrees([point.x doubleValue], [point.y doubleValue]);
             }
             if (ring == polygon.rings[0]) {
-                polyVecObj = [[MaplyVectorObject alloc] initWithAreal:staticCoords numCoords:[ring.numPoints intValue] attributes:nil];
+                polyVecObj = [[MaplyVectorObject alloc] initWithAreal:staticCoords numCoords:[ring.numPoints intValue]-1 attributes:nil];
             } else
-                [polyVecObj addHole:staticCoords numCoords:[ring.numPoints intValue]];
+                [polyVecObj addHole:staticCoords numCoords:[ring.numPoints intValue]-1];
             [lineVecObjs addObject:[[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[ring.numPoints intValue] attributes:nil]];
         } else {
             NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [ring.numPoints intValue]);

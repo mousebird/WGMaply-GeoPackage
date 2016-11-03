@@ -339,7 +339,7 @@
         
         NSMutableArray <LayerMenuViewBasemapItem *> *basemapLayerEntries = [NSMutableArray <LayerMenuViewBasemapItem *> array];
         NSArray <NSString *> *allKeys = _basemapLayerTileInfoDict.allKeys;
-        for (int idx=allKeys.count-1; idx>=0; idx--) {
+        for (int idx=0; idx<allKeys.count; idx++) {
             NSString *displayText = allKeys[idx];
             
             _basemapLayerTileInfoDict[displayText].cacheDir = [NSString stringWithFormat:@"%@/%@/",cacheDir, displayText];
@@ -396,7 +396,7 @@
     [self reloadDirectoryContent];
     [_treeView reloadData];
     
-    [self setBasemapLayerIndex:0];
+    [self setBasemapLayerIndex:_basemapLayerEntries.count-1];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
