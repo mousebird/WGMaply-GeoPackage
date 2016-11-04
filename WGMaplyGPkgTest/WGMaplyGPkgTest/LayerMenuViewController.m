@@ -648,6 +648,15 @@
             extraContents[tableName] = tableInfo;
         }
     } @catch (NSException *exception) {
+        @try {
+            if (results)
+                [results close];
+        } @catch (NSException *exception) {
+        }
+        results = nil;
+        
+        [gpkg close];
+        gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
     }
     @try {
         if (results)
