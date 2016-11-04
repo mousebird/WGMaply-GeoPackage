@@ -396,7 +396,7 @@
     [self reloadDirectoryContent];
     [_treeView reloadData];
     
-    [self setBasemapLayerIndex:_basemapLayerEntries.count-1];
+    [self setBasemapLayerIndex:(int)(_basemapLayerEntries.count-1)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
