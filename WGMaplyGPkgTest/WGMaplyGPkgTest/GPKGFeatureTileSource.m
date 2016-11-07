@@ -459,27 +459,32 @@
             NSLog(@"bbox %f %f %f %f %i", bbox.ll.x, bbox.ur.x, bbox.ll.y, bbox.ur.y, _isDegree);
 
             
-            _targetLevel = self.maxZoom;
-            for (int level=self.minZoom; level<self.maxZoom; level++) {
-                double xSridUnitsPerTile = (bbox.ur.x - bbox.ll.x) / (1 << level);
-                double ySridUnitsPerTile = (bbox.ur.y - bbox.ll.y) / (1 << level);
-                
-                MaplyBoundingBox bboxSnapped;
-                bboxSnapped.ll.x = bbox.ll.x + round((gpkgBBox.minLongitude.doubleValue - bbox.ll.x) / xSridUnitsPerTile) * xSridUnitsPerTile;
-                bboxSnapped.ll.y = bbox.ll.y + round((gpkgBBox.minLatitude.doubleValue - bbox.ll.y) / ySridUnitsPerTile) * ySridUnitsPerTile;
-                
-                bboxSnapped.ur.x = bbox.ur.x - round((bbox.ur.x - gpkgBBox.maxLongitude.doubleValue) / xSridUnitsPerTile) * xSridUnitsPerTile;
-                bboxSnapped.ur.y = bbox.ur.y - round((bbox.ur.y - gpkgBBox.maxLatitude.doubleValue) / ySridUnitsPerTile) * ySridUnitsPerTile;
-                
-                NSLog(@"bboxSnapped %f %f %f %f", bboxSnapped.ll.x, bboxSnapped.ur.x, bboxSnapped.ll.y, bboxSnapped.ur.y);
-                
-                int numTiles = (int)((bboxSnapped.ur.x - bboxSnapped.ll.x) / xSridUnitsPerTile) * (int)((bboxSnapped.ur.y - bboxSnapped.ll.y) / ySridUnitsPerTile);
-                
-                NSLog(@"numTiles %i", numTiles);
-                
-                if ( ((float)numFeatures / (float)numTiles) < featuresPerTile ) {
-                    _targetLevel = level;
-                    break;
+            
+            if ((gpkgBBox.minLongitude.doubleValue == gpkgBBox.maxLongitude.doubleValue) || (gpkgBBox.minLatitude.doubleValue == gpkgBBox.maxLatitude.doubleValue))
+                _targetLevel = self.minZoom;
+            else {
+                _targetLevel = self.maxZoom;
+                for (int level=self.minZoom; level<self.maxZoom; level++) {
+                    double xSridUnitsPerTile = (bbox.ur.x - bbox.ll.x) / (1 << level);
+                    double ySridUnitsPerTile = (bbox.ur.y - bbox.ll.y) / (1 << level);
+                    
+                    MaplyBoundingBox bboxSnapped;
+                    bboxSnapped.ll.x = bbox.ll.x + round((gpkgBBox.minLongitude.doubleValue - bbox.ll.x) / xSridUnitsPerTile) * xSridUnitsPerTile;
+                    bboxSnapped.ll.y = bbox.ll.y + round((gpkgBBox.minLatitude.doubleValue - bbox.ll.y) / ySridUnitsPerTile) * ySridUnitsPerTile;
+                    
+                    bboxSnapped.ur.x = bbox.ur.x - round((bbox.ur.x - gpkgBBox.maxLongitude.doubleValue) / xSridUnitsPerTile) * xSridUnitsPerTile;
+                    bboxSnapped.ur.y = bbox.ur.y - round((bbox.ur.y - gpkgBBox.maxLatitude.doubleValue) / ySridUnitsPerTile) * ySridUnitsPerTile;
+                    
+                    NSLog(@"bboxSnapped %f %f %f %f", bboxSnapped.ll.x, bboxSnapped.ur.x, bboxSnapped.ll.y, bboxSnapped.ur.y);
+                    
+                    int numTiles = (int)((bboxSnapped.ur.x - bboxSnapped.ll.x) / xSridUnitsPerTile) * (int)((bboxSnapped.ur.y - bboxSnapped.ll.y) / ySridUnitsPerTile);
+                    
+                    NSLog(@"numTiles %i", numTiles);
+                    
+                    if ( ((float)numFeatures / (float)numTiles) < featuresPerTile ) {
+                        _targetLevel = level;
+                        break;
+                    }
                 }
             }
             NSLog(@"_targetLevel %i", _targetLevel);
