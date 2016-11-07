@@ -66,16 +66,14 @@
                             </ogc:PropertyIsEqualTo>
                         </ogc:Or>
 					</ogc:Filter>
-                    <se:LineSymbolizer>
-                        <se:Stroke>
-                            <se:SvgParameter name="stroke">#ffff00</se:SvgParameter>
-                            <se:SvgParameter name="stroke-width">2</se:SvgParameter>
-                        </se:Stroke>
-                    </se:LineSymbolizer>
                     <se:PolygonSymbolizer>
                         <se:Fill>
                             <se:SvgParameter name="fill">#a020f0</se:SvgParameter>
                         </se:Fill>
+                        <se:Stroke>
+                            <se:SvgParameter name="stroke">#ffff00</se:SvgParameter>
+                            <se:SvgParameter name="stroke-width">2</se:SvgParameter>
+                        </se:Stroke>
                     </se:PolygonSymbolizer>
 				</Rule>
 			</FeatureTypeStyle>
