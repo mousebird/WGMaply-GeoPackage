@@ -33,8 +33,6 @@
 		E5A357891DBEA18D00680149 /* VORDME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357831DBEA18D00680149 /* VORDME.png */; };
 		E5A3578A1DBEA18D00680149 /* VORTAC.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357841DBEA18D00680149 /* VORTAC.png */; };
 		E5A3578C1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */; };
-		E5A3578F1DC3D96000680149 /* default.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3578E1DC3D96000680149 /* default.sld */; };
-		E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5B566B01D3D953E00DB0FD1 /* bounds.json */; };
 		E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */; };
 		E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */; };
 		E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5BD7D781D380DD500519CB9 /* rivers.gpkg */; };
@@ -52,6 +50,8 @@
 		E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F891D38016400D5AF18 /* libz.tbd */; };
 		E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */; };
 		E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */; };
+		E5F576D01DD19A49009282C6 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5F576CF1DD19A49009282C6 /* bounds.json */; };
+		E5F576D21DD19A50009282C6 /* default.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5F576D11DD19A50009282C6 /* default.sld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,9 +145,7 @@
 		E5A357841DBEA18D00680149 /* VORTAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VORTAC.png; sourceTree = "<group>"; };
 		E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GPKGFeatureAttributeAccess.mm; sourceTree = "<group>"; };
 		E5A3578D1DC0589700680149 /* GPKGFeatureAttributeAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPKGFeatureAttributeAccess.h; sourceTree = "<group>"; };
-		E5A3578E1DC3D96000680149 /* default.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = default.sld; sourceTree = "<group>"; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
-		E5B566B01D3D953E00DB0FD1 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bounds.json; sourceTree = "<group>"; };
 		E5B566B21D3FD29400DB0FD1 /* StartupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartupViewController.h; sourceTree = "<group>"; };
 		E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupViewController.m; sourceTree = "<group>"; };
 		E5B566B51D3FE33C00DB0FD1 /* ListTileTablesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListTileTablesViewController.h; sourceTree = "<group>"; };
@@ -174,6 +172,8 @@
 		E5D84F891D38016400D5AF18 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		E5F576CF1DD19A49009282C6 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = bounds.json; path = ../../libs/WhirlyGlobe/resources/srs/bounds.json; sourceTree = "<group>"; };
+		E5F576D11DD19A50009282C6 /* default.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = default.sld; path = ../../libs/WhirlyGlobe/resources/vectors/styles/default.sld; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -281,7 +281,7 @@
 		E5D84F5C1D37F58300D5AF18 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				E5A3578E1DC3D96000680149 /* default.sld */,
+				E5F576CA1DD19A1A009282C6 /* Resources */,
 				E5A3577D1DBDBA3400680149 /* mainNAVL.sld */,
 				E5A3577F1DBEA18D00680149 /* DME.png */,
 				E5A357801DBEA18D00680149 /* NDB.png */,
@@ -296,7 +296,6 @@
 				E56E10F61D51CA51004B47F7 /* ic_tiles.png */,
 				E56E10F71D51CA51004B47F7 /* indexed.png */,
 				E5190A5E1D49B5A7003130E2 /* map_pin.png */,
-				E5B566B01D3D953E00DB0FD1 /* bounds.json */,
 				E5BD7D781D380DD500519CB9 /* rivers.gpkg */,
 				E5D84F5D1D37F58300D5AF18 /* main.m */,
 			);
@@ -310,6 +309,15 @@
 				E5D84F831D38010200D5AF18 /* WhirlyGlobeMaplyComponentTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E5F576CA1DD19A1A009282C6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E5F576D11DD19A50009282C6 /* default.sld */,
+				E5F576CF1DD19A49009282C6 /* bounds.json */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		E7502AA4295695A349D4F389 /* Pods */ = {
@@ -438,9 +446,8 @@
 				E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */,
 				E5A357871DBEA18D00680149 /* VOR.png in Resources */,
 				E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */,
-				E5A3578F1DC3D96000680149 /* default.sld in Resources */,
+				E5F576D21DD19A50009282C6 /* default.sld in Resources */,
 				E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */,
-				E5B566B11D3D953E00DB0FD1 /* bounds.json in Resources */,
 				E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */,
 				E56E10FA1D51CA51004B47F7 /* ic_polygon.png in Resources */,
 				E5A357881DBEA18D00680149 /* TACAN.png in Resources */,
@@ -453,6 +460,7 @@
 				E5A357861DBEA18D00680149 /* NDB.png in Resources */,
 				E56E10F81D51CA51004B47F7 /* ic_linestring.png in Resources */,
 				E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */,
+				E5F576D01DD19A49009282C6 /* bounds.json in Resources */,
 				E5A357891DBEA18D00680149 /* VORDME.png in Resources */,
 				E56E10FC1D51CA51004B47F7 /* indexed.png in Resources */,
 			);
