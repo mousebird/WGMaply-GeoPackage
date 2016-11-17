@@ -25,16 +25,18 @@
 @implementation GPKGFeatureTileStyler {
     GPKGRTreeIndex *_rtreeIndex;
     int _targetLevel;
+    int _maxZoom;
     UIImage *_markerImage;
     GPKGGeometryProjectionTransform *_geomProjTransform;
 }
 
-- (nonnull instancetype)initWithStyle:(NSObject<MaplyVectorStyleDelegate> *__nonnull)styleDelegate viewC:(MaplyBaseViewController *__nonnull)viewC targetLevel:(int)targetLevel markerImage:(UIImage *)markerImage rtreeIndex:(GPKGRTreeIndex *__nonnull)rtreeIndex geomProjTransform:(GPKGGeometryProjectionTransform *__nonnull)geomProjTransform {
+- (nonnull instancetype)initWithStyle:(NSObject<MaplyVectorStyleDelegate> *__nonnull)styleDelegate viewC:(MaplyBaseViewController *__nonnull)viewC targetLevel:(int)targetLevel maxZoom:(int)maxZoom markerImage:(UIImage *)markerImage rtreeIndex:(GPKGRTreeIndex *__nonnull)rtreeIndex geomProjTransform:(GPKGGeometryProjectionTransform *__nonnull)geomProjTransform {
     
     self = [super init];
     if (self) {
         _styleDelegate = styleDelegate;
         _viewC = viewC;
+        _maxZoom = maxZoom;
         _targetLevel = targetLevel;
         _markerImage = markerImage;
         _rtreeIndex = rtreeIndex;
@@ -60,7 +62,7 @@
     GPKGRTreeIndexResults *featureIndexResults = [[GPKGRTreeIndexResults alloc] initWithRTreeIndex:_rtreeIndex andResults:geometryIndexResults];
     
     int n = featureIndexResults.count;
-    
+    unsigned long totalBytes = 0;
     
     if (n > 0 && tileID.level == _targetLevel) {
         GPKGResultSet *results = [featureIndexResults getResults];
@@ -76,6 +78,9 @@
             if (!columnNames)
                 columnNames = [row getColumnNames];
 
+            totalBytes += geometryData.bytes.length;
+            if (totalBytes > (3 * GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT))
+                break;
             
             if(geometryData != nil && !geometryData.empty){
                 
@@ -169,7 +174,7 @@
                             [self processPolygon:polygon withTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andLinestringObjs:linestringObjs andPolygonObjs:polygonObjs];
                         }
                     } else {
-                        NSLog(@"geometryType %i", geometry.geometryType);
+                        NSLog(@"GPKGFeatureTileStyler; Skipping geometryType %i", geometry.geometryType);
                         n -= 1;
                     }
                     
@@ -195,6 +200,11 @@
             
         }
         [results close];
+    }
+    
+    if (totalBytes > (3 * GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT)) {
+        _targetLevel = MIN(_targetLevel + 1, _maxZoom);
+        return 0;
     }
     
     [featureIndexResults close];
@@ -231,7 +241,7 @@
         [linestringObjs addObject:clipped];
         
     } else if ([lineString.numPoints intValue] > 0) {
-        NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [lineString.numPoints intValue]);
+        NSLog(@"GPKGFeatureTileStyler processLineString; skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [lineString.numPoints intValue]);
         processed = false;
     }
     
@@ -260,7 +270,7 @@
                 [polyVecObj addHole:staticCoords numCoords:[ring.numPoints intValue]-1];
             [lineVecObjs addObject:[[MaplyVectorObject alloc] initWithLineString:staticCoords numCoords:[ring.numPoints intValue] attributes:nil]];
         } else {
-            NSLog(@"skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [ring.numPoints intValue]);
+            NSLog(@"GPKGFeatureTileStyler processPolygon; skip %i %i %i %i", tileID.level, tileID.x, tileID.y, [ring.numPoints intValue]);
             polyVecObj = nil;
             break;
         }
@@ -429,35 +439,13 @@
             /*  This is just a heuristic calculation to approximate the number of points per geometry in the table.
                 The 43.0 offset is 40 + 3. 40 is the estimated GeoPackageBinaryHeader size. 3 is the approximate constant contribution to the WKB size.  And 18 is the approximate variable contribution to the WKB size.
              */
-            float avgNumPoints = (avgFeatureSizeBytes - 43.0) / 18.0;
+            float avgNumPoints = MAX((avgFeatureSizeBytes - 43.0) / 18.0, 1.0);
             
-            NSLog(@"totalFeatureSizeBytes %ld numFeatures %i avgFeatureSizeBytes %f avgNumPoints %f _isDegree %i", totalFeatureSizeBytes, numFeatures, avgFeatureSizeBytes, avgNumPoints, _isDegree);
             
             enum WKBGeometryType geomType = [_featureDao getGeometryType];
-            int maxFeatures;
-            if (geomType == WKB_POINT || geomType == WKB_MULTIPOINT)
-                maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-            else if (geomType == WKB_LINESTRING || geomType == WKB_MULTILINESTRING)
-                maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_LINESTRING;
-            else if (geomType == WKB_POLYGON || geomType == WKB_MULTIPOLYGON)
-                maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
-            else if (geomType == WKB_GEOMETRY || geomType == WKB_GEOMETRYCOLLECTION) {
-                if (avgNumPoints > 2.5)
-                    maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POLYGON;
-                else
-                    maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT;
-            } else {
-                NSLog(@"GPKGFeatureTileSource: unsupported geometry type.");
-                return nil;
-            }
+            int maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT / avgNumPoints;
 
             float featuresPerTile = (float)maxFeatures / (float)GPKG_FEATURE_TILE_SOURCE_TARGET_TILE_COUNT * 0.5;
-            
-            NSLog(@"maxFeatures %i featuresPerTile %f", maxFeatures, featuresPerTile);
-            
-            NSLog(@"gpkgBBox %f %f %f %f", gpkgBBox.minLongitude.doubleValue, gpkgBBox.maxLongitude.doubleValue, gpkgBBox.minLatitude.doubleValue, gpkgBBox.maxLatitude.doubleValue);
-            NSLog(@"bbox %f %f %f %f %i", bbox.ll.x, bbox.ur.x, bbox.ll.y, bbox.ur.y, _isDegree);
-
             
             
             if ((gpkgBBox.minLongitude.doubleValue == gpkgBBox.maxLongitude.doubleValue) || (gpkgBBox.minLatitude.doubleValue == gpkgBBox.maxLatitude.doubleValue))
@@ -475,11 +463,7 @@
                     bboxSnapped.ur.x = bbox.ur.x - round((bbox.ur.x - gpkgBBox.maxLongitude.doubleValue) / xSridUnitsPerTile) * xSridUnitsPerTile;
                     bboxSnapped.ur.y = bbox.ur.y - round((bbox.ur.y - gpkgBBox.maxLatitude.doubleValue) / ySridUnitsPerTile) * ySridUnitsPerTile;
                     
-                    NSLog(@"bboxSnapped %f %f %f %f", bboxSnapped.ll.x, bboxSnapped.ur.x, bboxSnapped.ll.y, bboxSnapped.ur.y);
-                    
                     int numTiles = (int)((bboxSnapped.ur.x - bboxSnapped.ll.x) / xSridUnitsPerTile) * (int)((bboxSnapped.ur.y - bboxSnapped.ll.y) / ySridUnitsPerTile);
-                    
-                    NSLog(@"numTiles %i", numTiles);
                     
                     if ( ((float)numFeatures / (float)numTiles) < featuresPerTile ) {
                         _targetLevel = level;
@@ -487,8 +471,6 @@
                     }
                 }
             }
-            NSLog(@"_targetLevel %i", _targetLevel);
-            
             _sldURL = sldURL;
         }
     }
@@ -528,7 +510,7 @@
         if (!_tileParser) {
             _styleSet = [[SLDStyleSet alloc] initWithViewC:layer.viewC useLayerNames:NO];
             [_styleSet loadSldURL:_sldURL];
-            _tileParser = [[GPKGFeatureTileStyler alloc] initWithStyle:_styleSet viewC:layer.viewC targetLevel:_targetLevel markerImage:_markerImage rtreeIndex:_rtreeIndex geomProjTransform:_geomProjTransform];
+            _tileParser = [[GPKGFeatureTileStyler alloc] initWithStyle:_styleSet viewC:layer.viewC targetLevel:_targetLevel maxZoom:self.maxZoom markerImage:_markerImage rtreeIndex:_rtreeIndex geomProjTransform:_geomProjTransform];
         }
     }
     
@@ -575,12 +557,8 @@
         if (n > 0)
             [layer addData:compObjs forTile:tileID style:MaplyDataStyleReplace];
         
-        if (n > 0 && compObjs.count > 0)
-            NSLog(@"Got some features");
-        
-        if (complete) {
+        if (complete)
             [self setLoaded:tileID];
-        }
         
         [layer tileDidLoad:tileID];
     });
