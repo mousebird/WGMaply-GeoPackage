@@ -45,7 +45,7 @@
 
 @interface GPKGFeatureTileSource : NSObject <MaplyPagingDelegate, GPKGProgress>
 
-- (id __nullable)initWithGeoPackage:(GPKGGeoPackage * __nonnull)geoPackage tableName:(NSString * __nonnull)tableName bounds:(NSDictionary * __nonnull)bounds sldURL:(NSURL * __nonnull)sldURL;
+- (id __nullable)initWithGeoPackage:(GPKGGeoPackage * __nonnull)geoPackage tableName:(NSString * __nonnull)tableName bounds:(NSDictionary * __nonnull)bounds sldURL:(NSURL * __nonnull)sldURL minZoom:(unsigned int)minZoom maxZoom:(unsigned int)maxZoom;
 - (void)close;
 
 @property (nonatomic, readonly) MaplyCoordinate center;

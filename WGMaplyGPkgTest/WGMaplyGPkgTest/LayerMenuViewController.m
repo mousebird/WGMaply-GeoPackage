@@ -766,7 +766,7 @@
             if (featureTableItem.sld && ![featureTableItem.sld isEqual:[NSNull null]])
                 sldURL = [NSURL URLWithString:featureTableItem.sld relativeToURL:docsDir];
             
-            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL];
+            GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL minZoom:1 maxZoom:20];
             
             MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
             vecLayer.numSimultaneousFetches = 1;

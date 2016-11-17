@@ -202,7 +202,7 @@
         [results close];
     }
     
-    if (totalBytes > (3 * GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT)) {
+    if (totalBytes > (8 * GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT)) {
         _targetLevel = MIN(_targetLevel + 1, _maxZoom);
         return 0;
     }
@@ -309,7 +309,7 @@
     GPKGFeatureDao *_featureDao;
     GPKGRTreeIndex *_rtreeIndex;
 
-    int _targetLevel;
+    int _targetLevel, _minZoom, _maxZoom;
     
     NSDictionary *_labelDesc, *_linestringDesc, *_polygonDesc, *_markerDesc, *_gridDesc;
     UIImage *_markerImage;
@@ -329,13 +329,15 @@
     GPKGFeatureTileStyler *_tileParser;
 }
 
-- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds sldURL:(NSURL *)sldURL {
+- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds sldURL:(NSURL *)sldURL minZoom:(unsigned int)minZoom maxZoom:(unsigned int)maxZoom {
     self = [super init];
     if (self) {
         _geoPackage = geoPackage;
         @synchronized (_geoPackage) {
             _featureDao = [_geoPackage getFeatureDaoWithTableName:tableName];
             _bounds = bounds;
+            _minZoom = minZoom;
+            _maxZoom = maxZoom;
             
             if (!_featureDao) {
                 NSLog(@"GPKGFeatureTileSource: Error accessing Feature DAO.");
@@ -441,6 +443,7 @@
              */
             float avgNumPoints = MAX((avgFeatureSizeBytes - 43.0) / 18.0, 1.0);
             
+//            NSLog(@"totalFeatureSizeBytes %i, numFeatures %i, avgFeatureSizeBytes %f", totalFeatureSizeBytes, numFeatures, avgFeatureSizeBytes);
             
             enum WKBGeometryType geomType = [_featureDao getGeometryType];
             int maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT / avgNumPoints;
@@ -471,6 +474,7 @@
                     }
                 }
             }
+//            NSLog(@"_targetLevel: %i", _targetLevel);
             _sldURL = sldURL;
         }
     }
@@ -487,11 +491,11 @@
 }
 
 - (int)minZoom {
-    return 1;
+    return _minZoom;
 }
 
 - (int)maxZoom {
-    return 20;
+    return _maxZoom;
 }
 
 - (MaplyCoordinate)center {
