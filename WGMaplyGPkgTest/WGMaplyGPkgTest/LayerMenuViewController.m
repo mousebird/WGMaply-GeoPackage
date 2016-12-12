@@ -615,18 +615,8 @@
 //        [self completedIndexing];
 //    }
 }
-- (void) completedImport {
-    LayerMenuViewGeopackageItem *geopackageItem = _importingGeopackageItem.geopackageItem;
-    GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
-    if (!gpkg) {
-        NSLog(@"Error: GeoPackage is nil.");
-        _importingGeopackageItem = nil;
-        [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:geopackageItem withAnimation:RATreeViewRowAnimationLeft];
-//        [_treeView reloadRowsForItems:@[geopackageItem] withRowAnimation:RATreeViewRowAnimationNone];
-        [_gpkgGeoPackageManager close];
-        _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
-        return;
-    }
+
+- (NSDictionary *)getExpandedExtraContentsForGpkgItem:(LayerMenuViewGeopackageItem *)geopackageItem gpkg:(GPKGGeoPackage *)gpkg {
     
     NSMutableDictionary *extraContents = [NSMutableDictionary dictionary];
     GPKGContentsDao *contentsDao = [gpkg getContentsDao];
@@ -663,9 +653,61 @@
             [results close];
     } @catch (NSException *exception) {
     }
+    return extraContents;
+}
+
+- (NSDictionary *)getBasicExtraContentsForGpkgItem:(LayerMenuViewGeopackageItem *)geopackageItem gpkg:(GPKGGeoPackage *)gpkg {
+    NSMutableDictionary *extraContents = [NSMutableDictionary dictionary];
+    GPKGContentsDao *contentsDao = [gpkg getContentsDao];
+    GPKGResultSet *results;
+    @try {
+        results = [contentsDao rawQuery:@"SELECT table_name, sld FROM gpkg_contents;"];
+        while([results moveToNext]) {
+            NSArray *result = [results getRow];
+            NSString *tableName = result[0];
+            NSString *sld = result[1];
+            NSMutableDictionary *tableInfo = [NSMutableDictionary dictionary];
+            [GPKGUtils setObject:sld forKey:@"sld" inDictionary:tableInfo];
+            [GPKGUtils setObject:nil forKey:@"grouping" inDictionary:tableInfo];
+            [GPKGUtils setObject:nil forKey:@"category" inDictionary:tableInfo];
+            [GPKGUtils setObject:nil forKey:@"zorder" inDictionary:tableInfo];
+            extraContents[tableName] = tableInfo;
+        }
+    } @catch (NSException *exception) {
+        @try {
+            if (results)
+                [results close];
+        } @catch (NSException *exception) {
+        }
+        results = nil;
+        
+        [gpkg close];
+        gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
+    }
+    @try {
+        if (results)
+            [results close];
+    } @catch (NSException *exception) {
+    }
+    return extraContents;
+}
+
+- (void) completedImport {
+    LayerMenuViewGeopackageItem *geopackageItem = _importingGeopackageItem.geopackageItem;
+    GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
+    if (!gpkg) {
+        NSLog(@"Error: GeoPackage is nil.");
+        _importingGeopackageItem = nil;
+        [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:geopackageItem withAnimation:RATreeViewRowAnimationLeft];
+//        [_treeView reloadRowsForItems:@[geopackageItem] withRowAnimation:RATreeViewRowAnimationNone];
+        [_gpkgGeoPackageManager close];
+        _gpkgGeoPackageManager = [GPKGGeoPackageFactory getManager];
+        return;
+    }
     
-    
-    
+    NSDictionary *extraContents = [self getExpandedExtraContentsForGpkgItem:geopackageItem gpkg:gpkg];
+    if (extraContents.count == 0)
+        extraContents = [self getBasicExtraContentsForGpkgItem:geopackageItem gpkg:gpkg];
     
     GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
     NSArray *tileTables;
