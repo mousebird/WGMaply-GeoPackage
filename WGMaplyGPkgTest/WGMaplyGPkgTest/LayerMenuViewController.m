@@ -644,9 +644,6 @@
         } @catch (NSException *exception) {
         }
         results = nil;
-        
-        [gpkg close];
-        gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
     }
     @try {
         if (results)
@@ -680,9 +677,6 @@
         } @catch (NSException *exception) {
         }
         results = nil;
-        
-        [gpkg close];
-        gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
     }
     @try {
         if (results)
@@ -706,8 +700,22 @@
     }
     
     NSDictionary *extraContents = [self getExpandedExtraContentsForGpkgItem:geopackageItem gpkg:gpkg];
-    if (extraContents.count == 0)
+    if (!extraContents || extraContents.count == 0) {
+        @try {
+            [gpkg close];
+        } @catch (NSException *exception) {
+        }
+        gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
         extraContents = [self getBasicExtraContentsForGpkgItem:geopackageItem gpkg:gpkg];
+        if (!extraContents || extraContents.count == 0) {
+            @try {
+                [gpkg close];
+            } @catch (NSException *exception) {
+            }
+            gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
+            extraContents = @{};
+        }
+    }
     
     GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
     NSArray *tileTables;
