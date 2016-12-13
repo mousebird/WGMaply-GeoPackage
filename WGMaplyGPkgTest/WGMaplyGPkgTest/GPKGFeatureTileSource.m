@@ -79,7 +79,7 @@
                 columnNames = [row getColumnNames];
 
             totalBytes += geometryData.bytes.length;
-            if (totalBytes > (3 * GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT))
+            if (totalBytes > GPKG_FEATURE_TILE_SOURCE_MAX_BYTES && _targetLevel < _maxZoom)
                 break;
             
             if(geometryData != nil && !geometryData.empty){
@@ -202,8 +202,9 @@
         [results close];
     }
     
-    if (totalBytes > (8 * GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT)) {
-        _targetLevel = MIN(_targetLevel + 1, _maxZoom);
+    if (totalBytes > GPKG_FEATURE_TILE_SOURCE_MAX_BYTES && _targetLevel < _maxZoom) {
+        _targetLevel += 1;
+        NSLog(@"incrementing _targetLevel to %i", _targetLevel);
         return 0;
     }
     
@@ -224,7 +225,7 @@
 
 - (bool) processLinestring:(WKBLineString *)lineString withTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andLinestringObjs:(NSMutableArray *)linestringObjs {
     
-    static MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
+    MaplyCoordinate staticCoords[GPKG_FEATURE_TILE_SOURCE_MAX_POINTS];
     bool processed = true;
     
     if ([lineString.numPoints intValue] > 0 && [lineString.numPoints intValue] < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
@@ -311,7 +312,7 @@
 
     int _targetLevel, _minZoom, _maxZoom;
     
-    NSDictionary *_labelDesc, *_linestringDesc, *_polygonDesc, *_markerDesc, *_gridDesc;
+    NSDictionary *_gridDesc;
     UIImage *_markerImage;
     
     NSDictionary *_bounds;
@@ -345,29 +346,6 @@
             }
 
             
-            _labelDesc = @{
-                            kMaplyJustify           : @"left",
-                            kMaplyDrawPriority      : @(kMaplyImageLayerDrawPriorityDefault + 230),
-                            kMaplyFont              :
-                                [UIFont systemFontOfSize:24.0],
-                            kMaplyTextColor         : [UIColor greenColor],
-                            kMaplyTextOutlineColor  : [UIColor blackColor],
-                            kMaplyTextOutlineSize   : @(1.0),
-                            kMaplyEnable            : @(NO)};
-            _linestringDesc = @{
-                         kMaplyColor: [UIColor yellowColor],
-                         kMaplyEnable: @(NO),
-                         kMaplyFilled: @(NO),
-                         kMaplyVecWidth: @(5.0),
-                         kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 210)
-                         };
-            _polygonDesc = @{
-                                kMaplyColor: [UIColor purpleColor],
-                                kMaplyEnable: @(NO),
-                                kMaplyFilled: @(YES),
-                                kMaplyVecWidth: @(5.0),
-                                kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200)
-                                };
             _gridDesc = @{
                          kMaplyColor: [UIColor greenColor],
                          kMaplyEnable: @(NO),
@@ -376,7 +354,6 @@
                          kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 220)
                          };
             
-            _markerDesc = @{kMaplyMinVis: @(0.0), kMaplyMaxVis: @(1.0), kMaplyFade: @(0.0), kMaplyDrawPriority: @(kMaplyImageLayerDrawPriorityDefault + 200), kMaplyEnable: @(NO)};
             _markerImage = [UIImage imageNamed:@"map_pin"];
             
             
@@ -443,7 +420,7 @@
              */
             float avgNumPoints = MAX((avgFeatureSizeBytes - 43.0) / 18.0, 1.0);
             
-//            NSLog(@"totalFeatureSizeBytes %i, numFeatures %i, avgFeatureSizeBytes %f", totalFeatureSizeBytes, numFeatures, avgFeatureSizeBytes);
+            NSLog(@"totalFeatureSizeBytes %i, numFeatures %i, avgFeatureSizeBytes %f", totalFeatureSizeBytes, numFeatures, avgFeatureSizeBytes);
             
             enum WKBGeometryType geomType = [_featureDao getGeometryType];
             int maxFeatures = GPKG_FEATURE_TILE_SOURCE_MAX_FEATURES_POINT / avgNumPoints;
@@ -474,7 +451,7 @@
                     }
                 }
             }
-//            NSLog(@"_targetLevel: %i", _targetLevel);
+            NSLog(@"_targetLevel: %i", _targetLevel);
             _sldURL = sldURL;
         }
     }
