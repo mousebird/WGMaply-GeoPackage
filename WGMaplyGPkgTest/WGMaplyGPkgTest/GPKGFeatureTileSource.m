@@ -54,11 +54,19 @@
     
     NSMutableDictionary *featureStyles = [NSMutableDictionary new];
     
-    GPKGResultSet * geometryIndexResults = [_rtreeIndex queryWithBoundingBox:[[GPKGBoundingBox alloc]
+    GPKGResultSet * geometryIndexResults;
+    while (!geometryIndexResults) {
+        @try {
+            geometryIndexResults = [_rtreeIndex queryWithBoundingBox:[[GPKGBoundingBox alloc]
                                                                               initWithMinLongitudeDouble:geoBboxDeg.ll.x
                                                                               andMaxLongitudeDouble:geoBboxDeg.ur.x
                                                                               andMinLatitudeDouble:geoBboxDeg.ll.y
                                                                               andMaxLatitudeDouble:geoBboxDeg.ur.y]];
+        } @catch (NSException *exception) {
+            geometryIndexResults = nil;
+            [NSThread sleepForTimeInterval:0.5];
+        }
+    }
     GPKGRTreeIndexResults *featureIndexResults = [[GPKGRTreeIndexResults alloc] initWithRTreeIndex:_rtreeIndex andResults:geometryIndexResults];
     
     int n = featureIndexResults.count;
@@ -391,8 +399,9 @@
                 bbox.ur.y = srsBBox.maxLatitude.doubleValue;
             }
 
-            
-            _rtreeIndex = [[GPKGRTreeIndex alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao andTransform:_geomProjTransform];
+            _rtreeIndex = [[GPKGRTreeIndex alloc] initWithGeoPackage:_geoPackage andFeatureDao:_featureDao];
+            // table is already indexed, so call this in same thread
+            [_rtreeIndex indexTable];
             
             GPKGBoundingBox *gpkgBBox = [_rtreeIndex getMinimalBoundingBox];
             

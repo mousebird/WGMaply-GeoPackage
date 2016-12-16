@@ -29,52 +29,116 @@ NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION = @"geopackage.exten
 
 @implementation GPKGRTreeIndex
 
--(instancetype) initWithGeoPackage: (GPKGGeoPackage *) geoPackage andFeatureDao: (GPKGFeatureDao *) featureDao andTransform:(GPKGGeometryProjectionTransform *)transform {
+-(instancetype) initWithGeoPackage: (GPKGGeoPackage *) geoPackage andFeatureDao: (GPKGFeatureDao *) featureDao {
     self = [super initWithGeoPackage:geoPackage];
     if(self != nil){
+        if (featureDao.idColumns.count < 1) {
+            NSLog(@"Feature table breaks GeoPackage requirement for a primary key (2.1.6.1.1, Requirement 29).");
+            return nil;
+        }
         self.featureDao = featureDao;
         self.extensionName = [GPKGExtensions buildExtensionNameWithAuthor:GPKG_EXTENSION_RTREE_INDEX_AUTHOR andExtensionName:GPKG_EXTENSION_RTREE_INDEX_NAME_NO_AUTHOR];
         
         self.tableName = [NSString stringWithFormat:@"rtree_%@_%@", self.featureDao.tableName, self.featureDao.getGeometryColumnName];
         
-        self.rtreeIndexDao = [[GPKGRTreeIndexDao alloc] initWithDatabase:geoPackage.database andFeatureDao:featureDao];
-        if (!self.rtreeIndexDao.columns) {
-            [self setupRTreeIndexWithTransform:transform];
-        }
-        
-        
     }
     return self;
 }
 
-- (void)setupRTreeIndexWithTransform:(GPKGGeometryProjectionTransform *)transform {
+- (void)indexTable {
+    self.rtreeIndexDao = [[GPKGRTreeIndexDao alloc] initWithDatabase:self.geoPackage.database andFeatureDao:self.featureDao];
+    
+    if (!self.rtreeIndexDao.columns || (self.featureDao.count != self.rtreeIndexDao.count)) {
+        GPKGSpatialReferenceSystemDao * srsDao = [self.geoPackage getSpatialReferenceSystemDao];
+        GPKGSpatialReferenceSystem * srs = (GPKGSpatialReferenceSystem *)[srsDao queryForIdObject:self.featureDao.projection.epsg];
+        
+        GPKGProjectionTransform *projTransform = [[GPKGProjectionTransform alloc] initWithFromSrs:srs andToEpsg:4326];
+        GPKGGeometryProjectionTransform *transform = [[GPKGGeometryProjectionTransform alloc] initWithProjectionTransform:projTransform];
+        
+        [self setupRTreeIndexWithTransform:transform createVTable:(self.rtreeIndexDao.columns == nil)];
+    } else {
+        __strong NSObject<GPKGProgress> *progress = self.progress;
+        if (progress)
+            [progress completed];
+    }
+}
+
+- (void)setupRTreeIndexWithTransform:(GPKGGeometryProjectionTransform *)transform createVTable:(bool)createVTable {
     NSString *createString = [NSString stringWithFormat:@"CREATE VIRTUAL TABLE %@ USING rtree(id, minx, maxx, miny, maxy);", self.tableName];
     
-    [_rtreeIndexDao.database exec:createString];
-    [_rtreeIndexDao initializeColumnsWithQuery:false];
-    
-    [_rtreeIndexDao beginTransaction];
-    GPKGResultSet *allResults = [self.featureDao queryForAll];
-    while([allResults moveToNext]) {
-        GPKGFeatureRow *featureRow = [self.featureDao getFeatureRow:allResults];
-        GPKGGeometryData *geometryData = [featureRow getGeometry];
+    bool success = false;
+    __strong NSObject<GPKGProgress> *progress = self.progress;
+    NSString *errorString = @"";
+    GPKGResultSet *allResults;
+    @try {
+        if (createVTable) {
+            [_rtreeIndexDao beginTransaction];
+            [_rtreeIndexDao.database exec:createString];
+            [_rtreeIndexDao commitTransaction];
+        }
+        [_rtreeIndexDao initializeColumnsWithQuery:false];
+        allResults = [self.featureDao queryWhere:nil andWhereArgs:nil andGroupBy:nil andHaving:nil andOrderBy:self.featureDao.idColumns[0]];
         
-        if(geometryData != nil && !geometryData.empty){
-            
-            NSNumber *featureID = [featureRow getId];
-            WKBGeometry * geometry = geometryData.geometry;
-            
-            geometry = [transform transformGeometry:geometry];
-            WKBGeometryEnvelope *envelope = [WKBGeometryEnvelopeBuilder buildEnvelopeWithGeometry:geometry];
-            
-            if (envelope) {
-                
-                GPKGGeometryIndex *geometryIndex = [_rtreeIndexDao populateWithGeomId:featureID andGeometryEnvelope:envelope];
-                [_rtreeIndexDao insert:geometryIndex];
+        int featureRowIdx = 0;
+        int featureRowsSkip = self.rtreeIndexDao.count;
+        [_rtreeIndexDao beginTransaction];
+        while((progress == nil || [progress isActive]) && [allResults moveToNext]) {
+            if (featureRowIdx < featureRowsSkip) {
+                featureRowIdx++;
+                continue;
             }
+            GPKGFeatureRow *featureRow = [self.featureDao getFeatureRow:allResults];
+            GPKGGeometryData *geometryData = [featureRow getGeometry];
+            
+            if(geometryData != nil && !geometryData.empty){
+                
+                NSNumber *featureID = [featureRow getId];
+                WKBGeometry * geometry = geometryData.geometry;
+                
+                geometry = [transform transformGeometry:geometry];
+                WKBGeometryEnvelope *envelope = [WKBGeometryEnvelopeBuilder buildEnvelopeWithGeometry:geometry];
+                
+                if (envelope) {
+                    GPKGGeometryIndex *geometryIndex = [_rtreeIndexDao populateWithGeomId:featureID andGeometryEnvelope:envelope];
+                    [_rtreeIndexDao insert:geometryIndex];
+                }
+            }
+            if(progress != nil){
+                [progress addProgress:1];
+            }
+            featureRowIdx++;
+        }
+        [_rtreeIndexDao commitTransaction];
+        [allResults close];
+        allResults = nil;
+        if(progress == nil || [progress isActive]) {
+            success = true;
+            if (progress)
+                [progress completed];
+        } else {
+            errorString = @"Indexing finished but delegate not active.";
+        }
+    } @catch (NSException *e) {
+        @try {
+            [_rtreeIndexDao commitTransaction];
+        } @finally {
+        }
+        @try {
+            if (allResults) {
+                [allResults close];
+                allResults = nil;
+            }
+        } @finally {
+        }
+        errorString = e.reason;
+    } @finally {
+        if (!success) {
+            self.featureDao = nil;
+            self.geoPackage = nil;
+            if (progress)
+                [progress failureWithError:errorString];
         }
     }
-    [_rtreeIndexDao commitTransaction];
 }
 
 -(GPKGResultSet *) queryWithBoundingBox: (GPKGBoundingBox *) boundingBox {

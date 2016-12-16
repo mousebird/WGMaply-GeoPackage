@@ -21,7 +21,11 @@ extern NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION;
 
 @interface GPKGRTreeIndex : GPKGBaseExtension
 
--(instancetype) initWithGeoPackage: (GPKGGeoPackage *) geoPackage andFeatureDao: (GPKGFeatureDao *) featureDao andTransform:(GPKGGeometryProjectionTransform *)transform;
+@property (nonatomic, weak) NSObject<GPKGProgress> * progress;
+
+-(instancetype) initWithGeoPackage: (GPKGGeoPackage *) geoPackage andFeatureDao: (GPKGFeatureDao *) featureDao;
+
+- (void)indexTable;
 
 -(GPKGResultSet *) queryWithBoundingBox: (GPKGBoundingBox *) boundingBox;
 -(GPKGResultSet *) queryWithGeometryEnvelope: (WKBGeometryEnvelope *) envelope;
