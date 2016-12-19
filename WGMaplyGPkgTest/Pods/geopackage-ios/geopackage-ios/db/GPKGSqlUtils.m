@@ -61,7 +61,7 @@
                             andOrderBy: (NSString *) orderBy
                             andLimit: (NSString *) limit{
     NSString * query = [GPKGSqlLiteQueryBuilder buildQueryWithDistinct:distinct
-                                                             andTables:table
+                                                             andTable:table
                                                             andColumns:columns
                                                               andWhere:where
                                                             andGroupBy:groupBy
@@ -101,7 +101,7 @@
     NSMutableString *countStatement = [NSMutableString string];
     
     [countStatement appendString:@"select count(*) from "];
-    [countStatement appendString:table];
+    [countStatement appendString:[self quoteWrapName:table]];
     
     if(where != nil){
         [countStatement appendString:@" "];
@@ -203,7 +203,7 @@
     if([self countWithDatabase:connection andTable:table andWhere:where andWhereArgs:whereArgs] > 0){
         NSMutableString *minStatement = [NSMutableString string];
         
-        [minStatement appendFormat:@"select min(%@) from %@", column, table];
+        [minStatement appendFormat:@"select min(%@) from %@", [self quoteWrapName:column], [self quoteWrapName:table]];
         
         if(where != nil){
             [minStatement appendString:@" "];
@@ -225,7 +225,7 @@
     if([self countWithDatabase:connection andTable:table andWhere:where andWhereArgs:whereArgs] > 0){
         NSMutableString *maxStatement = [NSMutableString string];
         
-        [maxStatement appendFormat:@"select max(%@) from %@", column, table];
+        [maxStatement appendFormat:@"select max(%@) from %@", [self quoteWrapName:column], [self quoteWrapName:table]];
         
         if(where != nil){
             [maxStatement appendString:@" "];
@@ -249,7 +249,7 @@
     
     NSMutableString *insertStatement = [NSMutableString string];
     [insertStatement appendString:@"insert into "];
-    [insertStatement appendString:table];
+    [insertStatement appendString:[self quoteWrapName:table]];
     [insertStatement appendString:@"("];
     
     int size = (values != nil) ? [values size] : 0;
@@ -260,7 +260,7 @@
         if(i > 0){
             [insertStatement appendString:@","];
         }
-        [insertStatement appendString:colName];
+        [insertStatement appendString:[self quoteWrapName:colName]];
         [args addObject:[values getValueForKey:colName]];
         i++;
     }
@@ -317,7 +317,7 @@
     
     NSMutableString *updateStatement = [NSMutableString string];
     [updateStatement appendString:@"update "];
-    [updateStatement appendString:table];
+    [updateStatement appendString:[self quoteWrapName:table]];
     [updateStatement appendString:@" set "];
     
     int setValuesSize = [values size];
@@ -329,7 +329,7 @@
         if(i > 0){
             [updateStatement appendString:@","];
         }
-        [updateStatement appendString:colName];
+        [updateStatement appendString:[self quoteWrapName:colName]];
         NSObject * value = [values getValueForKey:colName];
         if(value == nil){
             value = [[NSNull alloc] init];
@@ -368,7 +368,7 @@
     NSMutableString *deleteStatement = [NSMutableString string];
     
     [deleteStatement appendString:@"delete from "];
-    [deleteStatement appendString:table];
+    [deleteStatement appendString:[self quoteWrapName:table]];
     
     if(where != nil){
         [deleteStatement appendString:@" where "];
@@ -479,10 +479,9 @@
 }
 
 +(void) closeStatement: (sqlite3_stmt *) statement{
-//    if(sqlite3_stmt_busy(statement)){
-        if (statement != NULL)
-            sqlite3_finalize(statement);
-//    }
+    if (statement != NULL){
+        sqlite3_finalize(statement);
+    }
 }
 
 +(void) closeResultSet: (GPKGResultSet *) resultSet{
@@ -504,6 +503,25 @@
         [sqlString appendString:@"'"];
     }
     return sqlString;
+}
+
++(NSString *) quoteWrapName: (NSString *) name{
+    NSString * quoteName = nil;
+    if(name != nil){
+        quoteName = [NSString stringWithFormat:@"\"%@\"", name];
+    }
+    return quoteName;
+}
+
++(NSArray *) quoteWrapNames: (NSArray *) names{
+    NSMutableArray * quoteNames = nil;
+    if(names != nil){
+        quoteNames = [[NSMutableArray alloc] init];
+        for(NSString * name in names){
+            [quoteNames addObject:[self quoteWrapName:name]];
+        }
+    }
+    return quoteNames;
 }
 
 @end

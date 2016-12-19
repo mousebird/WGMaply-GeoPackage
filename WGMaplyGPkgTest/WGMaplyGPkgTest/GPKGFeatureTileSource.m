@@ -334,11 +334,12 @@
     GPKGGeometryProjectionTransform *_geomProjTransform;
     
     NSURL *_sldURL;
+    NSData *_sldData;
     SLDStyleSet *_styleSet;
     GPKGFeatureTileStyler *_tileParser;
 }
 
-- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds sldURL:(NSURL *)sldURL minZoom:(unsigned int)minZoom maxZoom:(unsigned int)maxZoom {
+- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds sldURL:(NSURL *)sldURL sldData:(NSData *)sldData minZoom:(unsigned int)minZoom maxZoom:(unsigned int)maxZoom {
     self = [super init];
     if (self) {
         _geoPackage = geoPackage;
@@ -462,6 +463,7 @@
             }
             NSLog(@"_targetLevel: %i", _targetLevel);
             _sldURL = sldURL;
+            _sldData = sldData;
         }
     }
     return self;
@@ -499,7 +501,11 @@
     @synchronized (self) {
         if (!_tileParser) {
             _styleSet = [[SLDStyleSet alloc] initWithViewC:layer.viewC useLayerNames:NO];
-            [_styleSet loadSldURL:_sldURL];
+            if (_sldData)
+                [_styleSet loadSldData:_sldData baseURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
+            else
+                [_styleSet loadSldURL:_sldURL];
+
             _tileParser = [[GPKGFeatureTileStyler alloc] initWithStyle:_styleSet viewC:layer.viewC targetLevel:_targetLevel maxZoom:self.maxZoom markerImage:_markerImage rtreeIndex:_rtreeIndex geomProjTransform:_geomProjTransform];
         }
     }

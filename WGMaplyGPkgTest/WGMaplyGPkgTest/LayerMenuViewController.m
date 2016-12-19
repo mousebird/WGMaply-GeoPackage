@@ -208,16 +208,18 @@
 @property (nonatomic, assign) BOOL indexed;
 @property (nonatomic, assign) BOOL indexing;
 
-@property (nonatomic, strong) NSString *sld;
+@property (nonatomic, strong) NSString *sldFilename;
+@property (nonatomic, strong) NSNumber *layerStyleID;
 @property (nonatomic, strong) NSString *grouping;
 @property (nonatomic, strong) NSString *category;
 @property (nonatomic, strong) NSNumber *zorder;
 
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed;
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed andSLDFilename:(NSString *)sldFilename andLayerStyleID:(NSNumber *)layerStyleID andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder;
 @end
 
+
 @implementation LayerMenuViewFeatureTableItem
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed andSLD:(NSString *)sld andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder {
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed andSLDFilename:(NSString *)sldFilename andLayerStyleID:(NSNumber *)layerStyleID andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder {
     self = [super initWithDisplayText:featureTableName];
     if (self) {
         self.geopackageItem = parent;
@@ -225,7 +227,8 @@
         self.geometryType = geometryType;
         self.count = count;
         self.indexed = indexed;
-        self.sld = sld;
+        self.sldFilename = sldFilename;
+        self.layerStyleID = layerStyleID;
         self.grouping = grouping;
         self.category = category;
         self.zorder = zorder;
@@ -687,6 +690,93 @@
     return extraContents;
 }
 
+- (NSDictionary *)getLayerStylesForGpkg:(GPKGGeoPackage *)gpkg {
+    
+    GPKGContentsDao *contentsDao = [gpkg getContentsDao];
+    GPKGResultSet *results;
+    NSMutableDictionary *layerStyles = [NSMutableDictionary dictionary];
+    int layerStylesTableCount = 0;
+    
+    @try {
+        results = [contentsDao rawQuery:@"SELECT name FROM sqlite_master WHERE type='table' AND name='layer_styles';"];
+        while([results moveToNext])
+            layerStylesTableCount++;
+        [results close];
+    } @finally {
+        @try {
+            if (results)
+                [results close];
+        } @finally {
+        }
+        results = nil;
+    }
+    
+    if (layerStylesTableCount == 0)
+        return layerStyles;
+    
+    @try {
+        results = [contentsDao rawQuery:@"SELECT id, f_table_name, f_geometry_column, styleName, useAsDefault FROM layer_styles ORDER BY f_table_name ASC, f_geometry_column ASC, useAsDefault DESC, styleName ASC;"];
+        while([results moveToNext]) {
+            NSArray *result = [results getRow];
+            
+            NSNumber *styleID = result[0];
+            NSString *tableName = result[1];
+            NSString *geomCol = result[2];
+            NSString *styleName = result[3];
+            NSNumber *useAsDefault = result[4];
+            
+            NSMutableDictionary *tableStyles = layerStyles[tableName];
+            if (!tableStyles) {
+                tableStyles = [NSMutableDictionary dictionary];
+                layerStyles[tableName] = tableStyles;
+            }
+            
+            NSMutableArray *geomStyles = tableStyles[geomCol];
+            if (!geomStyles) {
+                geomStyles = [NSMutableArray array];
+                tableStyles[geomCol] = geomStyles;
+            }
+            
+            [geomStyles addObject:@{@"styleID" : styleID, @"tableName" : tableName, @"geomCol" : geomCol, @"styleName" : styleName, @"useAsDefault" : useAsDefault}];
+        }
+    } @finally {
+        @try {
+            if (results)
+                [results close];
+        } @finally {
+        }
+        results = nil;
+    }
+    return layerStyles;
+}
+
+- (NSData *)getLayerStyleSLDDataForStyleID:(NSNumber *)layerStyleID inGpkg:(GPKGGeoPackage *)gpkg {
+    NSData *sldData;
+    GPKGContentsDao *contentsDao = [gpkg getContentsDao];
+    GPKGResultSet *results;
+    @try {
+        results = [contentsDao rawQuery:[NSString stringWithFormat:@"SELECT styleSLD FROM layer_styles WHERE id=%i;", layerStyleID.intValue]];
+        [results moveToNext];
+        NSArray *result = [results getRow];
+        NSString *styleSLD = result[0];
+        sldData = [styleSLD dataUsingEncoding:NSUTF8StringEncoding];
+        
+    } @catch (NSException *exception) {
+        @try {
+            if (results)
+                [results close];
+        } @finally {
+        }
+        results = nil;
+    }
+    @try {
+        if (results)
+            [results close];
+    } @finally {
+    }
+    return sldData;
+}
+
 - (void) completedImport {
     LayerMenuViewGeopackageItem *geopackageItem = _importingGeopackageItem.geopackageItem;
     GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.filename];
@@ -718,6 +808,8 @@
         }
     }
     
+    NSDictionary *layerStyles = [self getLayerStylesForGpkg:gpkg];
+    
     GPKGTileMatrixSetDao *tmsd = [gpkg getTileMatrixSetDao];
     NSArray *tileTables;
     @try {
@@ -732,6 +824,7 @@
     NSMutableArray <NSNumber *> *featureCounts = [NSMutableArray array];
     NSMutableArray <NSNumber *> *geometryTypes = [NSMutableArray array];
     NSMutableArray <NSNumber *> *indexedStates = [NSMutableArray array];
+    NSMutableArray <NSString *> *geomColNames = [NSMutableArray array];
     @try {
         featureTables = [gcd getFeatureTables];
         
@@ -740,6 +833,7 @@
             [featureCounts addObject:@([featureDao count])];
             GPKGGeometryColumns *geometryColumns = [featureDao geometryColumns];
             [geometryTypes addObject:@(geometryColumns.getGeometryType)];
+            [geomColNames addObject:geometryColumns.columnName];
             GPKGFeatureIndexManager *indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:gpkg andFeatureDao:featureDao];
             [indexedStates addObject:@([indexer isIndexedWithFeatureIndexType:GPKG_FIT_GEOPACKAGE])];
             [indexer close];
@@ -769,19 +863,29 @@
             NSString *featureTable = featureTables[i];
             int count = featureCounts[i].intValue;
             bool indexed = indexedStates[i].boolValue;
+            NSString *geomColName = geomColNames[i];
             enum WKBGeometryType geometryType = geometryTypes[i].intValue;
             
             NSDictionary *tableInfo = extraContents[featureTable];
-            NSString *sld, *grouping, *category;
+            NSString *sldFilename, *grouping, *category;
             NSNumber *zorder;
             if (tableInfo) {
-                sld = tableInfo[@"sld"];
+                sldFilename = tableInfo[@"sld"];
                 grouping = tableInfo[@"grouping"];
                 category = tableInfo[@"category"];
                 zorder = tableInfo[@"zorder"];
             }
+            NSNumber *layerStyleID;
+            NSDictionary *tableStyles = layerStyles[featureTable];
+            if (tableStyles) {
+                NSArray *geomStyles = tableStyles[geomColName];
+                if (geomStyles && geomStyles.count>0) {
+                    NSDictionary *layerStyleDict = geomStyles[0];
+                    layerStyleID = layerStyleDict[@"styleID"];
+                }
+            }
             
-            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:geopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andCount:count andIndexed:indexed andSLD:sld andGrouping:grouping andCategory:category andZOrder:zorder];
+            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:geopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andCount:count andIndexed:indexed andSLDFilename:sldFilename andLayerStyleID:layerStyleID andGrouping:grouping andCategory:category andZOrder:zorder];
             
             
             featureTableItem.delegate = self;
@@ -800,34 +904,39 @@
 }
 
 - (void)completedIndexing {
-        LayerMenuViewFeatureTableItem *featureTableItem = _indexingItem.featureTableItem;
     
-        featureTableItem.indexing = NO;
-        [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
-        
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSURL *docsDir = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-        NSURL *sldURL;
-        if (featureTableItem.sld && ![featureTableItem.sld isEqual:[NSNull null]])
-            sldURL = [NSURL URLWithString:featureTableItem.sld relativeToURL:docsDir];
-        
-        GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL minZoom:1 maxZoom:20];
-        
-        MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
-        vecLayer.numSimultaneousFetches = 1;
-        vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
-        
-        featureTableItem.featureSource = featureTileSource;
-        featureTableItem.pagingLayer = vecLayer;
-        featureTableItem.indexed = YES;
-        [self.delegate addFeatureLayer:vecLayer];
+    LayerMenuViewFeatureTableItem *featureTableItem = _indexingItem.featureTableItem;
+
+    featureTableItem.indexing = NO;
+    [_treeView deleteItemsAtIndexes:[NSIndexSet indexSetWithIndex:0] inParent:featureTableItem withAnimation:RATreeViewRowAnimationLeft];
     
-        [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *docsDir = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *sldURL;
+    if (featureTableItem.sldFilename && ![featureTableItem.sldFilename isEqual:[NSNull null]])
+        sldURL = [NSURL URLWithString:featureTableItem.sldFilename relativeToURL:docsDir];
+
+    NSData *sldData;
+    if (featureTableItem.layerStyleID && ![featureTableItem.layerStyleID isEqual:[NSNull null]])
+        sldData = [self getLayerStyleSLDDataForStyleID:featureTableItem.layerStyleID inGpkg:_indexingItem.gpkg];
+    
+    GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL sldData:sldData minZoom:1 maxZoom:20];
         
-        _indexingItem.rtreeIndex = nil;
-        _indexingItem.featureDao = nil;
-        _indexingItem.gpkg = nil;
-        _indexingItem = nil;
+    MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
+    vecLayer.numSimultaneousFetches = 1;
+    vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
+    
+    featureTableItem.featureSource = featureTileSource;
+    featureTableItem.pagingLayer = vecLayer;
+    featureTableItem.indexed = YES;
+    [self.delegate addFeatureLayer:vecLayer];
+
+    [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
+    
+    _indexingItem.rtreeIndex = nil;
+    _indexingItem.featureDao = nil;
+    _indexingItem.gpkg = nil;
+    _indexingItem = nil;
 }
 
 -(void) failureWithError: (NSString *) error {

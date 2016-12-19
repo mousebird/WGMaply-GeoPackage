@@ -22,16 +22,16 @@ PODS:
   - wkb-ios (1.0.6)
 
 DEPENDENCIES:
-  - geopackage-ios (from `https://github.com/mousebird/geopackage-ios.git`, branch `master`)
+  - geopackage-ios (from `https://github.com/mousebird/geopackage-ios.git`, branch `develop`)
 
 EXTERNAL SOURCES:
   geopackage-ios:
-    :branch: master
+    :branch: develop
     :git: https://github.com/mousebird/geopackage-ios.git
 
 CHECKOUT OPTIONS:
   geopackage-ios:
-    :commit: b15dab52f7f4e708aa5ac483c6579011d2c88ac5
+    :commit: 065bf61306b5c844419e6f5627b6e20590379455
     :git: https://github.com/mousebird/geopackage-ios.git
 
 SPEC CHECKSUMS:
@@ -40,6 +40,6 @@ SPEC CHECKSUMS:
   proj4: 234525105d05a33b2ae9a90a6fe3935f7a246f7e
   wkb-ios: 8d1526e825e3d088a5a191c8eefe213a9e41d25e
 
-PODFILE CHECKSUM: a6fc41805868a02901576f097de4592ae63fac16
+PODFILE CHECKSUM: 0cd5b7b70455358837016a09ec394c194b9b7e86
 
 COCOAPODS: 1.0.1

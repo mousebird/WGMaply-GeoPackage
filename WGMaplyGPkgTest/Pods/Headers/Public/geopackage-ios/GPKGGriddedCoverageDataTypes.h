@@ -1,0 +1,1 @@
+../../../geopackage-ios/geopackage-ios/extension/elevation/GPKGGriddedCoverageDataTypes.h
