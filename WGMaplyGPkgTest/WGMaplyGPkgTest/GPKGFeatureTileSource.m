@@ -500,7 +500,7 @@
     
     @synchronized (self) {
         if (!_tileParser) {
-            _styleSet = [[SLDStyleSet alloc] initWithViewC:layer.viewC useLayerNames:NO];
+            _styleSet = [[SLDStyleSet alloc] initWithViewC:layer.viewC useLayerNames:NO relativeDrawPriority:0];
             if (_sldData)
                 [_styleSet loadSldData:_sldData baseURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
             else

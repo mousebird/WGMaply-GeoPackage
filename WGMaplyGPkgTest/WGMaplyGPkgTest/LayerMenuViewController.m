@@ -920,11 +920,15 @@
     if (featureTableItem.layerStyleID && ![featureTableItem.layerStyleID isEqual:[NSNull null]])
         sldData = [self getLayerStyleSLDDataForStyleID:featureTableItem.layerStyleID inGpkg:_indexingItem.gpkg];
     
+    int drawPriority = kMaplyVectorDrawPriorityDefault;
+    if (featureTableItem.zorder && [featureTableItem.zorder isEqual:[NSNull null]])
+        drawPriority = kMaplyVectorDrawPriorityDefault + featureTableItem.zorder.intValue;
+    
     GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL sldData:sldData minZoom:1 maxZoom:20];
         
     MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
     vecLayer.numSimultaneousFetches = 1;
-    vecLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 200;
+    vecLayer.drawPriority = drawPriority;
     
     featureTableItem.featureSource = featureTileSource;
     featureTableItem.pagingLayer = vecLayer;
