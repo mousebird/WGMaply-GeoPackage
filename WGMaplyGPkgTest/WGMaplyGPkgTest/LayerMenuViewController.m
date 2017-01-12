@@ -947,7 +947,7 @@
         sldData = [self getLayerStyleSLDDataForStyleID:featureTableItem.layerStyleID inGpkg:_indexingItem.gpkg];
     
     int drawPriority = kMaplyVectorDrawPriorityDefault;
-    if (featureTableItem.zorder && [featureTableItem.zorder isEqual:[NSNull null]])
+    if (featureTableItem.zorder && ![featureTableItem.zorder isEqual:[NSNull null]])
         drawPriority = kMaplyVectorDrawPriorityDefault + featureTableItem.zorder.intValue;
     
     GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL sldData:sldData minZoom:1 maxZoom:20];
