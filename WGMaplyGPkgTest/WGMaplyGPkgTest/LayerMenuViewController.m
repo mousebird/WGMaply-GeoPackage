@@ -208,8 +208,6 @@
 @property (nonatomic, weak) NSObject<LayerMenuViewItemDelegate> *delegate;
 
 @property (nonatomic, assign) enum WKBGeometryType geometryType;
-@property (nonatomic, assign) unsigned int count;
-@property (nonatomic, assign) BOOL indexed;
 @property (nonatomic, assign) BOOL indexing;
 
 @property (nonatomic, strong) NSString *sldFilename;
@@ -218,19 +216,17 @@
 @property (nonatomic, strong) NSString *category;
 @property (nonatomic, strong) NSNumber *zorder;
 
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed andSLDFilename:(NSString *)sldFilename andLayerStyleID:(NSNumber *)layerStyleID andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder;
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andSLDFilename:(NSString *)sldFilename andLayerStyleID:(NSNumber *)layerStyleID andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder;
 @end
 
 
 @implementation LayerMenuViewFeatureTableItem
-- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andCount:(int)count andIndexed:(bool)indexed andSLDFilename:(NSString *)sldFilename andLayerStyleID:(NSNumber *)layerStyleID andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder {
+- (id) initWithParent:(LayerMenuViewGeopackageItem *)parent andFeatureTableName:(NSString *)featureTableName andGeometryType:(enum WKBGeometryType)geometryType andSLDFilename:(NSString *)sldFilename andLayerStyleID:(NSNumber *)layerStyleID andGrouping:(NSString *)grouping andCategory:(NSString *)category andZOrder:(NSNumber *)zorder {
     self = [super initWithDisplayText:featureTableName];
     if (self) {
         self.geopackageItem = parent;
         self.featureTableName = featureTableName;
         self.geometryType = geometryType;
-        self.count = count;
-        self.indexed = indexed;
         self.sldFilename = sldFilename;
         self.layerStyleID = layerStyleID;
         self.grouping = grouping;
@@ -255,7 +251,7 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.txtLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     
-    cell.txtLabel.text = [NSString stringWithFormat:@"%@ (%i)", self.featureTableName, self.count];
+    cell.txtLabel.text = self.featureTableName;
     if (self.geometryType == WKB_GEOMETRY || self.geometryType == WKB_GEOMETRYCOLLECTION)
         cell.typeImage.image = [UIImage imageNamed:@"ic_geometry"];
     else if (self.geometryType == WKB_POINT || self.geometryType == WKB_MULTIPOINT)
@@ -267,11 +263,8 @@
     else
         NSLog(@"Surprise geom type: %i", self.geometryType);
     
-//    if (self.indexed)
-//        cell.idxImage.image = [UIImage imageNamed:@"indexed"];
-//    else
-        cell.idxImage.image = nil;
-        
+    cell.idxImage.image = nil;
+    
     cell.enabledSwitch.on = (self.pagingLayer != nil || self.indexing);
     [cell.enabledSwitch removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
     [cell.enabledSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
@@ -846,22 +839,27 @@
 
     GPKGGeometryColumnsDao *gcd = [gpkg getGeometryColumnsDao];
     NSArray *featureTables;
-    NSMutableArray <NSNumber *> *featureCounts = [NSMutableArray array];
     NSMutableArray <NSNumber *> *geometryTypes = [NSMutableArray array];
-    NSMutableArray <NSNumber *> *indexedStates = [NSMutableArray array];
     NSMutableArray <NSString *> *geomColNames = [NSMutableArray array];
     @try {
         featureTables = [gcd getFeatureTables];
         
         for (NSString *tableName in featureTables) {
-            GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:tableName];
-            [featureCounts addObject:@([featureDao count])];
-            GPKGGeometryColumns *geometryColumns = [featureDao geometryColumns];
+            
+            GPKGGeometryColumns *geometryColumns = [gcd queryForTableName:tableName];
             [geometryTypes addObject:@(geometryColumns.getGeometryType)];
             [geomColNames addObject:geometryColumns.columnName];
-            GPKGFeatureIndexManager *indexer = [[GPKGFeatureIndexManager alloc] initWithGeoPackage:gpkg andFeatureDao:featureDao];
-            [indexedStates addObject:@([indexer isIndexedWithFeatureIndexType:GPKG_FIT_GEOPACKAGE])];
-            [indexer close];
+            
+            
+            /*
+            NSLog(@"completedImport flag 4 a");
+            GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:tableName];
+            GPKGGeometryColumns *geometryColumns = [featureDao geometryColumns];
+            NSLog(@"completedImport flag 4 d");
+            [geometryTypes addObject:@(geometryColumns.getGeometryType)];
+            [geomColNames addObject:geometryColumns.columnName];
+            NSLog(@"completedImport flag 4 e");
+             */
         }
         
         
@@ -886,8 +884,6 @@
     if (featureTables) {
         for (int i=0; i<featureTables.count; i++) {
             NSString *featureTable = featureTables[i];
-            int count = featureCounts[i].intValue;
-            bool indexed = indexedStates[i].boolValue;
             NSString *geomColName = geomColNames[i];
             enum WKBGeometryType geometryType = geometryTypes[i].intValue;
             
@@ -910,7 +906,7 @@
                 }
             }
             
-            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:geopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andCount:count andIndexed:indexed andSLDFilename:sldFilename andLayerStyleID:layerStyleID andGrouping:grouping andCategory:category andZOrder:zorder];
+            LayerMenuViewFeatureTableItem *featureTableItem = [[LayerMenuViewFeatureTableItem alloc] initWithParent:geopackageItem andFeatureTableName:featureTable andGeometryType:geometryType andSLDFilename:sldFilename andLayerStyleID:layerStyleID andGrouping:grouping andCategory:category andZOrder:zorder];
             
             
             featureTableItem.delegate = self;
@@ -958,7 +954,6 @@
     
     featureTableItem.featureSource = featureTileSource;
     featureTableItem.pagingLayer = vecLayer;
-    featureTableItem.indexed = YES;
     [self.delegate addFeatureLayer:vecLayer];
 
     [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
