@@ -849,17 +849,6 @@
             GPKGGeometryColumns *geometryColumns = [gcd queryForTableName:tableName];
             [geometryTypes addObject:@(geometryColumns.getGeometryType)];
             [geomColNames addObject:geometryColumns.columnName];
-            
-            
-            /*
-            NSLog(@"completedImport flag 4 a");
-            GPKGFeatureDao *featureDao = [gpkg getFeatureDaoWithTableName:tableName];
-            GPKGGeometryColumns *geometryColumns = [featureDao geometryColumns];
-            NSLog(@"completedImport flag 4 d");
-            [geometryTypes addObject:@(geometryColumns.getGeometryType)];
-            [geomColNames addObject:geometryColumns.columnName];
-            NSLog(@"completedImport flag 4 e");
-             */
         }
         
         
