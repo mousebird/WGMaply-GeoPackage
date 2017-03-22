@@ -24,6 +24,7 @@
 		E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */; };
 		E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */; };
 		E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E11061D53DB95004B47F7 /* ic_geometry.png */; };
+		E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
 		E59F825D1D860AFB00B02342 /* GPKGRTreeIndexDao.m in Sources */ = {isa = PBXBuildFile; fileRef = E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */; };
 		E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577D1DBDBA3400680149 /* mainNAVL.sld */; };
 		E5A357851DBEA18D00680149 /* DME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577F1DBEA18D00680149 /* DME.png */; };
@@ -44,7 +45,6 @@
 		E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F681D37F58300D5AF18 /* Assets.xcassets */; };
 		E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F6A1D37F58300D5AF18 /* LaunchScreen.storyboard */; };
 		E5D84F791D37FF4100D5AF18 /* GPKGTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */; };
-		E5D84F841D38010B00D5AF18 /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F811D38010200D5AF18 /* WhirlyGlobeMaplyComponent.framework */; };
 		E5D84F861D38015700D5AF18 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F851D38015700D5AF18 /* CoreLocation.framework */; };
 		E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F871D38015E00D5AF18 /* libc++.tbd */; };
 		E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F891D38016400D5AF18 /* libz.tbd */; };
@@ -82,6 +82,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0626D5561BF7E81E00CD3B04;
 			remoteInfo = "RATreeView iOS";
+		};
+		E56E4A791E831FB4008F0194 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2BE536FF1D2499E500B60FAD;
+			remoteInfo = WhirlyGlobeMaplyComponent;
+		};
+		E56E4A7B1E831FB4008F0194 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2BE537091D2499E500B60FAD;
+			remoteInfo = WhirlyGlobeMaplyComponentTests;
 		};
 		E5D84F801D38010200D5AF18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -134,6 +148,7 @@
 		E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerTableViewCell.m; sourceTree = "<group>"; };
 		E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerTableViewCell.xib; sourceTree = "<group>"; };
 		E56E11061D53DB95004B47F7 /* ic_geometry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_geometry.png; path = icons/ic_geometry.png; sourceTree = "<group>"; };
+		E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
 		E59F825B1D860AFB00B02342 /* GPKGRTreeIndexDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGRTreeIndexDao.h; sourceTree = "<group>"; };
 		E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGRTreeIndexDao.m; sourceTree = "<group>"; };
 		E5A3577D1DBDBA3400680149 /* mainNAVL.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainNAVL.sld; sourceTree = "<group>"; };
@@ -166,7 +181,7 @@
 		E5D84F751D37FF4100D5AF18 /* GPkgTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPkgTestConfig.h; sourceTree = "<group>"; };
 		E5D84F761D37FF4100D5AF18 /* GPKGTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGTileSource.h; sourceTree = "<group>"; };
 		E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGTileSource.m; sourceTree = "<group>"; };
-		E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
+		E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
 		E5D84F851D38015700D5AF18 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E5D84F871D38015E00D5AF18 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		E5D84F891D38016400D5AF18 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -181,6 +196,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
 				E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */,
 				E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */,
@@ -188,7 +204,6 @@
 				E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */,
 				E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */,
 				E5D84F861D38015700D5AF18 /* CoreLocation.framework in Frameworks */,
-				E5D84F841D38010B00D5AF18 /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
 				53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -199,6 +214,7 @@
 		5877722F8265A0C7942B11C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */,
 				E568626C1D4F096A00761466 /* RATreeView.xcodeproj */,
 				E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */,
 				E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */,
@@ -217,6 +233,15 @@
 				E56862731D4F096A00761466 /* RATreeView.framework */,
 				E56862751D4F096A00761466 /* RATreeView.framework */,
 				E56862771D4F096A00761466 /* RATreeViewTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E56E4A751E831FB3008F0194 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */,
+				E56E4A7C1E831FB4008F0194 /* WhirlyGlobeMaplyComponentTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -387,6 +412,10 @@
 					ProjectRef = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
 				},
 				{
+					ProductGroup = E56E4A751E831FB3008F0194 /* Products */;
+					ProjectRef = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
+				},
+				{
 					ProductGroup = E5D84F7B1D38010100D5AF18 /* Products */;
 					ProjectRef = E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */;
 				},
@@ -418,6 +447,20 @@
 			fileType = wrapper.cfbundle;
 			path = RATreeViewTests.xctest;
 			remoteRef = E56862761D4F096A00761466 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = WhirlyGlobeMaplyComponent.framework;
+			remoteRef = E56E4A791E831FB4008F0194 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E56E4A7C1E831FB4008F0194 /* WhirlyGlobeMaplyComponentTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = WhirlyGlobeMaplyComponentTests.xctest;
+			remoteRef = E56E4A7B1E831FB4008F0194 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E5D84F811D38010200D5AF18 /* WhirlyGlobeMaplyComponent.framework */ = {
@@ -665,13 +708,13 @@
 					"\"${PODS_ROOT}/Headers/Public/geopackage-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include\"",
 					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobeLib/include\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/private\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/private\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
@@ -696,13 +739,13 @@
 					"\"${PODS_ROOT}/Headers/Public/geopackage-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include\"",
 					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobeLib/include\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/WhirlyGlobeSrc/WhirlyGlobe-MaplyComponent/include/private\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/private\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
