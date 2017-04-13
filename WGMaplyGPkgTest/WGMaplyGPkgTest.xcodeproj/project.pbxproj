@@ -13,9 +13,9 @@
 		E536D0B01D87DA3C0062145D /* GPKGRTreeIndexResults.m in Sources */ = {isa = PBXBuildFile; fileRef = E536D0AF1D87DA3C0062145D /* GPKGRTreeIndexResults.m */; };
 		E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */; };
 		E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */; };
-		E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
-		E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
-		E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E568627A1D4F097800761466 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
+		E568627B1D4F127A00761466 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
+		E568627C1D4F127A00761466 /* ReferenceProxy in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E56E10F81D51CA51004B47F7 /* ic_linestring.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F31D51CA51004B47F7 /* ic_linestring.png */; };
 		E56E10F91D51CA51004B47F7 /* ic_point.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F41D51CA51004B47F7 /* ic_point.png */; };
 		E56E10FA1D51CA51004B47F7 /* ic_polygon.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F51D51CA51004B47F7 /* ic_polygon.png */; };
@@ -24,7 +24,7 @@
 		E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */; };
 		E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */; };
 		E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E11061D53DB95004B47F7 /* ic_geometry.png */; };
-		E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
+		E56E4A7D1E831FCC008F0194 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
 		E59F825D1D860AFB00B02342 /* GPKGRTreeIndexDao.m in Sources */ = {isa = PBXBuildFile; fileRef = E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */; };
 		E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577D1DBDBA3400680149 /* mainNAVL.sld */; };
 		E5A357851DBEA18D00680149 /* DME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577F1DBEA18D00680149 /* DME.png */; };
@@ -120,7 +120,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */,
+				E568627C1D4F127A00761466 /* ReferenceProxy in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -196,10 +196,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
-				E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */,
+				E56E4A7D1E831FCC008F0194 /* ReferenceProxy in Frameworks */,
+				E568627A1D4F097800761466 /* ReferenceProxy in Frameworks */,
 				E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */,
-				E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */,
+				E568627B1D4F127A00761466 /* ReferenceProxy in Frameworks */,
 				E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */,
 				E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */,
 				E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */,
@@ -539,7 +539,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		9AA11281737963984E258681 /* [CP] Embed Pods Frameworks */ = {
