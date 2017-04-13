@@ -9,13 +9,11 @@
 /* Begin PBXBuildFile section */
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
 		E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = E5190A5E1D49B5A7003130E2 /* map_pin.png */; };
-		E536D0A91D8769370062145D /* GPKGRTreeIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = E536D0A81D8769370062145D /* GPKGRTreeIndex.m */; };
-		E536D0B01D87DA3C0062145D /* GPKGRTreeIndexResults.m in Sources */ = {isa = PBXBuildFile; fileRef = E536D0AF1D87DA3C0062145D /* GPKGRTreeIndexResults.m */; };
 		E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */; };
 		E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */; };
-		E568627A1D4F097800761466 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
-		E568627B1D4F127A00761466 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
-		E568627C1D4F127A00761466 /* ReferenceProxy in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
+		E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
+		E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E56E10F81D51CA51004B47F7 /* ic_linestring.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F31D51CA51004B47F7 /* ic_linestring.png */; };
 		E56E10F91D51CA51004B47F7 /* ic_point.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F41D51CA51004B47F7 /* ic_point.png */; };
 		E56E10FA1D51CA51004B47F7 /* ic_polygon.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F51D51CA51004B47F7 /* ic_polygon.png */; };
@@ -24,8 +22,13 @@
 		E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */; };
 		E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */; };
 		E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E11061D53DB95004B47F7 /* ic_geometry.png */; };
-		E56E4A7D1E831FCC008F0194 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
-		E59F825D1D860AFB00B02342 /* GPKGRTreeIndexDao.m in Sources */ = {isa = PBXBuildFile; fileRef = E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */; };
+		E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
+		E5823DBC1EA01D6B00889932 /* GPKGFeatureAttributeAccess.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB11EA01D6B00889932 /* GPKGFeatureAttributeAccess.mm */; };
+		E5823DBD1EA01D6B00889932 /* GPKGFeatureTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB31EA01D6B00889932 /* GPKGFeatureTileSource.m */; };
+		E5823DBE1EA01D6B00889932 /* GPKGRTreeIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB51EA01D6B00889932 /* GPKGRTreeIndex.m */; };
+		E5823DBF1EA01D6B00889932 /* GPKGRTreeIndexDao.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB71EA01D6B00889932 /* GPKGRTreeIndexDao.m */; };
+		E5823DC01EA01D6B00889932 /* GPKGRTreeIndexResults.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB91EA01D6B00889932 /* GPKGRTreeIndexResults.m */; };
+		E5823DC11EA01D6B00889932 /* GPKGTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DBB1EA01D6B00889932 /* GPKGTileSource.m */; };
 		E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577D1DBDBA3400680149 /* mainNAVL.sld */; };
 		E5A357851DBEA18D00680149 /* DME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577F1DBEA18D00680149 /* DME.png */; };
 		E5A357861DBEA18D00680149 /* NDB.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357801DBEA18D00680149 /* NDB.png */; };
@@ -33,18 +36,15 @@
 		E5A357881DBEA18D00680149 /* TACAN.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357821DBEA18D00680149 /* TACAN.png */; };
 		E5A357891DBEA18D00680149 /* VORDME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357831DBEA18D00680149 /* VORDME.png */; };
 		E5A3578A1DBEA18D00680149 /* VORTAC.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357841DBEA18D00680149 /* VORTAC.png */; };
-		E5A3578C1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */; };
 		E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */; };
 		E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */; };
 		E5BD7D7B1D380DD500519CB9 /* rivers.gpkg in Resources */ = {isa = PBXBuildFile; fileRef = E5BD7D781D380DD500519CB9 /* rivers.gpkg */; };
-		E5C11A621DBA4B62009FB1DA /* GPKGFeatureTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5C11A611DBA4B62009FB1DA /* GPKGFeatureTileSource.m */; };
 		E5D84F5E1D37F58300D5AF18 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F5D1D37F58300D5AF18 /* main.m */; };
 		E5D84F611D37F58300D5AF18 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F601D37F58300D5AF18 /* AppDelegate.m */; };
 		E5D84F641D37F58300D5AF18 /* TilePyramidViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F631D37F58300D5AF18 /* TilePyramidViewController.m */; };
 		E5D84F671D37F58300D5AF18 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F651D37F58300D5AF18 /* Main.storyboard */; };
 		E5D84F691D37F58300D5AF18 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F681D37F58300D5AF18 /* Assets.xcassets */; };
 		E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E5D84F6A1D37F58300D5AF18 /* LaunchScreen.storyboard */; };
-		E5D84F791D37FF4100D5AF18 /* GPKGTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */; };
 		E5D84F861D38015700D5AF18 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F851D38015700D5AF18 /* CoreLocation.framework */; };
 		E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F871D38015E00D5AF18 /* libc++.tbd */; };
 		E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F891D38016400D5AF18 /* libz.tbd */; };
@@ -120,7 +120,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E568627C1D4F127A00761466 /* ReferenceProxy in Embed Frameworks */,
+				E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,10 +131,6 @@
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5190A5E1D49B5A7003130E2 /* map_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_pin.png; sourceTree = "<group>"; };
-		E536D0A71D8769370062145D /* GPKGRTreeIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGRTreeIndex.h; sourceTree = "<group>"; };
-		E536D0A81D8769370062145D /* GPKGRTreeIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGRTreeIndex.m; sourceTree = "<group>"; };
-		E536D0AE1D87DA3C0062145D /* GPKGRTreeIndexResults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGRTreeIndexResults.h; sourceTree = "<group>"; };
-		E536D0AF1D87DA3C0062145D /* GPKGRTreeIndexResults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGRTreeIndexResults.m; sourceTree = "<group>"; };
 		E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerMenuViewController.h; sourceTree = "<group>"; };
 		E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerMenuViewController.m; sourceTree = "<group>"; };
 		E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerMenuViewController.xib; sourceTree = "<group>"; };
@@ -149,8 +145,18 @@
 		E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerTableViewCell.xib; sourceTree = "<group>"; };
 		E56E11061D53DB95004B47F7 /* ic_geometry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_geometry.png; path = icons/ic_geometry.png; sourceTree = "<group>"; };
 		E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
-		E59F825B1D860AFB00B02342 /* GPKGRTreeIndexDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGRTreeIndexDao.h; sourceTree = "<group>"; };
-		E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGRTreeIndexDao.m; sourceTree = "<group>"; };
+		E5823DB01EA01D6B00889932 /* GPKGFeatureAttributeAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGFeatureAttributeAccess.h; path = ../WGMaplyGeoPackage/GPKGFeatureAttributeAccess.h; sourceTree = "<group>"; };
+		E5823DB11EA01D6B00889932 /* GPKGFeatureAttributeAccess.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GPKGFeatureAttributeAccess.mm; path = ../WGMaplyGeoPackage/GPKGFeatureAttributeAccess.mm; sourceTree = "<group>"; };
+		E5823DB21EA01D6B00889932 /* GPKGFeatureTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGFeatureTileSource.h; path = ../WGMaplyGeoPackage/GPKGFeatureTileSource.h; sourceTree = "<group>"; };
+		E5823DB31EA01D6B00889932 /* GPKGFeatureTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGFeatureTileSource.m; path = ../WGMaplyGeoPackage/GPKGFeatureTileSource.m; sourceTree = "<group>"; };
+		E5823DB41EA01D6B00889932 /* GPKGRTreeIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGRTreeIndex.h; path = ../WGMaplyGeoPackage/GPKGRTreeIndex.h; sourceTree = "<group>"; };
+		E5823DB51EA01D6B00889932 /* GPKGRTreeIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGRTreeIndex.m; path = ../WGMaplyGeoPackage/GPKGRTreeIndex.m; sourceTree = "<group>"; };
+		E5823DB61EA01D6B00889932 /* GPKGRTreeIndexDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGRTreeIndexDao.h; path = ../WGMaplyGeoPackage/GPKGRTreeIndexDao.h; sourceTree = "<group>"; };
+		E5823DB71EA01D6B00889932 /* GPKGRTreeIndexDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGRTreeIndexDao.m; path = ../WGMaplyGeoPackage/GPKGRTreeIndexDao.m; sourceTree = "<group>"; };
+		E5823DB81EA01D6B00889932 /* GPKGRTreeIndexResults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGRTreeIndexResults.h; path = ../WGMaplyGeoPackage/GPKGRTreeIndexResults.h; sourceTree = "<group>"; };
+		E5823DB91EA01D6B00889932 /* GPKGRTreeIndexResults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGRTreeIndexResults.m; path = ../WGMaplyGeoPackage/GPKGRTreeIndexResults.m; sourceTree = "<group>"; };
+		E5823DBA1EA01D6B00889932 /* GPKGTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGTileSource.h; path = ../WGMaplyGeoPackage/GPKGTileSource.h; sourceTree = "<group>"; };
+		E5823DBB1EA01D6B00889932 /* GPKGTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGTileSource.m; path = ../WGMaplyGeoPackage/GPKGTileSource.m; sourceTree = "<group>"; };
 		E5A3577D1DBDBA3400680149 /* mainNAVL.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainNAVL.sld; sourceTree = "<group>"; };
 		E5A3577F1DBEA18D00680149 /* DME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DME.png; sourceTree = "<group>"; };
 		E5A357801DBEA18D00680149 /* NDB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDB.png; sourceTree = "<group>"; };
@@ -158,15 +164,12 @@
 		E5A357821DBEA18D00680149 /* TACAN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TACAN.png; sourceTree = "<group>"; };
 		E5A357831DBEA18D00680149 /* VORDME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VORDME.png; sourceTree = "<group>"; };
 		E5A357841DBEA18D00680149 /* VORTAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VORTAC.png; sourceTree = "<group>"; };
-		E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GPKGFeatureAttributeAccess.mm; sourceTree = "<group>"; };
-		E5A3578D1DC0589700680149 /* GPKGFeatureAttributeAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPKGFeatureAttributeAccess.h; sourceTree = "<group>"; };
 		E5A6D1CB90C7D5ACE416306A /* Pods-WGMaplyGPkgTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.release.xcconfig"; sourceTree = "<group>"; };
 		E5B566B21D3FD29400DB0FD1 /* StartupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartupViewController.h; sourceTree = "<group>"; };
 		E5B566B31D3FD29400DB0FD1 /* StartupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartupViewController.m; sourceTree = "<group>"; };
 		E5B566B51D3FE33C00DB0FD1 /* ListTileTablesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListTileTablesViewController.h; sourceTree = "<group>"; };
 		E5B566B61D3FE33C00DB0FD1 /* ListTileTablesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListTileTablesViewController.m; sourceTree = "<group>"; };
 		E5BD7D781D380DD500519CB9 /* rivers.gpkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = rivers.gpkg; path = ../../sampleData/rivers.gpkg; sourceTree = "<group>"; };
-		E5C11A611DBA4B62009FB1DA /* GPKGFeatureTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGFeatureTileSource.m; sourceTree = "<group>"; };
 		E5D84F591D37F58300D5AF18 /* WGMaplyGPkgTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WGMaplyGPkgTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5D84F5D1D37F58300D5AF18 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E5D84F5F1D37F58300D5AF18 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -177,10 +180,7 @@
 		E5D84F681D37F58300D5AF18 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E5D84F6B1D37F58300D5AF18 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E5D84F6D1D37F58300D5AF18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E5D84F731D37FF4100D5AF18 /* GPKGFeatureTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGFeatureTileSource.h; sourceTree = "<group>"; };
 		E5D84F751D37FF4100D5AF18 /* GPkgTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPkgTestConfig.h; sourceTree = "<group>"; };
-		E5D84F761D37FF4100D5AF18 /* GPKGTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPKGTileSource.h; sourceTree = "<group>"; };
-		E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPKGTileSource.m; sourceTree = "<group>"; };
 		E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
 		E5D84F851D38015700D5AF18 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E5D84F871D38015E00D5AF18 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -196,10 +196,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E56E4A7D1E831FCC008F0194 /* ReferenceProxy in Frameworks */,
-				E568627A1D4F097800761466 /* ReferenceProxy in Frameworks */,
+				E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
+				E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */,
-				E568627B1D4F127A00761466 /* ReferenceProxy in Frameworks */,
+				E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */,
 				E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */,
 				E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */,
@@ -246,9 +246,29 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E5823DA91EA01D2500889932 /* WGMaplyGeoPackage */ = {
+			isa = PBXGroup;
+			children = (
+				E5823DB01EA01D6B00889932 /* GPKGFeatureAttributeAccess.h */,
+				E5823DB11EA01D6B00889932 /* GPKGFeatureAttributeAccess.mm */,
+				E5823DB21EA01D6B00889932 /* GPKGFeatureTileSource.h */,
+				E5823DB31EA01D6B00889932 /* GPKGFeatureTileSource.m */,
+				E5823DB41EA01D6B00889932 /* GPKGRTreeIndex.h */,
+				E5823DB51EA01D6B00889932 /* GPKGRTreeIndex.m */,
+				E5823DB61EA01D6B00889932 /* GPKGRTreeIndexDao.h */,
+				E5823DB71EA01D6B00889932 /* GPKGRTreeIndexDao.m */,
+				E5823DB81EA01D6B00889932 /* GPKGRTreeIndexResults.h */,
+				E5823DB91EA01D6B00889932 /* GPKGRTreeIndexResults.m */,
+				E5823DBA1EA01D6B00889932 /* GPKGTileSource.h */,
+				E5823DBB1EA01D6B00889932 /* GPKGTileSource.m */,
+			);
+			name = WGMaplyGeoPackage;
+			sourceTree = "<group>";
+		};
 		E5D84F501D37F58300D5AF18 = {
 			isa = PBXGroup;
 			children = (
+				E5823DA91EA01D2500889932 /* WGMaplyGeoPackage */,
 				E5D84F5B1D37F58300D5AF18 /* WGMaplyGPkgTest */,
 				E5D84F5A1D37F58300D5AF18 /* Products */,
 				E7502AA4295695A349D4F389 /* Pods */,
@@ -267,13 +287,7 @@
 		E5D84F5B1D37F58300D5AF18 /* WGMaplyGPkgTest */ = {
 			isa = PBXGroup;
 			children = (
-				E5D84F731D37FF4100D5AF18 /* GPKGFeatureTileSource.h */,
-				E5C11A611DBA4B62009FB1DA /* GPKGFeatureTileSource.m */,
-				E5A3578B1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm */,
-				E5A3578D1DC0589700680149 /* GPKGFeatureAttributeAccess.h */,
 				E5D84F751D37FF4100D5AF18 /* GPkgTestConfig.h */,
-				E5D84F761D37FF4100D5AF18 /* GPKGTileSource.h */,
-				E5D84F771D37FF4100D5AF18 /* GPKGTileSource.m */,
 				E5D84F5F1D37F58300D5AF18 /* AppDelegate.h */,
 				E5D84F601D37F58300D5AF18 /* AppDelegate.m */,
 				E5D84F621D37F58300D5AF18 /* TilePyramidViewController.h */,
@@ -293,12 +307,6 @@
 				E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */,
 				E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */,
 				E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */,
-				E59F825B1D860AFB00B02342 /* GPKGRTreeIndexDao.h */,
-				E59F825C1D860AFB00B02342 /* GPKGRTreeIndexDao.m */,
-				E536D0A71D8769370062145D /* GPKGRTreeIndex.h */,
-				E536D0A81D8769370062145D /* GPKGRTreeIndex.m */,
-				E536D0AE1D87DA3C0062145D /* GPKGRTreeIndexResults.h */,
-				E536D0AF1D87DA3C0062145D /* GPKGRTreeIndexResults.m */,
 			);
 			path = WGMaplyGPkgTest;
 			sourceTree = "<group>";
@@ -564,18 +572,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5823DBC1EA01D6B00889932 /* GPKGFeatureAttributeAccess.mm in Sources */,
 				E5D84F641D37F58300D5AF18 /* TilePyramidViewController.m in Sources */,
-				E5D84F791D37FF4100D5AF18 /* GPKGTileSource.m in Sources */,
-				E5A3578C1DC0533A00680149 /* GPKGFeatureAttributeAccess.mm in Sources */,
 				E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */,
 				E5D84F611D37F58300D5AF18 /* AppDelegate.m in Sources */,
-				E5C11A621DBA4B62009FB1DA /* GPKGFeatureTileSource.m in Sources */,
-				E59F825D1D860AFB00B02342 /* GPKGRTreeIndexDao.m in Sources */,
+				E5823DBD1EA01D6B00889932 /* GPKGFeatureTileSource.m in Sources */,
+				E5823DBF1EA01D6B00889932 /* GPKGRTreeIndexDao.m in Sources */,
 				E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */,
-				E536D0B01D87DA3C0062145D /* GPKGRTreeIndexResults.m in Sources */,
+				E5823DC01EA01D6B00889932 /* GPKGRTreeIndexResults.m in Sources */,
+				E5823DBE1EA01D6B00889932 /* GPKGRTreeIndex.m in Sources */,
+				E5823DC11EA01D6B00889932 /* GPKGTileSource.m in Sources */,
 				E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */,
 				E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */,
-				E536D0A91D8769370062145D /* GPKGRTreeIndex.m in Sources */,
 				E5D84F5E1D37F58300D5AF18 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -716,6 +724,7 @@
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/private\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
+					"\"$(SRCROOT)/../WGMaplyGeoPackage\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -747,6 +756,7 @@
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/private\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
+					"\"$(SRCROOT)/../WGMaplyGeoPackage\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
