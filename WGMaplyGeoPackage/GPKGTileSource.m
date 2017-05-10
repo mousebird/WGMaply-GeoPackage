@@ -7,7 +7,6 @@
 //
 
 #import "GPKGTileSource.h"
-#import "GPkgTestConfig.h"
 #import "GPKGGeoPackageFactory.h"
 #import "GPKGStandardFormatTileRetriever.h"
 #import "MaplyCoordinateSystem.h"
