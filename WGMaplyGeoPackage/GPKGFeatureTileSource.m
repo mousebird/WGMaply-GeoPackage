@@ -20,7 +20,6 @@
 #import "GPKGRTreeIndexResults.h"
 #import "MapboxVectorTiles.h"
 #import "SLDStyleSet.h"
-#import "GPKGFeatureAttributeAccess.h"
 
 @implementation GPKGFeatureTileStyler {
     GPKGRTreeIndex *_rtreeIndex;

@@ -716,7 +716,6 @@
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/private\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
 					"\"$(SRCROOT)/../WGMaplyGeoPackage\"",
 				);
@@ -748,7 +747,6 @@
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/private\"",
 					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
 					"\"$(SRCROOT)/../WGMaplyGeoPackage\"",
 				);
