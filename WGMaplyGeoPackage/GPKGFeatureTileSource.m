@@ -200,7 +200,7 @@
                             }
                             [featuresForStyle addObject:vecObj];
                         }
-                        [GPKGFeatureAttributeAccess setAttributes:attributes forVectorObject:vecObj];
+                        [vecObj.attributes addEntriesFromDictionary:attributes];
                     }
 
                 }
