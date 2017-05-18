@@ -1,0 +1,10 @@
+*.iml
+*.class
+.gradle
+local.properties
+.idea/workspace.xml
+.idea/libraries
+app/libs/WhirlyGlobeMaply.aar
+.DS_Store
+build
+
