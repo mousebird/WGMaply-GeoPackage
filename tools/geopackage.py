@@ -2,7 +2,7 @@
 #
 #
 #  geopackage.py
-#  MBTiles to GeoPackage conversor
+#  MBTiles to GeoPackage converter
 #
 #  Created by jmnavarro
 #  Copyright © 2017 mousebird consulting. All rights reserved.
@@ -15,8 +15,9 @@ import os
 from pathlib import Path
 
 
-def main(source_file, target_file):
+def main(source_file, target_file, is_vector):
     logging.info("Converting '%s' in '%s'..." % (source_file, target_file))
+    logging.info("Vector mode is %s" % is_vector)
 
     #
     # source
@@ -66,7 +67,7 @@ def main(source_file, target_file):
     fill_spatial_ref_sys(target_conn)
 
     logging.debug("Filling gpkg_contents...")
-    fill_contents(target_conn, spherical_mercator_bounds)
+    fill_contents(target_conn, spherical_mercator_bounds, is_vector)
 
     logging.debug("Filling gpkg_tile_matrix_set...")
     fill_tile_matrix_set(target_conn, spherical_mercator_bounds)
@@ -83,17 +84,19 @@ def main(source_file, target_file):
     logging.info("Done!")
 
 
-def lonlat_to_mercator(lon, lat):
-    rMajor = 6378137
-    shift = math.pi * rMajor
-    x = float(lon) * shift / 180
-    x = float(lon) * 20037508.34 / 180
-    y = math.log(math.tan((90 + float(lat)) * math.pi / 360)) / (math.pi / 180)
-    y = y * shift / 180
-    return [x, y]
 
 
 def get_spherical_mercator(source):
+
+    def lonlat_to_mercator(lon, lat):
+        rMajor = 6378137
+        shift = math.pi * rMajor
+        x = float(lon) * shift / 180
+        x = float(lon) * 20037508.34 / 180
+        y = math.log(math.tan((90 + float(lat)) * math.pi / 360)) / (math.pi / 180)
+        y = y * shift / 180
+        return [x, y]
+
     logging.debug("Getting source min_x, min_y, max_x, max_y ...")
     mb_metadata = dict(source.execute('select name, value from metadata').fetchall())
     bounds = mb_metadata['bounds'].split(",")
@@ -133,7 +136,7 @@ def fill_spatial_ref_sys(conn):
     conn.commit()
 
 
-def fill_contents(conn, spherical_mercator_bounds):
+def fill_contents(conn, spherical_mercator_bounds, is_vector):
     cursor = conn.execute("SELECT count(*) FROM gpkg_contents WHERE identifier='%s'" % 'tiles')
     result = cursor.fetchone()
     if len(result or ()) > 0 and result[0] > 0:
@@ -145,7 +148,8 @@ def fill_contents(conn, spherical_mercator_bounds):
         logging.debug("Updated record to 'gpkg_contents'")
     else:
         values = [
-            ('tiles', 'tiles', 'tiles', 3857, spherical_mercator_bounds[0], spherical_mercator_bounds[1],
+            ('tiles', 'tiles' if not is_vector else 'mbvectiles', 'tiles', 3857,
+             spherical_mercator_bounds[0], spherical_mercator_bounds[1],
              spherical_mercator_bounds[2], spherical_mercator_bounds[3]),
         ]
         conn.executemany(
@@ -334,6 +338,10 @@ def parse_arguments():
         fromfile_prefix_chars='@')
 
     parser.add_argument(
+        "--vector",
+        help="use vector mode",
+        action="store_true")
+    parser.add_argument(
         "mbtiles",
         help="MBTiles source file.",
         metavar="mbtiles")
@@ -363,4 +371,4 @@ if __name__ == '__main__':
 
     prepare_logger(args)
 
-    main(args.mbtiles, args.geopackage)
+    main(args.mbtiles, args.geopackage, args.vector)
