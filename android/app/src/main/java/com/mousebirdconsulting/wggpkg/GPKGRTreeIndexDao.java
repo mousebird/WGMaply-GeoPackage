@@ -5,7 +5,9 @@ import mil.nga.geopackage.BoundingBox;
 import mil.nga.geopackage.GeoPackageException;
 import mil.nga.geopackage.core.contents.Contents;
 import mil.nga.geopackage.db.GeoPackageConnection;
+import mil.nga.geopackage.extension.index.GeometryIndex;
 import mil.nga.geopackage.user.UserDao;
+import mil.nga.wkb.geom.GeometryEnvelope;
 
 
 /**
@@ -48,6 +50,16 @@ public class GPKGRTreeIndexDao extends UserDao<GPKGRTreeIndexColumn, GPKGRTreeIn
     @Override
     public GPKGRTreeIndexRow newRow() {
         return new GPKGRTreeIndexRow(getTable());
+    }
+
+    GeometryIndex populate(long geomId, GeometryEnvelope envelope) {
+        GeometryIndex geometryIndex = new GeometryIndex();
+        geometryIndex.setGeomId(geomId);
+        geometryIndex.setMinX(envelope.getMinX());
+        geometryIndex.setMaxX(envelope.getMaxX());
+        geometryIndex.setMinY(envelope.getMinY());
+        geometryIndex.setMaxY(envelope.getMaxY());
+        return geometryIndex;
     }
 
 }

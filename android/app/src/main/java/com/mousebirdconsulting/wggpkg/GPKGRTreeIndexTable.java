@@ -13,6 +13,23 @@ import mil.nga.geopackage.user.UserTable;
 
 public class GPKGRTreeIndexTable extends UserTable<GPKGRTreeIndexColumn> {
 
+    public static final String COLUMN_ID = "id";
+
+    public static final String COLUMN_MINX = "minx";
+
+    public static final String COLUMN_MAXX = "maxx";
+
+    public static final String COLUMN_MINY = "miny";
+
+    public static final String COLUMN_MAXY = "maxy";
+
+    private final int minXColumnIndex;
+
+    private final int maxXColumnIndex;
+
+    private final int minYColumnIndex;
+
+    private final int maxYColumnIndex;
 
 //    /**
 //     * Foreign key to Contents
@@ -30,7 +47,75 @@ public class GPKGRTreeIndexTable extends UserTable<GPKGRTreeIndexColumn> {
      */
     public GPKGRTreeIndexTable(String tableName, List<GPKGRTreeIndexColumn> columns) {
         super(tableName, columns);
+
+        Integer minXColumn = null;
+        Integer maxXColumn = null;
+        Integer minYColumn = null;
+        Integer maxYColumn = null;
+
+        for (GPKGRTreeIndexColumn column : columns) {
+
+            String columnName = column.getName();
+            int columnIndex = column.getIndex();
+
+            if (columnName.equals(COLUMN_MINX))
+                minXColumn = columnIndex;
+            else if (columnName.equals(COLUMN_MAXX))
+                maxXColumn = columnIndex;
+            else if (columnName.equals(COLUMN_MINY))
+                minYColumn = columnIndex;
+            else if (columnName.equals(COLUMN_MAXY))
+                maxYColumn = columnIndex;
+
+        }
+
+        missingCheck(minXColumn, COLUMN_MINX);
+        minXColumnIndex = minXColumn;
+
+        missingCheck(maxXColumn, COLUMN_MAXX);
+        maxXColumnIndex = maxXColumn;
+
+        missingCheck(minYColumn, COLUMN_MINY);
+        minYColumnIndex = minYColumn;
+
+        missingCheck(maxYColumn, COLUMN_MAXY);
+        maxYColumnIndex = maxYColumn;
+
     }
+
+    public int getMinXColumnIndex() {
+        return minXColumnIndex;
+    }
+
+    public GPKGRTreeIndexColumn getMinXColumn() {
+        return getColumn(minXColumnIndex);
+    }
+
+    public int getMaxXColumnIndex() {
+        return maxXColumnIndex;
+    }
+
+    public GPKGRTreeIndexColumn getMaxXColumn() {
+        return getColumn(maxXColumnIndex);
+    }
+
+    public int getMinYColumnIndex() {
+        return minYColumnIndex;
+    }
+
+    public GPKGRTreeIndexColumn getMinYColumn() {
+        return getColumn(minYColumnIndex);
+    }
+
+    public int getMaxYColumnIndex() {
+        return maxYColumnIndex;
+    }
+
+    public GPKGRTreeIndexColumn getMaxYColumn() {
+        return getColumn(maxYColumnIndex);
+    }
+
+
 //
 //    /**
 //     * Get the contents
