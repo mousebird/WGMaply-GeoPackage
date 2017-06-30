@@ -9,6 +9,8 @@ import android.os.Bundle;
 
 import android.util.Log;
 
+import com.mousebird.maply.MaplyBaseController;
+
 public class MainActivity extends AppCompatActivity implements GPkgTreeFragment.GPkgTreeFragmentInteractionListener {
 
     private EarthFragment earthFragment;
@@ -69,5 +71,10 @@ public class MainActivity extends AppCompatActivity implements GPkgTreeFragment.
 //        selectFragment(earthFragment);
 //        gpkgButton.setEnabled(true);
     }
+
+    public void changeFeatureLayer(String gpkg, String featureTable, boolean enabled) {
+        earthFragment.changeFeatureLayer(gpkg, featureTable, enabled);
+    }
+
 
 }

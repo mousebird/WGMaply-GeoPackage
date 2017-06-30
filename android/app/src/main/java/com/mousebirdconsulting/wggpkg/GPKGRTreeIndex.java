@@ -1,6 +1,8 @@
 package com.mousebirdconsulting.wggpkg;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import java.sql.ResultSet;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mil.nga.geopackage.BoundingBox;
+import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageCore;
 import mil.nga.geopackage.core.srs.SpatialReferenceSystem;
 import mil.nga.geopackage.core.srs.SpatialReferenceSystemDao;
@@ -16,6 +19,7 @@ import mil.nga.geopackage.db.GeoPackageConnection;
 import mil.nga.geopackage.db.GeoPackageDataType;
 import mil.nga.geopackage.extension.BaseExtension;
 import mil.nga.geopackage.extension.index.GeometryIndex;
+import mil.nga.geopackage.factory.GeoPackageCursorWrapper;
 import mil.nga.geopackage.features.user.FeatureCursor;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureRow;
@@ -47,7 +51,7 @@ public class GPKGRTreeIndex extends BaseExtension {
     protected GeoPackageProgress progress;
 
 
-    public GPKGRTreeIndex(String database, GeoPackageConnection db, GeoPackageCore geoPackage, FeatureDao featureDao) {
+    public GPKGRTreeIndex(String database, GeoPackageConnection db, GeoPackage geoPackage, FeatureDao featureDao) {
         super(geoPackage);
 
         this.featureDao = featureDao;
@@ -60,13 +64,22 @@ public class GPKGRTreeIndex extends BaseExtension {
                 new GPKGRTreeIndexColumn(3, "miny", GeoPackageDataType.FLOAT, null, true, 0, false),
                 new GPKGRTreeIndexColumn(4, "maxy", GeoPackageDataType.FLOAT, null, true, 0, false));
 
-        GPKGRTreeIndexTable table = new GPKGRTreeIndexTable(tableName, columns);
+        final GPKGRTreeIndexTable table = new GPKGRTreeIndexTable(tableName, columns);
 
 
 
         GPKGRTreeIndexConnection rtreeIndexDb = new GPKGRTreeIndexConnection(db);
 
         rTreeIndexDao = new GPKGRTreeIndexDao(database, db, rtreeIndexDb, table);
+
+
+        geoPackage.registerTable(tableName,
+                new GeoPackageCursorWrapper() {
+                    @Override
+                    public Cursor wrapCursor(Cursor cursor) {
+                        return new GPKGRTreeIndexCursor(table, cursor);
+                    }
+                });
 
 
 
@@ -84,18 +97,27 @@ public class GPKGRTreeIndex extends BaseExtension {
 
     public void indexTable() {
         try {
-            if (rTreeIndexDao.count() != featureDao.count()) {
+
+            boolean rtreeIndexCreated = true;
+            try {
+                rTreeIndexDao.count();
+            } catch (SQLiteException exception) {
+                rtreeIndexCreated = false;
+            }
+            //if (rTreeIndexDao.count() != featureDao.count()) {
+            if (!rtreeIndexCreated) {
 
                 SpatialReferenceSystemDao srsDao = geoPackage.getSpatialReferenceSystemDao();
-                Projection projFrom = ProjectionFactory.getProjection(featureDao.getProjection().getEpsg());
+                //Projection projFrom = ProjectionFactory.getProjection(featureDao.getProjection().getEpsg());
+                Projection projFrom = featureDao.getProjection();
                 Projection projTo = ProjectionFactory.getProjection(4326);
                 ProjectionTransform projTransform = projFrom.getTransformation(projTo);
                 GeometryProjectionTransform transform = new GeometryProjectionTransform(projTransform);
 
 
                 // TODO: how to detect if rtree vtable exists but isn't fully populated?
-                if (rTreeIndexDao.count() == 0)
-                    rTreeIndexDao.getDatabaseConnection().execSQL("CREATE VIRTUAL TABLE " + tableName + " USING rtree(id, minx, maxx, miny, maxy);");
+                //if (rTreeIndexDao.count() == 0)
+                rTreeIndexDao.getDatabaseConnection().execSQL("CREATE VIRTUAL TABLE " + tableName + " USING rtree(id, minx, maxx, miny, maxy);");
 
                 FeatureCursor cursor = featureDao.query(null, null, null, null, "id");
                 int featureRowIdx = 0;
@@ -174,6 +196,10 @@ public class GPKGRTreeIndex extends BaseExtension {
     public FeatureRow getFeatureRow(GPKGRTreeIndexRow rTreeIndexRow) {
         GeometryIndex geometryIndex = rTreeIndexRow.getGeometryIndex();
         return featureDao.queryForIdRow(geometryIndex.getGeomId());
+    }
+
+    public BoundingBox getMinimalBoundingBox() {
+        return rTreeIndexDao.getMinimalBoundingBox();
     }
 
 }

@@ -8,6 +8,7 @@ package com.mousebirdconsulting.wggpkg;
 public class LayerMenuViewFeatureTableItem extends LayerMenuViewItem {
 
     private String featureTableName;
+
     public boolean enabled;
 
     public LayerMenuViewFeatureTableItem(String featureTableName) {
@@ -15,6 +16,10 @@ public class LayerMenuViewFeatureTableItem extends LayerMenuViewItem {
     }
 
     public String displayText() {
+        return featureTableName;
+    }
+
+    public String getFeatureTableName() {
         return featureTableName;
     }
 

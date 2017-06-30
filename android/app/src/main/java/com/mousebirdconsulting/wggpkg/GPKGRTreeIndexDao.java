@@ -1,6 +1,8 @@
 package com.mousebirdconsulting.wggpkg;
 
 
+import android.database.Cursor;
+
 import mil.nga.geopackage.BoundingBox;
 import mil.nga.geopackage.GeoPackageException;
 import mil.nga.geopackage.core.contents.Contents;
@@ -60,6 +62,29 @@ public class GPKGRTreeIndexDao extends UserDao<GPKGRTreeIndexColumn, GPKGRTreeIn
         geometryIndex.setMinY(envelope.getMinY());
         geometryIndex.setMaxY(envelope.getMaxY());
         return geometryIndex;
+    }
+
+    public BoundingBox getMinimalBoundingBox() {
+        String queryString = "SELECT MIN(minx) AS minx, MAX(maxx) AS maxx, MIN(miny) AS miny, MAX(maxy) AS maxy FROM " + getTableName();
+        Cursor cursor = getDatabaseConnection().rawQuery(queryString, null);
+
+        Double minx = null;
+        Double maxx = null;
+        Double miny = null;
+        Double maxy = null;
+
+        if (cursor.moveToNext()) {
+            minx = cursor.getDouble(0);
+            maxx = cursor.getDouble(1);
+            miny = cursor.getDouble(2);
+            maxy = cursor.getDouble(3);
+        }
+        cursor.close();
+
+        if (minx==null || maxx==null || miny==null || maxy==null)
+            return null;
+
+        return new BoundingBox(minx, maxx, miny, maxy);
     }
 
 }

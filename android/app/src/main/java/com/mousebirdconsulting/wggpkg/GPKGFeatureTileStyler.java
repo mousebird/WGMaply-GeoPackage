@@ -13,6 +13,7 @@ import com.mousebird.maply.VectorStyle;
 import com.mousebird.maply.VectorStyleInterface;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class GPKGFeatureTileStyler {
     GPKGRTreeIndex rTreeIndex;
     GeometryProjectionTransform geomProjTransform;
 
-    GPKGFeatureTileStyler(VectorStyleInterface styleInterface, MaplyBaseController viewC, int targetLevel, int maxZoom, GPKGRTreeIndex rTreeIndex, GeometryProjectionTransform geomProjTransform) {
+    public GPKGFeatureTileStyler(VectorStyleInterface styleInterface, MaplyBaseController viewC, int targetLevel, int maxZoom, GPKGRTreeIndex rTreeIndex, GeometryProjectionTransform geomProjTransform) {
 
         this.styleInterface = styleInterface;
         this.viewC = viewC;
@@ -190,7 +191,7 @@ public class GPKGFeatureTileStyler {
                                 }
                                 featuresForStyle.add(vectorObject);
                             }
-                            //vectorObject.getAttributes().
+                            vectorObject.getAttributes().addEntries(attributes);
                         }
 
                     }
@@ -198,10 +199,24 @@ public class GPKGFeatureTileStyler {
 
 
             }
+            rTreeIndexCursor.close();
         }
 
+        if (totalBytes > GPKG_FEATURE_TILE_SOURCE_MAX_BYTES && targetLevel < maxZoom) {
+            targetLevel += 1;
+            return 0;
+        }
 
-        return 0;
+        ArrayList<String> symbolizerKeys = new ArrayList<>(featureStyles.keySet());
+        java.util.Collections.sort(symbolizerKeys);
+
+        for (String key : symbolizerKeys) {
+            VectorStyle vectorStyle = styleInterface.styleForUUID(key, viewC);
+            ArrayList<VectorObject> features = featureStyles.get(key);
+            compObjs.addAll(Arrays.asList(vectorStyle.buildObjects(features, tileID, viewC)));
+        }
+
+        return n;
     }
 
     boolean processLineString(LineString lineString, MaplyTileID tileID, Mbr geoBbox, Mbr geoBboxDeg, ArrayList<VectorObject> linestringObjs) {
