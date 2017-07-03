@@ -116,8 +116,8 @@ public class GPKGFeatureTileSource implements PagingInterface {
 
             BoundingBox bbox = new BoundingBox(
                     srsBounds.get(0).doubleValue(),
-                    srsBounds.get(1).doubleValue(),
                     srsBounds.get(2).doubleValue(),
+                    srsBounds.get(1).doubleValue(),
                     srsBounds.get(3).doubleValue());
 
             boolean isDegree = (srsBounds.get(6).intValue() == 1);
@@ -129,10 +129,10 @@ public class GPKGFeatureTileSource implements PagingInterface {
 
             if (isDegree) {
                 bbox = new BoundingBox(
-                        bbox.getMinLongitude() * Math.PI / 180.0,
-                        bbox.getMaxLongitude() * Math.PI / 180.0,
-                        bbox.getMinLatitude() * Math.PI / 180.0,
-                        bbox.getMaxLatitude() * Math.PI / 180.0);
+                        bbox.getMinLongitude() * 180.0 / Math.PI,
+                        bbox.getMaxLongitude() * 180.0 / Math.PI,
+                        bbox.getMinLatitude() * 180.0 / Math.PI,
+                        bbox.getMaxLatitude() * 180.0 / Math.PI);
             } else {
                 bbox = projTransform.transform(bbox);
             }
@@ -196,14 +196,6 @@ public class GPKGFeatureTileSource implements PagingInterface {
 
                 }
             }
-
-
-
-
-
-
-
-
         }
 
     }
@@ -268,6 +260,7 @@ public class GPKGFeatureTileSource implements PagingInterface {
             if (tileParser == null) {
                 try {
                     styleSet = new SLDStyleSet(layer.maplyControl, assetManager, sldFileName, displayMetrics, false, 0);
+                    styleSet.loadSldInputStream();
                     tileParser = new GPKGFeatureTileStyler(styleSet, layer.maplyControl, targetLevel, maxZoom, rTreeIndex, geomProjTransform);
                 } catch (Exception e) {
                     // TODO: handle error
@@ -316,11 +309,14 @@ public class GPKGFeatureTileSource implements PagingInterface {
                     }
                 }
 
-                if (n > 0)
+                if (n > 0) {
                     layer.addData(compObjs, tileID);
+                }
 
+                if (complete)
+                    setLoaded(tileID);
 
-
+                layer.tileDidLoad(tileID);
             }
         }
 
@@ -342,18 +338,61 @@ public class GPKGFeatureTileSource implements PagingInterface {
     @Override
     public void tileDidUnload(MaplyTileID tileID)
     {
+        clearLoaded(tileID);
     }
 
     void setLoaded(MaplyTileID tileID) {
+        synchronized (this) {
+            //HashMap<Integer, HashMap<Integer, HashMap<Integer, Boolean>>> loadedTiles;
 
+            HashMap<Integer, HashMap<Integer, Boolean>> levelDict = loadedTiles.get(tileID.level);
+            if (levelDict == null) {
+                levelDict = new HashMap<>();
+                loadedTiles.put(tileID.level, levelDict);
+            }
+
+            HashMap<Integer, Boolean> columnDict = levelDict.get(tileID.x);
+            if (columnDict == null) {
+                columnDict = new HashMap<>();
+                levelDict.put(tileID.x, columnDict);
+            }
+
+            columnDict.put(tileID.y, Boolean.TRUE);
+        }
     }
 
     void clearLoaded(MaplyTileID tileID) {
+        synchronized (this) {
+            HashMap<Integer, HashMap<Integer, Boolean>> levelDict = loadedTiles.get(tileID.level);
+            if (levelDict == null)
+                return;
 
+            HashMap<Integer, Boolean> columnDict = levelDict.get(tileID.x);
+            if (columnDict == null)
+                return;
+
+            if (columnDict.containsKey(tileID.y))
+                columnDict.remove(tileID.y);
+            if (columnDict.size() == 0)
+                levelDict.remove(tileID.x);
+            if (levelDict.size() == 0)
+                loadedTiles.remove(tileID.level);
+
+        }
     }
 
     boolean isParentLoaded(MaplyTileID tileID) {
-        return false;
+        MaplyTileID parentTileID = new MaplyTileID(tileID.x/2, tileID.y/2, tileID.level-1);
+
+        HashMap<Integer, HashMap<Integer, Boolean>> levelDict = loadedTiles.get(parentTileID.level);
+        if (levelDict == null)
+            return false;
+
+        HashMap<Integer, Boolean> columnDict = levelDict.get(parentTileID.x);
+        if (columnDict == null)
+            return false;
+
+        return columnDict.containsKey(parentTileID.y);
     }
 
     @Override

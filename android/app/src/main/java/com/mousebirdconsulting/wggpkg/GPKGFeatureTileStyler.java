@@ -150,7 +150,8 @@ public class GPKGFeatureTileStyler {
                                 n -= 1;
                         } else if (geometry.getGeometryType() == GeometryType.POINT) {
                             Point point = (Point)geometry;
-                            Point2d point2d = new Point2d(point.getX(), point.getY());
+                            Point2d point2d = new Point2d(point.getX()*Math.PI/180.0, point.getY()*Math.PI/180.0);
+
                             VectorObject vectorObject = new VectorObject();
                             vectorObject.addPoint(point2d);
                             pointObjs.add(vectorObject);
@@ -159,7 +160,7 @@ public class GPKGFeatureTileStyler {
                             VectorObject multiPointObj = new VectorObject();
                             Point2d point2d;
                             for (Point point: multiPoint.getPoints()) {
-                                point2d = new Point2d(point.getX(), point.getY());
+                                point2d = new Point2d(point.getX()*180.0/Math.PI, point.getY());
                                 multiPointObj.addPoint(point2d);
                             }
                             pointObjs.add(multiPointObj);

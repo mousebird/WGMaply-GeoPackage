@@ -102,10 +102,10 @@ public class EarthFragment extends GlobeMapFragment {
             setBounds();
 
         // setup base layer tiles
-        String cacheDirName = "stamen_watercolor";
+        String cacheDirName = "stamen_toner";
         File cacheDir = new File(getActivity().getCacheDir(), cacheDirName);
         cacheDir.mkdir();
-        RemoteTileSource remoteTileSource = new RemoteTileSource(baseControl, new RemoteTileInfo("http://tile.stamen.com/watercolor/", "png", 0, 18));
+        RemoteTileSource remoteTileSource = new RemoteTileSource(baseControl, new RemoteTileInfo("http://tile.stamen.com/toner/", "png", 0, 18));
         remoteTileSource.setCacheDir(cacheDir);
         SphericalMercatorCoordSystem coordSystem = new SphericalMercatorCoordSystem();
 
