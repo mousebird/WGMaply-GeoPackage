@@ -5,7 +5,7 @@
 #  MBTiles to GeoPackage converter
 #
 #  Created by jmnavarro
-#  Copyright © 2017 mousebird consulting. All rights reserved.
+#  Copyright 2017 mousebird consulting. All rights reserved.
 #
 import sys
 import argparse, logging
