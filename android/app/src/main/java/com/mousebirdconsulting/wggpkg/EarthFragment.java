@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.j256.ormlite.dao.GenericRawResults;
 import com.mousebird.maply.GlobeMapFragment;
 import com.mousebird.maply.MaplyBaseController;
 import com.mousebird.maply.QuadImageTileLayer;
@@ -15,6 +17,7 @@ import com.mousebird.maply.RemoteTileInfo;
 import com.mousebird.maply.RemoteTileSource;
 import com.mousebird.maply.SphericalMercatorCoordSystem;
 
+import mil.nga.geopackage.core.contents.ContentsDao;
 import mil.nga.geopackage.db.GeoPackageConnection;
 import mil.nga.geopackage.factory.GeoPackageFactory;
 import mil.nga.geopackage.GeoPackageManager;
@@ -25,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,6 +48,13 @@ public class EarthFragment extends GlobeMapFragment {
     HashMap<String, HashMap<String, Boolean>> vectorLayerConfig = new HashMap<>();
 
     HashMap<String, List<Number>> bounds = null;
+
+    class TableInfo {
+        public String sld, grouping, category;
+        public Number zorder;
+    }
+
+    HashMap<String, HashMap<String, TableInfo>> extraContents = new HashMap<>();
 
     public EarthFragment() {
         super();
@@ -91,6 +102,8 @@ public class EarthFragment extends GlobeMapFragment {
         }
     }
 
+
+
     @Override
     protected MapDisplayType chooseDisplayType() {
         return MapDisplayType.Globe;
@@ -132,30 +145,37 @@ public class EarthFragment extends GlobeMapFragment {
 
 
         for (String gpkgFilename : vectorLayerConfig.keySet()) {
+
+
+            GeoPackage gpkg = manager.open(gpkgFilename);
+
+            boolean imported = false;
+            try {
+                imported = manager.importGeoPackage(gpkgFilename, getContext().getAssets().open(gpkgFilename));
+            } catch (Exception e) {
+                if (!e.getMessage().startsWith("GeoPackage database already exists"))
+                    Log.e("EarthFragment", "Import exception", e);
+                else
+                    imported = true;
+            }
+
+            setExtraContents(gpkgFilename, gpkg);
+
+            HashMap<String, TableInfo> gpkgExtraContents = extraContents.get(gpkgFilename);
+
             for (String featureTableName: vectorLayerConfig.get(gpkgFilename).keySet()) {
-                Log.i("EarthFragment", "controlHasStarted ; " + gpkgFilename + " ; " + featureTableName );
-
-                boolean imported = false;
-                try {
-                    imported = manager.importGeoPackage(gpkgFilename, getContext().getAssets().open(gpkgFilename));
-                } catch (Exception e) {
-                    if (!e.getMessage().startsWith("GeoPackage database already exists"))
-                        Log.e("EarthFragment", "Import exception", e);
-                    else
-                        imported = true;
-                }
-
-                Log.i("EarthFragment", "imported? " + imported);
-
-                GeoPackage gpkg = manager.open(gpkgFilename);
-
                 FeatureDao featureDao = gpkg.getFeatureDao(featureTableName);
 
-                GPKGFeatureTileSource tileSource = new GPKGFeatureTileSource("ne_10m_populated_places.gpkg",
+                String sldFilename = null;
+                if (gpkgExtraContents != null) {
+                    TableInfo tableInfo = gpkgExtraContents.get(featureTableName);
+                    if (tableInfo != null)
+                        sldFilename = tableInfo.sld;
+                }
+
+                GPKGFeatureTileSource tileSource = new GPKGFeatureTileSource(gpkgFilename,
                         gpkg, (GeoPackageConnection)gpkg.getDatabase(), featureDao,
-                        "mainne_10m_populated_places.sld", getContext().getAssets(), getContext().getResources().getDisplayMetrics(), bounds, 1, 20);
-
-
+                        sldFilename, getContext().getAssets(), getContext().getResources().getDisplayMetrics(), bounds, 1, 20);
 
                 QuadPagingLayer quadPagingLayer = new QuadPagingLayer(baseControl, new SphericalMercatorCoordSystem(), tileSource);
 
@@ -164,6 +184,28 @@ public class EarthFragment extends GlobeMapFragment {
             }
         }
     }
+
+    void setExtraContents(String gpkgFilename, GeoPackage gpkg) {
+        if (extraContents.containsKey(gpkgFilename))
+            return;
+        HashMap<String, TableInfo> gpkgExtraContents = new HashMap<>();
+        extraContents.put(gpkgFilename, gpkgExtraContents);
+
+        ContentsDao contentsDao = gpkg.getContentsDao();
+        try {
+            GenericRawResults<String[]> rawResults = contentsDao.queryRaw("SELECT table_name, sld FROM gpkg_contents;");
+            List<String[]> results = rawResults.getResults();
+            for (String[] entry : results) {
+                String tableName = entry[0];
+                TableInfo tableInfo = new TableInfo();
+                tableInfo.sld = entry[1];
+                gpkgExtraContents.put(tableName, tableInfo);
+            }
+        } catch (SQLException e) {
+            Log.e("EarthFragment", "Error in setExtraContents.", e);
+        }
+    }
+
 
     public void changeFeatureLayer(String gpkg, String featureTable, boolean enabled) {
 

@@ -160,7 +160,7 @@ public class GPKGFeatureTileStyler {
                             VectorObject multiPointObj = new VectorObject();
                             Point2d point2d;
                             for (Point point: multiPoint.getPoints()) {
-                                point2d = new Point2d(point.getX()*180.0/Math.PI, point.getY());
+                                point2d = new Point2d(point.getX()*Math.PI/180.0, point.getY()*Math.PI/180.0);
                                 multiPointObj.addPoint(point2d);
                             }
                             pointObjs.add(multiPointObj);
@@ -184,6 +184,10 @@ public class GPKGFeatureTileStyler {
                         allVectorObjects.addAll(polygonObjs);
 
                         for (VectorObject vectorObject : allVectorObjects) {
+                            AttrDictionary attrDictionary = vectorObject.getAttributes();
+                            if (attrDictionary == null) {
+                                continue;
+                            }
                             for (VectorStyle vectorStyle : vectorStyles) {
                                 ArrayList<VectorObject> featuresForStyle = featureStyles.get(vectorStyle.getUuid());
                                 if (featuresForStyle == null) {
@@ -192,7 +196,7 @@ public class GPKGFeatureTileStyler {
                                 }
                                 featuresForStyle.add(vectorObject);
                             }
-                            vectorObject.getAttributes().addEntries(attributes);
+                            attrDictionary.addEntries(attributes);
                         }
 
                     }
@@ -205,6 +209,7 @@ public class GPKGFeatureTileStyler {
 
         if (totalBytes > GPKG_FEATURE_TILE_SOURCE_MAX_BYTES && targetLevel < maxZoom) {
             targetLevel += 1;
+            Log.i("TileStyler", "incrementing targetLevel to " + targetLevel);
             return 0;
         }
 
@@ -214,7 +219,9 @@ public class GPKGFeatureTileStyler {
         for (String key : symbolizerKeys) {
             VectorStyle vectorStyle = styleInterface.styleForUUID(key, viewC);
             ArrayList<VectorObject> features = featureStyles.get(key);
-            compObjs.addAll(Arrays.asList(vectorStyle.buildObjects(features, tileID, viewC)));
+            ComponentObject[] builtObjects = vectorStyle.buildObjects(features, tileID, viewC);
+            if (builtObjects != null)
+                compObjs.addAll(Arrays.asList(builtObjects));
         }
 
         return n;
@@ -229,10 +236,10 @@ public class GPKGFeatureTileStyler {
         if (pointsList.size() > 0 && pointsList.size() < GPKG_FEATURE_TILE_SOURCE_MAX_POINTS) {
 
             for (int i = 0; i < pointsList.size(); i++)
-                coords.add(new Point2d(pointsList.get(i).getX(), pointsList.get(i).getY()));
+                coords.add(new Point2d(pointsList.get(i).getX()*Math.PI/180.0, pointsList.get(i).getY()*Math.PI/180.0));
 
             VectorObject vecObj = new VectorObject();
-            vecObj.addLinear(pointsList.toArray(new Point2d[]{}));
+            vecObj.addLinear(coords.toArray(new Point2d[]{}));
 
             VectorObject clipped = vecObj.clipToMbr(geoBbox);
 
@@ -260,7 +267,7 @@ public class GPKGFeatureTileStyler {
                 List<Point> pointsList = ring.getPoints();
                 ArrayList<Point2d> ringCoords = new ArrayList<Point2d>();
                 for (int i = 0; i < pointsList.size()-1; i++)
-                    ringCoords.add(new Point2d(pointsList.get(i).getX(), pointsList.get(i).getY()));
+                    ringCoords.add(new Point2d(pointsList.get(i).getX()*Math.PI/180.0, pointsList.get(i).getY()*Math.PI/180.0));
 
                 if (polyVecObj == null) {
                     polyVecObj = new VectorObject();

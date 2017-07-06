@@ -43,6 +43,7 @@ import mil.nga.geopackage.projection.ProjectionFactory;
 import mil.nga.geopackage.projection.ProjectionTransform;
 import mil.nga.wkb.geom.GeometryType;
 
+import static com.mousebird.maply.MaplyBaseController.FeatureDrawPriorityBase;
 import static com.mousebird.maply.MaplyBaseController.ImageLayerDrawPriorityDefault;
 
 /**
@@ -93,7 +94,7 @@ public class GPKGFeatureTileSource implements PagingInterface {
             gridVectorInfo.setColor(Color.GREEN);
             gridVectorInfo.setEnable(false);
             gridVectorInfo.setLineWidth(5.0f);
-            gridVectorInfo.setDrawPriority(ImageLayerDrawPriorityDefault + 220);
+            gridVectorInfo.setDrawPriority(FeatureDrawPriorityBase + 220);
 
             //TODO: assign markerBitmap
             //markerBitmap =
