@@ -304,8 +304,10 @@ public class GPKGFeatureTileSource implements PagingInterface {
                                 new Point2d(geoBbox.ll.getX(), geoBbox.ur.getY()),
                                 new Point2d(geoBbox.ll.getX(), geoBbox.ll.getY())
                         });
-                        ComponentObject vecCompObj = layer.maplyControl.addVector(vectorObject, gridVectorInfo, MaplyBaseController.ThreadMode.ThreadCurrent);
-                        compObjs.add(vecCompObj);
+                        if (layer.maplyControl != null) {
+                            ComponentObject vecCompObj = layer.maplyControl.addVector(vectorObject, gridVectorInfo, MaplyBaseController.ThreadMode.ThreadCurrent);
+                            compObjs.add(vecCompObj);
+                        }
 
                     }
                 }

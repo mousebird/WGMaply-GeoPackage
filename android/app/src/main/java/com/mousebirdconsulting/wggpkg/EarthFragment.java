@@ -223,6 +223,13 @@ public class EarthFragment extends GlobeMapFragment {
 
     }
 
+    public boolean isFeatureLayerEnabled(String gpkg, String featureTable) {
+        HashMap<String, Boolean> featureTables = vectorLayerConfig.get(gpkg);
+        if (featureTables == null)
+            return false;
+        Boolean enabled = featureTables.get(featureTable);
+        return ((enabled != null) && enabled);
+    }
 
 }
 

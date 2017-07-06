@@ -76,5 +76,9 @@ public class MainActivity extends AppCompatActivity implements GPkgTreeFragment.
         earthFragment.changeFeatureLayer(gpkg, featureTable, enabled);
     }
 
+    public boolean isFeatureLayerEnabled(String gpkg, String featureTable) {
+        return earthFragment.isFeatureLayerEnabled(gpkg, featureTable);
+    }
+
 
 }

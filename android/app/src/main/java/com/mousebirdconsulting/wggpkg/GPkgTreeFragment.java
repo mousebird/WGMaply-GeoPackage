@@ -101,6 +101,7 @@ public class GPkgTreeFragment extends Fragment {
     public interface GPkgTreeFragmentInteractionListener {
         void onFragmentInteraction();
         void changeFeatureLayer(String gpkg, String featureTable, boolean enabled);
+        boolean isFeatureLayerEnabled(String gpkg, String featureTable);
     }
 
 
@@ -164,7 +165,9 @@ public class GPkgTreeFragment extends Fragment {
                         GeoPackage gpkg = geoPackageManager.open(filename);
                         List<String> features = gpkg.getFeatureTables();
                         for (String featureTableName : features) {
-                            TreeNode<LayerMenuViewFeatureTableItem> featureTableNode = new TreeNode<>(new LayerMenuViewFeatureTableItem(featureTableName));
+                            LayerMenuViewFeatureTableItem layerMenuViewFeatureTableItem = new LayerMenuViewFeatureTableItem(featureTableName);
+                            layerMenuViewFeatureTableItem.enabled = mListener.isFeatureLayerEnabled(filename, featureTableName);
+                            TreeNode<LayerMenuViewFeatureTableItem> featureTableNode = new TreeNode<>(layerMenuViewFeatureTableItem);
                             node.addChild(featureTableNode);
                         }
 
