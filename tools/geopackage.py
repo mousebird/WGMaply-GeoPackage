@@ -217,7 +217,7 @@ def fill_tiles_table(source, conn):
     values = []
     for data in tiles:
         third = flip_y(data[0], data[2])
-        values.append((data[0], data[1], third, memoryview(data[3])))
+        values.append((data[0], data[1], third, sqlite3.Binary(data[3])))
 
     conn.executemany("INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?,?,?,?)",
                      values)
