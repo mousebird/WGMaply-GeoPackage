@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "RATreeView.h"
 #import "GPKGProgress.h"
+#import "WhirlyGlobeComponent.h"
 
 
 @class MaplyQuadImageTilesLayer;
@@ -35,7 +36,7 @@
 
 @interface LayerMenuViewController : UIViewController <RATreeViewDataSource, RATreeViewDelegate, GPKGProgress, LayerMenuViewItemDelegate>
 
-- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys;
+- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys viewC:(MaplyBaseViewController *)viewC;
 
 @property (nonatomic, weak) NSObject<LayerMenuViewControllerDelegate> *delegate;
 

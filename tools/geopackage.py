@@ -102,7 +102,9 @@ def get_spherical_mercator(source):
     bounds = mb_metadata['bounds'].split(",")
     minxy = lonlat_to_mercator(bounds[0], bounds[1])
     maxxy = lonlat_to_mercator(bounds[2], bounds[3])
-    spherical_mercator_bounds = [minxy[0], minxy[1], maxxy[0], maxxy[1]]
+#    spherical_mercator_bounds = [minxy[0], minxy[1], maxxy[0], maxxy[1]]
+# Hard wiring this at the moment.  It's not clear when it needs to be calculated
+    spherical_mercator_bounds = [-20026376.39, -20026376.39, 20026376.39, 20026376.39]
     return spherical_mercator_bounds
 
 

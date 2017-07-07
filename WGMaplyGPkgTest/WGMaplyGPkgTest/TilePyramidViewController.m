@@ -78,7 +78,7 @@
     UIBarButtonItem *layerMenuButton = [[UIBarButtonItem alloc] initWithTitle:@"Layer Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showPopover)];
     self.navigationItem.rightBarButtonItem = layerMenuButton;
     
-    _layerMenuVC = [[LayerMenuViewController alloc] initWithBasemapLayerTileInfoDict:[self getBasemapLayerTileInfoDict] bounds:bounds coordSys:theViewC.coordSystem];
+    _layerMenuVC = [[LayerMenuViewController alloc] initWithBasemapLayerTileInfoDict:[self getBasemapLayerTileInfoDict] bounds:bounds coordSys:theViewC.coordSystem viewC:theViewC];
     _layerMenuVC.delegate = self;
     [_layerMenuVC view];
     
