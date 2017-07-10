@@ -22,19 +22,18 @@
 						<LabelPlacement>
 						<PointPlacement>
                             <Displacement>
-                                <DisplacementX>100</DisplacementX>
+                                <DisplacementX>25</DisplacementX>
                                 <DisplacementY>0</DisplacementY>
                             </Displacement>
 						</PointPlacement>
 						</LabelPlacement>
 						<Font>
 							<CssParameter name="font-family" >Arial</CssParameter>
-							<CssParameter name="font-weight" >normal</CssParameter>
-							<CssParameter name="font-weight" >normal</CssParameter>
-							<CssParameter name="font-size" >8.25</CssParameter>
+							<CssParameter name="font-weight" >bold</CssParameter>
+							<CssParameter name="font-size" >24</CssParameter>
 						</Font>
 						<Fill>
-							<CssParameter name="fill" >#000000</CssParameter>
+							<CssParameter name="fill" >#42b9f4</CssParameter>
 						</Fill>
 					</TextSymbolizer>
 				</Rule>

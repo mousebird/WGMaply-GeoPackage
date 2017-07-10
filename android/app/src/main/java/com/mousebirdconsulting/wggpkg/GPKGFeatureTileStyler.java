@@ -107,8 +107,10 @@ public class GPKGFeatureTileStyler {
 
                             FeatureColumn featureColumn = featureRow.getColumn(columnName);
                             GeoPackageDataType geoPackageDataType = featureColumn.getDataType();
-
-                            if (geoPackageDataType == GeoPackageDataType.BOOLEAN)
+                            if (geoPackageDataType == null)
+                                continue;
+                            if (featureRow.getValue(columnName) == null)
+                                continue;
 
                             switch (geoPackageDataType) {
                                 case TEXT: {
