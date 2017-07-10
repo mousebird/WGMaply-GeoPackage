@@ -202,6 +202,24 @@
     return _center;
 }
 
+- (NSData *)imageForTile:(MaplyTileID)tileID
+{
+    NSArray *offsets = _tileOffsets[@(tileID.level)];
+    int xOffset = ((NSNumber *)offsets[0]).intValue;
+    int yOffset = ((NSNumber *)offsets[1]).intValue;
+    
+    int newX = tileID.x - xOffset;
+    int newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
+
+    GPKGGeoPackageTile *gpkgTile;
+    @synchronized (_geoPackage) {
+        if (_retriever)
+            gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
+    }
+    
+    return [gpkgTile data];
+}
+
 - (void)startFetchLayer:(id __nonnull)layer tile:(MaplyTileID)tileID {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
@@ -209,26 +227,16 @@
                        
                        MaplyQuadImageTilesLayer *quadLayer = (MaplyQuadImageTilesLayer *)layer;
 
-                       NSArray *offsets = _tileOffsets[@(tileID.level)];
-                       int xOffset = ((NSNumber *)offsets[0]).intValue;
-                       int yOffset = ((NSNumber *)offsets[1]).intValue;
-                       
-                       int newX = tileID.x - xOffset;
-                       int newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
                        
                        
                        //NSLog(@"fetch tile %i %i %i ; %i %i", tileID.level, tileID.x, tileID.y, newX, newY);
-                       GPKGGeoPackageTile *gpkgTile;
-                       @synchronized (_geoPackage) {
-                           if (_retriever)
-                               gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
-                       }
                        
+                       NSData *data = [self imageForTile:tileID];
 
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
-                                           if (gpkgTile) {
-                                               [quadLayer loadedImages:[gpkgTile data] forTile:tileID];
+                                           if (data) {
+                                               [quadLayer loadedImages:data forTile:tileID];
                                            } else {
                                                [quadLayer loadError:nil forTile:tileID];
                                            }

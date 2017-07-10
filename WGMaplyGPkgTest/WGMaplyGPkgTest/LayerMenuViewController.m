@@ -323,6 +323,7 @@
     NSDictionary *_bounds;
     MaplyCoordinateSystem *_coordSys;
     LayerMenuViewIndexingItem *_indexingItem;
+    MaplyBaseViewController *__weak theViewC;
 }
 
 @end
@@ -330,10 +331,11 @@
 @implementation LayerMenuViewController
 
 
-- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys {
+- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys viewC:(MaplyBaseViewController *)viewC {
     
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
+        theViewC = viewC;
         _basemapLayerTileInfoDict = basemapLayerTileInfoDict;
         _bounds = bounds;
         _coordSys = coordSys;
@@ -1009,18 +1011,55 @@
             LayerMenuViewGeopackageItem *geopackageItem = tileTableItem.geopackageItem;
             GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.name];
             
-            GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
-            
-            MaplyQuadImageTilesLayer *imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:gpkgTileSource.coordSys tileSource:gpkgTileSource];
-            
-            imageLayer.numSimultaneousFetches = 2;
-            // This fades in the image layer
-//            imageLayer.color = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.5];
-            imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
-            
-            tileTableItem.tileSource = gpkgTileSource;
-            tileTableItem.imageLayer = imageLayer;
-            [self.delegate addTileLayer:imageLayer];
+            // This is either an image or vector tile layer
+            GPKGContentsDao * contentsDao = [gpkg getContentsDao];
+            GPKGContents *contents = (GPKGContents *)[contentsDao queryForIdObject:tileTableItem.tileTableName];
+            enum GPKGContentsDataType dataType = [GPKGContentsDataTypes fromName:contents.dataType];
+
+            switch (dataType)
+            {
+                case GPKG_CDT_TILES:
+                {
+                    GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
+                    
+                    MaplyQuadImageTilesLayer *imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:gpkgTileSource.coordSys tileSource:gpkgTileSource];
+                    
+                    imageLayer.numSimultaneousFetches = 2;
+                    // This fades in the image layer
+                    //            imageLayer.color = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.5];
+                    imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
+                    
+                    tileTableItem.tileSource = gpkgTileSource;
+                    tileTableItem.imageLayer = imageLayer;
+                    [self.delegate addTileLayer:imageLayer];
+                }
+                    break;
+                case GPKG_CDT_MBVECTOR_TILES:
+                {
+                    // Simple style with random colors
+                    MaplyVectorStyleSimpleGenerator *simpleStyle = [[MaplyVectorStyleSimpleGenerator alloc] initWithViewC:theViewC];
+
+                    // The tile source doesn't know what format the data is.  It's just data.
+                    // So we can reuse this for vector data too.
+                    GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
+
+                    // This parses the vector tile data on demand and builds features
+                    MapboxVectorTiles *vecTiles = [[MapboxVectorTiles alloc] initWithTileSource:gpkgTileSource style:simpleStyle viewC:theViewC];
+                    
+                    // Vector tiles are always in spherical mercator, so let's not get too clever
+                    MaplyCoordinateSystem *coordSys = [[MaplySphericalMercator alloc] initWebStandard];
+
+                    // The layer makes it all work
+                    MaplyQuadPagingLayer *layer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:coordSys delegate:vecTiles];
+                    layer.flipY = false;
+                    layer.singleLevelLoading = true;
+                    [self.delegate addFeatureLayer:layer];
+                    
+                }
+                    break;
+                default:
+                    break;
+            }
             
         }
         
