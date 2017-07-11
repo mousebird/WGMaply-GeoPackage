@@ -1,15 +1,12 @@
 package com.mousebirdconsulting.wggpkg;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Button;
-import android.view.View;
-import android.os.Bundle;
-
 import android.util.Log;
-
-import com.mousebird.maply.MaplyBaseController;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements GPkgTreeFragment.GPkgTreeFragmentInteractionListener {
 
@@ -80,5 +77,11 @@ public class MainActivity extends AppCompatActivity implements GPkgTreeFragment.
         return earthFragment.isFeatureLayerEnabled(gpkg, featureTable);
     }
 
+    public void changeTileLayer(String gpkg, String tileTable, boolean enabled) {
+        earthFragment.changeTileLayer(gpkg, tileTable, enabled);
+    }
 
+    public boolean isTileLayerEnabled(String gpkg, String tileTable) {
+        return earthFragment.isTileLayerEnabled(gpkg, tileTable);
+    }
 }

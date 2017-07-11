@@ -2,27 +2,21 @@ package com.mousebirdconsulting.wggpkg;
 
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.j256.ormlite.dao.GenericRawResults;
 import com.mousebird.maply.GlobeMapFragment;
-import com.mousebird.maply.MaplyBaseController;
 import com.mousebird.maply.QuadImageTileLayer;
 import com.mousebird.maply.QuadPagingLayer;
 import com.mousebird.maply.RemoteTileInfo;
 import com.mousebird.maply.RemoteTileSource;
 import com.mousebird.maply.SphericalMercatorCoordSystem;
 
-import mil.nga.geopackage.core.contents.ContentsDao;
-import mil.nga.geopackage.db.GeoPackageConnection;
-import mil.nga.geopackage.factory.GeoPackageFactory;
-import mil.nga.geopackage.GeoPackageManager;
-import mil.nga.geopackage.GeoPackage;
-import mil.nga.geopackage.features.user.FeatureDao;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,19 +27,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import android.util.Log;
 
-import com.mousebirdconsulting.wggpkg.R;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import static java.security.AccessController.getContext;
+import mil.nga.geopackage.GeoPackage;
+import mil.nga.geopackage.GeoPackageManager;
+import mil.nga.geopackage.core.contents.ContentsDao;
+import mil.nga.geopackage.db.GeoPackageConnection;
+import mil.nga.geopackage.factory.GeoPackageFactory;
+import mil.nga.geopackage.features.user.FeatureDao;
+import mil.nga.geopackage.tiles.user.TileDao;
 
 
 public class EarthFragment extends GlobeMapFragment {
 
     HashMap<String, HashMap<String, Boolean>> vectorLayerConfig = new HashMap<>();
+    HashMap<String, HashMap<String, Boolean>> tileLayerConfig = new HashMap<>();
 
     HashMap<String, List<Number>> bounds = null;
 
@@ -143,10 +138,8 @@ public class EarthFragment extends GlobeMapFragment {
         // Available databases
         List<String> databases = manager.databases();
 
-
+        // Work through the vector layers
         for (String gpkgFilename : vectorLayerConfig.keySet()) {
-
-
             GeoPackage gpkg = manager.open(gpkgFilename);
 
             boolean imported = false;
@@ -181,6 +174,33 @@ public class EarthFragment extends GlobeMapFragment {
 
                 baseControl.addLayer(quadPagingLayer);
 
+            }
+        }
+
+        // Work through the image layers
+        for (String gpkgFilename : tileLayerConfig.keySet()) {
+            GeoPackage gpkg = manager.open(gpkgFilename);
+
+            boolean imported = false;
+            try {
+                imported = manager.importGeoPackage(gpkgFilename, getContext().getAssets().open(gpkgFilename));
+            } catch (Exception e) {
+                if (!e.getMessage().startsWith("GeoPackage database already exists"))
+                    Log.e("EarthFragment", "Import exception", e);
+                else
+                    imported = true;
+            }
+
+            for (String tileTableName: tileLayerConfig.get(gpkgFilename).keySet()) {
+                TileDao tileDao = gpkg.getTileDao(tileTableName);
+
+                GPKGImageTileSource imageTileSource = new GPKGImageTileSource(gpkgFilename,gpkg,
+                        (GeoPackageConnection)gpkg.getDatabase(), tileDao, bounds);
+
+                QuadImageTileLayer imageTileLayer = new QuadImageTileLayer(baseControl,imageTileSource.getCoordSys(),imageTileSource);
+                imageTileLayer.setDrawPriority(200);
+
+                baseControl.addLayer(imageTileLayer);
             }
         }
     }
@@ -228,6 +248,30 @@ public class EarthFragment extends GlobeMapFragment {
         if (featureTables == null)
             return false;
         Boolean enabled = featureTables.get(featureTable);
+        return ((enabled != null) && enabled);
+    }
+
+    public void changeTileLayer(String gpkg, String tileTable, boolean enabled) {
+
+        HashMap<String, Boolean> tileTables = tileLayerConfig.get(gpkg);
+
+        if ((tileTables == null) && enabled) {
+            tileTables = new HashMap<>();
+            tileLayerConfig.put(gpkg, tileTables);
+        }
+
+        if (enabled)
+            tileTables.put(tileTable, Boolean.TRUE);
+        else
+            tileTables.remove(tileTable);
+
+    }
+
+    public boolean isTileLayerEnabled(String gpkg, String tileTable) {
+        HashMap<String, Boolean> tileTables = tileLayerConfig.get(gpkg);
+        if (tileTables == null)
+            return false;
+        Boolean enabled = tileTables.get(tileTable);
         return ((enabled != null) && enabled);
     }
 

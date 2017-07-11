@@ -1,8 +1,8 @@
 package com.mousebirdconsulting.wggpkg;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,40 +14,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.content.res.AssetManager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import mil.nga.geopackage.db.GeoPackageConnection;
 import mil.nga.geopackage.factory.GeoPackageFactory;
-import mil.nga.geopackage.features.user.FeatureDao;
-import tellh.com.recyclertreeview_lib.LayoutItemType;
+import tellh.com.recyclertreeview_lib.TreeNode;
 import tellh.com.recyclertreeview_lib.TreeViewAdapter;
 import tellh.com.recyclertreeview_lib.TreeViewBinder;
-import tellh.com.recyclertreeview_lib.TreeNode;
-
-
-import com.mousebird.maply.MaplyBaseController;
-import com.mousebird.maply.QuadPagingLayer;
-import com.mousebird.maply.VectorInfo;
-import com.mousebirdconsulting.wggpkg.R;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class GPkgTreeFragment extends Fragment {
 
@@ -101,6 +81,7 @@ public class GPkgTreeFragment extends Fragment {
     public interface GPkgTreeFragmentInteractionListener {
         void onFragmentInteraction();
         void changeFeatureLayer(String gpkg, String featureTable, boolean enabled);
+        void changeTileLayer(String gpkg, String tileTable, boolean enabled);
         boolean isFeatureLayerEnabled(String gpkg, String featureTable);
     }
 
@@ -189,18 +170,25 @@ public class GPkgTreeFragment extends Fragment {
 
                     TreeNode parentNode = node.getParent();
 
-
                     LayerMenuViewItem parentItem = (LayerMenuViewItem)parentNode.getContent();
                     LayerMenuViewGeopackageItem gpkgItem = (LayerMenuViewGeopackageItem) parentItem;
                     String filename = gpkgItem.getFilename();
                     String featureTableName = featureTableItem.getFeatureTableName();
 
                     mListener.changeFeatureLayer(filename, featureTableName, featureTableItem.enabled);
+                } else if (item instanceof  LayerMenuViewTileTableItem) {
+                    LayerMenuViewTileTableItem tileTableItem = (LayerMenuViewTileTableItem)item;
+                    tileTableItem.enabled = !tileTableItem.enabled;
+                    adapter.notifyDataSetChanged();
 
+                    TreeNode parentNode = node.getParent();
 
+                    LayerMenuViewItem parentItem = (LayerMenuViewItem)parentNode.getContent();
+                    LayerMenuViewGeopackageItem gpkgItem = (LayerMenuViewGeopackageItem) parentItem;
+                    String filename = gpkgItem.getFilename();
+                    String tileTableName = tileTableItem.getTileTableName();
 
-
-
+                    mListener.changeTileLayer(filename, tileTableName, tileTableItem.enabled);
                 } else if (item instanceof  LayerMenuViewTileTableItem) {
                     LayerMenuViewTileTableItem tileTableItem = (LayerMenuViewTileTableItem)item;
                     tileTableItem.enabled = !tileTableItem.enabled;
@@ -209,12 +197,6 @@ public class GPkgTreeFragment extends Fragment {
 
 
                 if (!node.isLeaf()) {
-
-
-
-
-
-
                     //Update and toggle the node.
                     onToggle(!node.isExpand(), holder);
 //                    if (!node.isExpand())

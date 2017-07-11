@@ -17,4 +17,8 @@ public class LayerMenuViewTileTableItem extends LayerMenuViewItem {
     public String displayText() {
         return tileTableName;
     }
+
+    public String getTileTableName() {
+        return tileTableName;
+    }
 }
