@@ -263,7 +263,7 @@ public class EarthFragment extends GlobeMapFragment {
                 tableInfo.sld = entry[1];
                 gpkgExtraContents.put(tableName, tableInfo);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Log.e("EarthFragment", "Error in setExtraContents.", e);
         }
     }

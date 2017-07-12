@@ -79,7 +79,10 @@ public class GPKGFeatureTileSource implements PagingInterface {
     public GPKGFeatureTileSource(String database, GeoPackage geoPackage, GeoPackageConnection geoPackageConnection, FeatureDao featureDao, String sldFileName, AssetManager assetManager, DisplayMetrics displayMetrics, HashMap<String, List<Number>> bounds, int inMinZoom, int inMaxZoom) {
         minZoom = inMinZoom;
         maxZoom = inMaxZoom;
-        this.sldFileName = sldFileName;
+        if (sldFileName != null)
+            this.sldFileName = sldFileName;
+        else
+            this.sldFileName = "default.sld";
         this.assetManager = assetManager;
         this.displayMetrics = displayMetrics;
         this.geoPackage = geoPackage;
