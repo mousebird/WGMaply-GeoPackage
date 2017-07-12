@@ -165,14 +165,19 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
         GeoPackageTile tile = tileRetrieve.getTile(newX,newY,tileID.level);
 
         // Make a bitmap of it and return it
-        byte[] tileData = tile.getData();
-        if (tileData != null)
-        {
-            Bitmap bm = BitmapFactory.decodeByteArray(tileData,0,tileData.length);
+        byte[] tileData = null;
+
+        if (tile != null) {
+            tileData = tile.getData();
+        }
+
+        if (tileData != null) {
+            Bitmap bm = BitmapFactory.decodeByteArray(tileData, 0, tileData.length);
             MaplyImageTile imageTile = new MaplyImageTile(bm);
 
-            quadLayer.loadedTile(tileID,frame,imageTile);
-        }
+            quadLayer.loadedTile(tileID, frame, imageTile);
+        } else
+            quadLayer.loadedTile(tileID, frame, null);
     }
 
     public void clear(QuadImageTileLayerInterface var1)
