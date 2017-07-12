@@ -29,6 +29,7 @@ import mil.nga.geopackage.tiles.matrixset.TileMatrixSet;
 import mil.nga.geopackage.tiles.retriever.GeoPackageTile;
 import mil.nga.geopackage.tiles.retriever.GeoPackageTileRetriever;
 import mil.nga.geopackage.tiles.user.TileDao;
+import mil.nga.geopackage.tiles.user.TileRow;
 
 /**
  * Implements an image tile source from a GeoPackage table.
@@ -41,10 +42,11 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
     CoordSystem coordSys = null;
     boolean valid = false;
     HashMap<Integer,Integer[]> tileOffsets = new HashMap<Integer,Integer[]>();
+    GeoPackage gpkg;
 
     public GPKGImageTileSource(String database, GeoPackage geoPackage, GeoPackageConnection geoPackageConnection,
                                TileDao inTileDao, HashMap<String, List<Number>> bounds) {
-
+        gpkg = geoPackage;
         tileDao = inTileDao;
         SpatialReferenceSystemDao srsDao = geoPackage.getSpatialReferenceSystemDao();
         SpatialReferenceSystem srs;
@@ -108,6 +110,11 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
             double xOffset = (tileMatrixSet.getMinX() - projMinX) / xSridUnitsPerTile;
             double yOffset = (projMaxY - tileMatrixSet.getMaxY() ) / ySridUnitsPerTile;
 
+            Log.d("GPKG","units per tile " + xSridUnitsPerTile + " " + ySridUnitsPerTile);
+            Log.d("GPKG","min x y " + tileMatrixSet.getMinX() + " " + tileMatrixSet.getMinY());
+            Log.d("GPKG","offset " + z + ":" + " " + xOffset + " " + yOffset);
+
+
             Integer[] offsets = new Integer[2];
             offsets[0] = (int)Math.round(xOffset);  offsets[1] = (int)Math.round(yOffset);
             tileOffsets.put(z,offsets);
@@ -164,11 +171,13 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
         int newY = ((1 << tileID.level) - tileID.y - 1) - offsets[1];
         GeoPackageTile tile = tileRetrieve.getTile(newX,newY,tileID.level);
 
-        // Make a bitmap of it and return it
         byte[] tileData = null;
-
-        if (tile != null) {
-            tileData = tile.getData();
+        TileRow tileRow;
+        synchronized (gpkg) {
+            tileRow = tileDao.queryForTile(newX,newY,tileID.level);
+        }
+        if (tileRow != null) {
+            tileData = tileRow.getTileData();
         }
 
         if (tileData != null) {
