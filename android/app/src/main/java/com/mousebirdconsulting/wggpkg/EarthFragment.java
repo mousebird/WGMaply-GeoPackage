@@ -9,11 +9,13 @@ import android.view.ViewGroup;
 
 import com.j256.ormlite.dao.GenericRawResults;
 import com.mousebird.maply.GlobeMapFragment;
+import com.mousebird.maply.MapboxVectorTileSource;
 import com.mousebird.maply.QuadImageTileLayer;
 import com.mousebird.maply.QuadPagingLayer;
 import com.mousebird.maply.RemoteTileInfo;
 import com.mousebird.maply.RemoteTileSource;
 import com.mousebird.maply.SphericalMercatorCoordSystem;
+import com.mousebird.maply.VectorStyleSimpleGenerator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -180,6 +182,7 @@ public class EarthFragment extends GlobeMapFragment {
         // Work through the image layers
         for (String gpkgFilename : tileLayerConfig.keySet()) {
             GeoPackage gpkg = manager.open(gpkgFilename);
+            ContentsDao contentsDao = gpkg.getContentsDao();
 
             boolean imported = false;
             try {
@@ -194,13 +197,52 @@ public class EarthFragment extends GlobeMapFragment {
             for (String tileTableName: tileLayerConfig.get(gpkgFilename).keySet()) {
                 TileDao tileDao = gpkg.getTileDao(tileTableName);
 
-                GPKGImageTileSource imageTileSource = new GPKGImageTileSource(gpkgFilename,gpkg,
-                        (GeoPackageConnection)gpkg.getDatabase(), tileDao, bounds);
+                boolean isVectorTiles = false;
+                try {
+                    GenericRawResults<String[]> rawResults = contentsDao.queryRaw("SELECT table_name, data_type FROM gpkg_contents;");
+                    List<String[]> results = rawResults.getResults();
+                    for (String[] entry : results) {
+                        String tableName = entry[0];
+                        if (tableName.equals(tileTableName))
+                        {
+                            if (entry[1].equals("mbvectiles"))
+                                isVectorTiles = true;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
 
-                QuadImageTileLayer imageTileLayer = new QuadImageTileLayer(baseControl,imageTileSource.getCoordSys(),imageTileSource);
-                imageTileLayer.setDrawPriority(200);
+                if (isVectorTiles)
+                {
+                    // Mapbox Vector tile format data
+                    // Yes, this is custom to us
+                    GPKGVectorTileSource vecTileSource = new GPKGVectorTileSource(gpkgFilename, gpkg,
+                            (GeoPackageConnection) gpkg.getDatabase(), tileDao, bounds);
 
-                baseControl.addLayer(imageTileLayer);
+                    // A simple vector style that picks random colors
+                    VectorStyleSimpleGenerator simpleStyle = new VectorStyleSimpleGenerator(baseControl);
+
+                    // Set up the source and start the layer
+                    MapboxVectorTileSource mbTileSource = new MapboxVectorTileSource(vecTileSource,simpleStyle);
+
+                    QuadPagingLayer layer = new QuadPagingLayer(baseControl,vecTileSource.coordSys,mbTileSource);
+                    layer.setSimultaneousFetches(4);
+                    layer.setImportance(1024*1024);
+
+                    baseControl.addLayer(layer);
+                } else {
+                    // Regular image tile pyramid
+                    GPKGImageTileSource imageTileSource = new GPKGImageTileSource(gpkgFilename, gpkg,
+                            (GeoPackageConnection) gpkg.getDatabase(), tileDao, bounds);
+
+                    QuadImageTileLayer imageTileLayer = new QuadImageTileLayer(baseControl, imageTileSource.getCoordSys(), imageTileSource);
+                    imageTileLayer.setDrawPriority(200);
+
+                    baseControl.addLayer(imageTileLayer);
+                }
             }
         }
     }

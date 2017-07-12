@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
+import mil.nga.geopackage.core.contents.Contents;
+import mil.nga.geopackage.core.contents.ContentsDao;
 import mil.nga.geopackage.factory.GeoPackageFactory;
 import tellh.com.recyclertreeview_lib.TreeNode;
 import tellh.com.recyclertreeview_lib.TreeViewAdapter;
@@ -157,6 +160,24 @@ public class GPkgTreeFragment extends Fragment {
                             TreeNode<LayerMenuViewTileTableItem> tileTableNode = new TreeNode<>(new LayerMenuViewTileTableItem(tileTableName));
                             node.addChild(tileTableNode);
                         }
+
+                        List<String> vecTiles = new ArrayList<String>();
+                        try {
+                            ContentsDao contentsDao = gpkg.getContentsDao();
+                            List<Contents> contents = contentsDao.queryForEq(Contents.COLUMN_DATA_TYPE,
+                                    "mbvectiles");
+                            for (Contents content : contents) {
+                                vecTiles.add(content.getTableName());
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                        for (String tileTableName : vecTiles) {
+                            TreeNode<LayerMenuViewTileTableItem> tileTableNode = new TreeNode<>(new LayerMenuViewTileTableItem(tileTableName));
+                            node.addChild(tileTableNode);
+                        }
+
                         gpkgItem.setLoaded(true);
                         Log.i("GPkgTreeFragment", "gpkg contents: F " + features.size() + " ; T " + tiles.size());
 
