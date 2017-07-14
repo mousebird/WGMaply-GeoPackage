@@ -183,6 +183,7 @@ public class EarthFragment extends GlobeMapFragment {
         for (String gpkgFilename : tileLayerConfig.keySet()) {
             GeoPackage gpkg = manager.open(gpkgFilename);
             ContentsDao contentsDao = gpkg.getContentsDao();
+            List<String> fields = getContentsFields(contentsDao);
 
             boolean imported = false;
             try {
@@ -198,21 +199,20 @@ public class EarthFragment extends GlobeMapFragment {
                 TileDao tileDao = gpkg.getTileDao(tileTableName);
 
                 boolean isVectorTiles = false;
-                try {
-                    GenericRawResults<String[]> rawResults = contentsDao.queryRaw("SELECT table_name, data_type FROM gpkg_contents;");
-                    List<String[]> results = rawResults.getResults();
-                    for (String[] entry : results) {
-                        String tableName = entry[0];
-                        if (tableName.equals(tileTableName))
-                        {
-                            if (entry[1].equals("mbvectiles"))
-                                isVectorTiles = true;
+                if (fields.contains("data_type")) {
+                    try {
+                        GenericRawResults<String[]> rawResults = contentsDao.queryRaw("SELECT table_name, data_type FROM gpkg_contents;");
+                        List<String[]> results = rawResults.getResults();
+                        for (String[] entry : results) {
+                            String tableName = entry[0];
+                            if (tableName.equals(tileTableName)) {
+                                if (entry[1].equals("mbvectiles"))
+                                    isVectorTiles = true;
+                            }
                         }
+                    } catch (Exception e) {
+                        continue;
                     }
-                }
-                catch (Exception e)
-                {
-                    continue;
                 }
 
                 if (isVectorTiles)
@@ -247,13 +247,31 @@ public class EarthFragment extends GlobeMapFragment {
         }
     }
 
+    List<String> getContentsFields(ContentsDao contentsDao) {
+        ArrayList<String> fields = new ArrayList<>();
+        try {
+            GenericRawResults<String[]> rawResults = contentsDao.queryRaw("PRAGMA table_info(gpkg_contents);");
+            List<String[]> results = rawResults.getResults();
+            for (String[] entry : results)
+                fields.add(entry[1]);
+        } catch (Exception e) {
+            // TODO: handle this error?
+        }
+        return fields;
+    }
+
     void setExtraContents(String gpkgFilename, GeoPackage gpkg) {
         if (extraContents.containsKey(gpkgFilename))
             return;
+
         HashMap<String, TableInfo> gpkgExtraContents = new HashMap<>();
         extraContents.put(gpkgFilename, gpkgExtraContents);
 
         ContentsDao contentsDao = gpkg.getContentsDao();
+        List<String> fields = getContentsFields(contentsDao);
+        if (!fields.contains("sld"))
+            return;
+
         try {
             GenericRawResults<String[]> rawResults = contentsDao.queryRaw("SELECT table_name, sld FROM gpkg_contents;");
             List<String[]> results = rawResults.getResults();

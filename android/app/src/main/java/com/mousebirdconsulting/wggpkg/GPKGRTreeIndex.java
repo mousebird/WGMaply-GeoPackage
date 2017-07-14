@@ -101,7 +101,7 @@ public class GPKGRTreeIndex extends BaseExtension {
             boolean rtreeIndexCreated = true;
             try {
                 rTreeIndexDao.count();
-            } catch (SQLiteException exception) {
+            } catch (Exception exception) {
                 rtreeIndexCreated = false;
             }
             //if (rTreeIndexDao.count() != featureDao.count()) {
