@@ -30,7 +30,7 @@
 						<Font>
 							<CssParameter name="font-family" >Arial</CssParameter>
 							<CssParameter name="font-weight" >bold</CssParameter>
-							<CssParameter name="font-size" >24</CssParameter>
+							<CssParameter name="font-size" >12</CssParameter>
 						</Font>
 						<Fill>
 							<CssParameter name="fill" >#42b9f4</CssParameter>
