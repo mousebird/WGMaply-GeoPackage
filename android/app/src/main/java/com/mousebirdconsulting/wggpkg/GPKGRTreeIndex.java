@@ -2,31 +2,24 @@ package com.mousebirdconsulting.wggpkg;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.j256.ormlite.dao.GenericRawResults;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import mil.nga.geopackage.BoundingBox;
 import mil.nga.geopackage.GeoPackage;
-import mil.nga.geopackage.GeoPackageCore;
-import mil.nga.geopackage.core.srs.SpatialReferenceSystem;
 import mil.nga.geopackage.core.srs.SpatialReferenceSystemDao;
 import mil.nga.geopackage.db.GeoPackageConnection;
 import mil.nga.geopackage.db.GeoPackageDataType;
 import mil.nga.geopackage.extension.BaseExtension;
-import mil.nga.geopackage.extension.index.FeatureTableIndex;
 import mil.nga.geopackage.extension.index.GeometryIndex;
 import mil.nga.geopackage.factory.GeoPackageCursorWrapper;
 import mil.nga.geopackage.features.user.FeatureCursor;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureRow;
-import mil.nga.geopackage.features.user.FeatureTable;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import mil.nga.geopackage.io.GeoPackageProgress;
 import mil.nga.geopackage.projection.GeometryProjectionTransform;
@@ -122,6 +115,9 @@ public class GPKGRTreeIndex extends BaseExtension {
 
             FeatureCursor cursor = featureDao.query(null, null, null, null, featureDao.getTable().getPkColumn().getName());
 
+            rTreeIndexDao.getDatabaseConnection().getDb().beginTransaction();
+
+            int total = cursor.getCount();
             if (featureRowSkip < cursor.getCount()) {
 
                 while ((progress == null || progress.isActive()) && cursor.moveToNext()) {
@@ -151,10 +147,15 @@ public class GPKGRTreeIndex extends BaseExtension {
 
                     }
                     featureRowIdx++;
-                    if ((featureRowIdx % 1000) == 0)
-                        Log.i("GPKGRTreeIndex", "indexing... " + featureRowIdx);
+                    if ((featureRowIdx % 1000) == 0) {
+                        Log.i("GPKGRTreeIndex", "indexing... " + featureRowIdx + " of " + total);
+                        rTreeIndexDao.getDatabaseConnection().getDb().endTransaction();
+                        rTreeIndexDao.getDatabaseConnection().getDb().beginTransaction();
+                    }
                 }
             }
+
+            rTreeIndexDao.getDatabaseConnection().getDb().endTransaction();
 
             cursor.close();
 
