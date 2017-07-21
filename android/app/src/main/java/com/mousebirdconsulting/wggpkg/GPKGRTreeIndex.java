@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+import com.j256.ormlite.dao.GenericRawResults;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,11 +20,13 @@ import mil.nga.geopackage.core.srs.SpatialReferenceSystemDao;
 import mil.nga.geopackage.db.GeoPackageConnection;
 import mil.nga.geopackage.db.GeoPackageDataType;
 import mil.nga.geopackage.extension.BaseExtension;
+import mil.nga.geopackage.extension.index.FeatureTableIndex;
 import mil.nga.geopackage.extension.index.GeometryIndex;
 import mil.nga.geopackage.factory.GeoPackageCursorWrapper;
 import mil.nga.geopackage.features.user.FeatureCursor;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureRow;
+import mil.nga.geopackage.features.user.FeatureTable;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import mil.nga.geopackage.io.GeoPackageProgress;
 import mil.nga.geopackage.projection.GeometryProjectionTransform;
@@ -98,32 +102,27 @@ public class GPKGRTreeIndex extends BaseExtension {
     public void indexTable() {
         try {
 
-            boolean rtreeIndexCreated = true;
-            try {
-                rTreeIndexDao.count();
-            } catch (Exception exception) {
-                rtreeIndexCreated = false;
-            }
+            GenericRawResults<String[]> rawResults = geoPackage.getContentsDao().queryRaw("SELECT * FROM sqlite_master WHERE name='" + tableName + "';");
+            boolean rtreeIndexCreated = (rawResults.getResults().size() > 0);
+
             //if (rTreeIndexDao.count() != featureDao.count()) {
-            if (!rtreeIndexCreated) {
-
-                SpatialReferenceSystemDao srsDao = geoPackage.getSpatialReferenceSystemDao();
-                //Projection projFrom = ProjectionFactory.getProjection(featureDao.getProjection().getEpsg());
-                Projection projFrom = featureDao.getProjection();
-                Projection projTo = ProjectionFactory.getProjection(4326);
-                ProjectionTransform projTransform = projFrom.getTransformation(projTo);
-                GeometryProjectionTransform transform = new GeometryProjectionTransform(projTransform);
-
-
-                // TODO: how to detect if rtree vtable exists but isn't fully populated?
-                //if (rTreeIndexDao.count() == 0)
+            if (!rtreeIndexCreated)
                 rTreeIndexDao.getDatabaseConnection().execSQL("CREATE VIRTUAL TABLE " + tableName + " USING rtree(id, minx, maxx, miny, maxy);");
 
-                FeatureCursor cursor = featureDao.query(null, null, null, null, "id");
-                int featureRowIdx = 0;
-                int featureRowSkip = rTreeIndexDao.count();
+            SpatialReferenceSystemDao srsDao = geoPackage.getSpatialReferenceSystemDao();
+            Projection projFrom = featureDao.getProjection();
+            Projection projTo = ProjectionFactory.getProjection(4326);
+            ProjectionTransform projTransform = projFrom.getTransformation(projTo);
+            GeometryProjectionTransform transform = new GeometryProjectionTransform(projTransform);
 
-                List<GPKGRTreeIndexColumn> columns = rTreeIndexDao.getTable().getColumns();
+            int featureRowIdx = 0;
+            int featureRowSkip = rTreeIndexDao.count();
+
+            List<GPKGRTreeIndexColumn> columns = rTreeIndexDao.getTable().getColumns();
+
+            FeatureCursor cursor = featureDao.query(null, null, null, null, featureDao.getTable().getPkColumn().getName());
+
+            if (featureRowSkip < cursor.getCount()) {
 
                 while ((progress == null || progress.isActive()) && cursor.moveToNext()) {
                     if (featureRowIdx < featureRowSkip) {
@@ -152,14 +151,13 @@ public class GPKGRTreeIndex extends BaseExtension {
 
                     }
                     featureRowIdx++;
+                    if ((featureRowIdx % 1000) == 0)
+                        Log.i("GPKGRTreeIndex", "indexing... " + featureRowIdx);
                 }
-                cursor.close();
-
-
-            } else {
-                // TODO: progress interface has no complete ??
-
             }
+
+            cursor.close();
+
         } catch (Exception e) {
             Log.e("GPKGRTreeIndex", "indexTable exception", e);
         }
