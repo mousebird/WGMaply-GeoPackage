@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.mousebird.maply.GlobeMapFragment;
 import com.mousebird.maply.MapboxVectorTileSource;
+import com.mousebird.maply.PlateCarreeCoordSystem;
 import com.mousebird.maply.QuadImageTileLayer;
 import com.mousebird.maply.QuadPagingLayer;
 import com.mousebird.maply.RemoteTileInfo;
@@ -172,7 +173,7 @@ public class EarthFragment extends GlobeMapFragment {
                         gpkg, (GeoPackageConnection)gpkg.getDatabase(), featureDao,
                         sldFilename, getContext().getAssets(), getContext().getResources().getDisplayMetrics(), bounds, 1, 20);
 
-                QuadPagingLayer quadPagingLayer = new QuadPagingLayer(baseControl, new SphericalMercatorCoordSystem(), tileSource);
+                QuadPagingLayer quadPagingLayer = new QuadPagingLayer(baseControl, new PlateCarreeCoordSystem(), tileSource);
 
                 baseControl.addLayer(quadPagingLayer);
 
