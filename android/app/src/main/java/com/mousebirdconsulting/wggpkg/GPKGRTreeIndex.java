@@ -149,12 +149,14 @@ public class GPKGRTreeIndex extends BaseExtension {
                     featureRowIdx++;
                     if ((featureRowIdx % 1000) == 0) {
                         Log.i("GPKGRTreeIndex", "indexing... " + featureRowIdx + " of " + total);
+                        rTreeIndexDao.getDatabaseConnection().getDb().setTransactionSuccessful();
                         rTreeIndexDao.getDatabaseConnection().getDb().endTransaction();
                         rTreeIndexDao.getDatabaseConnection().getDb().beginTransaction();
                     }
                 }
             }
 
+            rTreeIndexDao.getDatabaseConnection().getDb().setTransactionSuccessful();
             rTreeIndexDao.getDatabaseConnection().getDb().endTransaction();
 
             cursor.close();
