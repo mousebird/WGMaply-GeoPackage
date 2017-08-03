@@ -336,5 +336,10 @@ public class EarthFragment extends GlobeMapFragment {
         return ((enabled != null) && enabled);
     }
 
+    public void resetLayers() {
+        vectorLayerConfig = new HashMap<>();
+        tileLayerConfig = new HashMap<>();
+    }
+
 }
 

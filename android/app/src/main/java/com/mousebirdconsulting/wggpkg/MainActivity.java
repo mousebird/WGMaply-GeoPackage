@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements GPkgTreeFragment.
         this.viewTree = viewTree;
         if (viewTree) {
             selectFragment(gpkgTreeFragment);
+            earthFragment.resetLayers();
             gpkgButton.setText("GLOBE");
         } else {
             selectFragment(earthFragment);
