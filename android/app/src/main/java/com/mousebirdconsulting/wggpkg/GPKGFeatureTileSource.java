@@ -21,6 +21,7 @@ import com.mousebird.maply.VectorInfo;
 import com.mousebird.maply.VectorObject;
 import com.mousebird.maply.WideVectorInfo;
 import com.mousebird.maply.sld.sldstyleset.SLDStyleSet;
+import com.mousebird.maply.sld.sldstyleset.AssetWrapper;
 
 //import android.database.sqlite.SQLiteDatabase;
 import org.sqlite.database.sqlite.SQLiteCursor;
@@ -30,6 +31,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.io.File;
 
 import mil.nga.geopackage.BoundingBox;
 import mil.nga.geopackage.GeoPackage;
@@ -67,8 +69,7 @@ public class GPKGFeatureTileSource implements PagingInterface {
     Bitmap markerBitmap;
     HashMap<Integer, HashMap<Integer, HashMap<Integer, Boolean>>> loadedTiles;
 
-
-    AssetManager assetManager;
+    AssetWrapper assetWrapper;
     String sldFileName;
     DisplayMetrics displayMetrics;
     SLDStyleSet styleSet;
@@ -76,14 +77,14 @@ public class GPKGFeatureTileSource implements PagingInterface {
 
 
 
-    public GPKGFeatureTileSource(String database, GeoPackage geoPackage, GeoPackageConnection geoPackageConnection, FeatureDao featureDao, String sldFileName, AssetManager assetManager, DisplayMetrics displayMetrics, HashMap<String, List<Number>> bounds, int inMinZoom, int inMaxZoom) {
+    public GPKGFeatureTileSource(String database, GeoPackage geoPackage, GeoPackageConnection geoPackageConnection, FeatureDao featureDao, String sldFileName, AssetWrapper assetWrapper, DisplayMetrics displayMetrics, HashMap<String, List<Number>> bounds, int inMinZoom, int inMaxZoom) {
         minZoom = inMinZoom;
         maxZoom = inMaxZoom;
         if (sldFileName != null)
             this.sldFileName = sldFileName;
         else
             this.sldFileName = "default.sld";
-        this.assetManager = assetManager;
+        this.assetWrapper = assetWrapper;
         this.displayMetrics = displayMetrics;
         this.geoPackage = geoPackage;
         synchronized (this.geoPackage) {
@@ -263,7 +264,9 @@ public class GPKGFeatureTileSource implements PagingInterface {
         synchronized(this) {
             if (tileParser == null) {
                 try {
-                    styleSet = new SLDStyleSet(layer.maplyControl, assetManager, sldFileName, displayMetrics, false, 0);
+                    File assetFile = new File(sldFileName);
+                    String name = assetFile.getName();
+                    styleSet = new SLDStyleSet(layer.maplyControl, assetWrapper, name, displayMetrics, false, 0);
                     styleSet.loadSldInputStream();
                     tileParser = new GPKGFeatureTileStyler(styleSet, layer.maplyControl, targetLevel, maxZoom, rTreeIndex, geomProjTransform);
                 } catch (Exception e) {

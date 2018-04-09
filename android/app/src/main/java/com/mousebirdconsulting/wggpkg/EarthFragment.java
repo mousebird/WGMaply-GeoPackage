@@ -17,6 +17,7 @@ import com.mousebird.maply.RemoteTileInfo;
 import com.mousebird.maply.RemoteTileSource;
 import com.mousebird.maply.SphericalMercatorCoordSystem;
 import com.mousebird.maply.VectorStyleSimpleGenerator;
+import com.mousebird.maply.sld.sldstyleset.AssetWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -169,9 +170,10 @@ public class EarthFragment extends GlobeMapFragment {
                         sldFilename = tableInfo.sld;
                 }
 
+                AssetWrapper assetWrapper = new AssetWrapper(getContext().getAssets());
                 GPKGFeatureTileSource tileSource = new GPKGFeatureTileSource(gpkgFilename,
                         gpkg, (GeoPackageConnection)gpkg.getDatabase(), featureDao,
-                        sldFilename, getContext().getAssets(), getContext().getResources().getDisplayMetrics(), bounds, 1, 20);
+                        sldFilename, assetWrapper, getContext().getResources().getDisplayMetrics(), bounds, 1, 20);
 
                 QuadPagingLayer quadPagingLayer = new QuadPagingLayer(baseControl, new PlateCarreeCoordSystem(), tileSource);
 
