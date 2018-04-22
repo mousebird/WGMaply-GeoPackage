@@ -238,7 +238,7 @@ public class EarthFragment extends GlobeMapFragment {
                     baseControl.addLayer(layer);
                 } else {
                     // Regular image tile pyramid
-                    GPKGImageTileSource imageTileSource = new GPKGImageTileSource(gpkgFilename, gpkg,
+                    GPKGImageTileSource imageTileSource = new GPKGImageTileSource(globeControl, gpkgFilename, gpkg,
                             (GeoPackageConnection) gpkg.getDatabase(), tileDao, bounds);
 
                     QuadImageTileLayer imageTileLayer = new QuadImageTileLayer(baseControl, imageTileSource.getCoordSys(), imageTileSource);

@@ -7,15 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B29A09B208D338A0087C3D8 /* RATreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A09A208D338A0087C3D8 /* RATreeView.m */; };
+		2B29A0B9208D33C20087C3D8 /* RATreeNodeItem+Private.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A09C208D33C00087C3D8 /* RATreeNodeItem+Private.m */; };
+		2B29A0BA208D33C20087C3D8 /* RABatchChangeEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A09D208D33C00087C3D8 /* RABatchChangeEntity.m */; };
+		2B29A0BB208D33C20087C3D8 /* RATreeView+TableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0A0208D33C10087C3D8 /* RATreeView+TableViewDataSource.m */; };
+		2B29A0BC208D33C20087C3D8 /* RATreeNodeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0A7208D33C10087C3D8 /* RATreeNodeItem.m */; };
+		2B29A0BD208D33C20087C3D8 /* RATreeView+Private.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0A8208D33C10087C3D8 /* RATreeView+Private.m */; };
+		2B29A0BE208D33C20087C3D8 /* RATableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0A9208D33C10087C3D8 /* RATableView.m */; };
+		2B29A0BF208D33C20087C3D8 /* RATreeNodeCollectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0AB208D33C10087C3D8 /* RATreeNodeCollectionController.m */; };
+		2B29A0C0208D33C20087C3D8 /* RABatchChanges.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0AE208D33C20087C3D8 /* RABatchChanges.m */; };
+		2B29A0C1208D33C20087C3D8 /* RATreeNodeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0AF208D33C20087C3D8 /* RATreeNodeController.m */; };
+		2B29A0C2208D33C20087C3D8 /* RATreeView+Enums.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B1208D33C20087C3D8 /* RATreeView+Enums.m */; };
+		2B29A0C3208D33C20087C3D8 /* RATreeView+TableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B2208D33C20087C3D8 /* RATreeView+TableViewDelegate.m */; };
+		2B29A0C4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m */; };
+		2B29A0C5208D33C20087C3D8 /* RATreeNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B5208D33C20087C3D8 /* RATreeNode.m */; };
 		2BAFDA86208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
 		2BAFDA87208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
 		E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = E5190A5E1D49B5A7003130E2 /* map_pin.png */; };
 		E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */; };
 		E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */; };
-		E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
-		E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; };
-		E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56862751D4F096A00761466 /* RATreeView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E56E10F81D51CA51004B47F7 /* ic_linestring.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F31D51CA51004B47F7 /* ic_linestring.png */; };
 		E56E10F91D51CA51004B47F7 /* ic_point.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F41D51CA51004B47F7 /* ic_point.png */; };
 		E56E10FA1D51CA51004B47F7 /* ic_polygon.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E10F51D51CA51004B47F7 /* ic_polygon.png */; };
@@ -63,34 +74,6 @@
 			remoteGlobalIDString = 2BE536FE1D2499E500B60FAD;
 			remoteInfo = WhirlyGlobeMaplyComponent;
 		};
-		E56862721D4F096A00761466 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A50D0BE21CA34E3F00EC9402;
-			remoteInfo = "RATreeView OSX";
-		};
-		E56862741D4F096A00761466 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0626D5571BF7E81E00CD3B04;
-			remoteInfo = "RATreeView iOS";
-		};
-		E56862761D4F096A00761466 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0626D6941BF8A37800CD3B04;
-			remoteInfo = RATreeViewTests;
-		};
-		E568627D1D4F127A00761466 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0626D5561BF7E81E00CD3B04;
-			remoteInfo = "RATreeView iOS";
-		};
 		E56E4A791E831FB4008F0194 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
@@ -128,7 +111,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E568627C1D4F127A00761466 /* RATreeView.framework in Embed Frameworks */,
 				2BAFDA87208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -137,13 +119,43 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B29A099208D338A0087C3D8 /* RATreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeView.h; path = ../libs/RATreeView/RATreeView/RATreeView/RATreeView.h; sourceTree = "<group>"; };
+		2B29A09A208D338A0087C3D8 /* RATreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RATreeView.m; path = ../libs/RATreeView/RATreeView/RATreeView/RATreeView.m; sourceTree = "<group>"; };
+		2B29A09C208D33C00087C3D8 /* RATreeNodeItem+Private.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RATreeNodeItem+Private.m"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeItem+Private.m"; sourceTree = "<group>"; };
+		2B29A09D208D33C00087C3D8 /* RABatchChangeEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RABatchChangeEntity.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RABatchChangeEntity.m"; sourceTree = "<group>"; };
+		2B29A09E208D33C10087C3D8 /* RATreeView+TableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeView+TableViewDelegate.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+TableViewDelegate.h"; sourceTree = "<group>"; };
+		2B29A09F208D33C10087C3D8 /* RATreeView+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeView+Private.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+Private.h"; sourceTree = "<group>"; };
+		2B29A0A0208D33C10087C3D8 /* RATreeView+TableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RATreeView+TableViewDataSource.m"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+TableViewDataSource.m"; sourceTree = "<group>"; };
+		2B29A0A1208D33C10087C3D8 /* RATreeNodeItem+ClassExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeNodeItem+ClassExtension.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeItem+ClassExtension.h"; sourceTree = "<group>"; };
+		2B29A0A2208D33C10087C3D8 /* RATreeView_ClassExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeView_ClassExtension.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView_ClassExtension.h"; sourceTree = "<group>"; };
+		2B29A0A3208D33C10087C3D8 /* RATreeNodeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNodeItem.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeItem.h"; sourceTree = "<group>"; };
+		2B29A0A4208D33C10087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeView+RATreeNodeCollectionControllerDataSource.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+RATreeNodeCollectionControllerDataSource.h"; sourceTree = "<group>"; };
+		2B29A0A5208D33C10087C3D8 /* RATreeView+TableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeView+TableViewDataSource.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+TableViewDataSource.h"; sourceTree = "<group>"; };
+		2B29A0A6208D33C10087C3D8 /* RATreeNodeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNodeController.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeController.h"; sourceTree = "<group>"; };
+		2B29A0A7208D33C10087C3D8 /* RATreeNodeItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RATreeNodeItem.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeItem.m"; sourceTree = "<group>"; };
+		2B29A0A8208D33C10087C3D8 /* RATreeView+Private.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RATreeView+Private.m"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+Private.m"; sourceTree = "<group>"; };
+		2B29A0A9208D33C10087C3D8 /* RATableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RATableView.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATableView.m"; sourceTree = "<group>"; };
+		2B29A0AA208D33C10087C3D8 /* RATreeNodeItem+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeNodeItem+Private.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeItem+Private.h"; sourceTree = "<group>"; };
+		2B29A0AB208D33C10087C3D8 /* RATreeNodeCollectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RATreeNodeCollectionController.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeCollectionController.m"; sourceTree = "<group>"; };
+		2B29A0AC208D33C10087C3D8 /* RATableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATableView.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATableView.h"; sourceTree = "<group>"; };
+		2B29A0AD208D33C20087C3D8 /* RATreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNode.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNode.h"; sourceTree = "<group>"; };
+		2B29A0AE208D33C20087C3D8 /* RABatchChanges.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RABatchChanges.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RABatchChanges.m"; sourceTree = "<group>"; };
+		2B29A0AF208D33C20087C3D8 /* RATreeNodeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RATreeNodeController.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeController.m"; sourceTree = "<group>"; };
+		2B29A0B0208D33C20087C3D8 /* RATreeView+Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RATreeView+Enums.h"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+Enums.h"; sourceTree = "<group>"; };
+		2B29A0B1208D33C20087C3D8 /* RATreeView+Enums.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RATreeView+Enums.m"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+Enums.m"; sourceTree = "<group>"; };
+		2B29A0B2208D33C20087C3D8 /* RATreeView+TableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RATreeView+TableViewDelegate.m"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+TableViewDelegate.m"; sourceTree = "<group>"; };
+		2B29A0B3208D33C20087C3D8 /* RABatchChangeEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RABatchChangeEntity.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RABatchChangeEntity.h"; sourceTree = "<group>"; };
+		2B29A0B4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RATreeView+RATreeNodeCollectionControllerDataSource.m"; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeView+RATreeNodeCollectionControllerDataSource.m"; sourceTree = "<group>"; };
+		2B29A0B5208D33C20087C3D8 /* RATreeNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RATreeNode.m; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNode.m"; sourceTree = "<group>"; };
+		2B29A0B6208D33C20087C3D8 /* RABatchChanges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RABatchChanges.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RABatchChanges.h"; sourceTree = "<group>"; };
+		2B29A0B7208D33C20087C3D8 /* RATreeNodeCollectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNodeCollectionController.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeCollectionController.h"; sourceTree = "<group>"; };
+		2B29A0B8208D33C20087C3D8 /* RATreeNode_ClassExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNode_ClassExtension.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNode_ClassExtension.h"; sourceTree = "<group>"; };
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5190A5E1D49B5A7003130E2 /* map_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_pin.png; sourceTree = "<group>"; };
 		E53FD7651D4ED2A500FD73BD /* LayerMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerMenuViewController.h; sourceTree = "<group>"; };
 		E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerMenuViewController.m; sourceTree = "<group>"; };
 		E53FD7671D4ED2A500FD73BD /* LayerMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerMenuViewController.xib; sourceTree = "<group>"; };
-		E568626C1D4F096A00761466 /* RATreeView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RATreeView.xcodeproj; path = ../libs/RATreeView/RATreeView/RATreeView.xcodeproj; sourceTree = "<group>"; };
 		E56E10F31D51CA51004B47F7 /* ic_linestring.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_linestring.png; path = icons/ic_linestring.png; sourceTree = "<group>"; };
 		E56E10F41D51CA51004B47F7 /* ic_point.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_point.png; path = icons/ic_point.png; sourceTree = "<group>"; };
 		E56E10F51D51CA51004B47F7 /* ic_polygon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_polygon.png; path = icons/ic_polygon.png; sourceTree = "<group>"; };
@@ -204,10 +216,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
-				E568627A1D4F097800761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */,
 				2BAFDA86208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
-				E568627B1D4F127A00761466 /* RATreeView.framework in Frameworks */,
 				E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */,
 				E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */,
 				E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */,
@@ -219,11 +229,56 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2B29A097208D33470087C3D8 /* external */ = {
+			isa = PBXGroup;
+			children = (
+				2B29A098208D334E0087C3D8 /* RATreeView */,
+			);
+			name = external;
+			sourceTree = "<group>";
+		};
+		2B29A098208D334E0087C3D8 /* RATreeView */ = {
+			isa = PBXGroup;
+			children = (
+				2B29A0B3208D33C20087C3D8 /* RABatchChangeEntity.h */,
+				2B29A09D208D33C00087C3D8 /* RABatchChangeEntity.m */,
+				2B29A0B6208D33C20087C3D8 /* RABatchChanges.h */,
+				2B29A0AE208D33C20087C3D8 /* RABatchChanges.m */,
+				2B29A0AC208D33C10087C3D8 /* RATableView.h */,
+				2B29A0A9208D33C10087C3D8 /* RATableView.m */,
+				2B29A0B8208D33C20087C3D8 /* RATreeNode_ClassExtension.h */,
+				2B29A0AD208D33C20087C3D8 /* RATreeNode.h */,
+				2B29A0B5208D33C20087C3D8 /* RATreeNode.m */,
+				2B29A0B7208D33C20087C3D8 /* RATreeNodeCollectionController.h */,
+				2B29A0AB208D33C10087C3D8 /* RATreeNodeCollectionController.m */,
+				2B29A0A6208D33C10087C3D8 /* RATreeNodeController.h */,
+				2B29A0AF208D33C20087C3D8 /* RATreeNodeController.m */,
+				2B29A0A3208D33C10087C3D8 /* RATreeNodeItem.h */,
+				2B29A0A7208D33C10087C3D8 /* RATreeNodeItem.m */,
+				2B29A0A1208D33C10087C3D8 /* RATreeNodeItem+ClassExtension.h */,
+				2B29A0AA208D33C10087C3D8 /* RATreeNodeItem+Private.h */,
+				2B29A09C208D33C00087C3D8 /* RATreeNodeItem+Private.m */,
+				2B29A0A2208D33C10087C3D8 /* RATreeView_ClassExtension.h */,
+				2B29A0B0208D33C20087C3D8 /* RATreeView+Enums.h */,
+				2B29A0B1208D33C20087C3D8 /* RATreeView+Enums.m */,
+				2B29A09F208D33C10087C3D8 /* RATreeView+Private.h */,
+				2B29A0A8208D33C10087C3D8 /* RATreeView+Private.m */,
+				2B29A0A4208D33C10087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.h */,
+				2B29A0B4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m */,
+				2B29A0A5208D33C10087C3D8 /* RATreeView+TableViewDataSource.h */,
+				2B29A0A0208D33C10087C3D8 /* RATreeView+TableViewDataSource.m */,
+				2B29A09E208D33C10087C3D8 /* RATreeView+TableViewDelegate.h */,
+				2B29A0B2208D33C20087C3D8 /* RATreeView+TableViewDelegate.m */,
+				2B29A099208D338A0087C3D8 /* RATreeView.h */,
+				2B29A09A208D338A0087C3D8 /* RATreeView.m */,
+			);
+			name = RATreeView;
+			sourceTree = "<group>";
+		};
 		5877722F8265A0C7942B11C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */,
-				E568626C1D4F096A00761466 /* RATreeView.xcodeproj */,
 				E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */,
 				E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */,
 				E5D84F891D38016400D5AF18 /* libz.tbd */,
@@ -233,16 +288,6 @@
 				7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		E568626D1D4F096A00761466 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E56862731D4F096A00761466 /* RATreeView.framework */,
-				E56862751D4F096A00761466 /* RATreeView.framework */,
-				E56862771D4F096A00761466 /* RATreeViewTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		E56E4A751E831FB3008F0194 /* Products */ = {
@@ -257,6 +302,7 @@
 		E5823DA91EA01D2500889932 /* WGMaplyGeoPackage */ = {
 			isa = PBXGroup;
 			children = (
+				2B29A097208D33470087C3D8 /* external */,
 				E5823DB21EA01D6B00889932 /* GPKGFeatureTileSource.h */,
 				E5823DB31EA01D6B00889932 /* GPKGFeatureTileSource.m */,
 				E5823DB41EA01D6B00889932 /* GPKGRTreeIndex.h */,
@@ -386,7 +432,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E568627E1D4F127A00761466 /* PBXTargetDependency */,
 				2BAFDA89208068F200BAD98E /* PBXTargetDependency */,
 			);
 			name = WGMaplyGPkgTest;
@@ -423,10 +468,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = E568626D1D4F096A00761466 /* Products */;
-					ProjectRef = E568626C1D4F096A00761466 /* RATreeView.xcodeproj */;
-				},
-				{
 					ProductGroup = E56E4A751E831FB3008F0194 /* Products */;
 					ProjectRef = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
 				},
@@ -443,27 +484,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		E56862731D4F096A00761466 /* RATreeView.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RATreeView.framework;
-			remoteRef = E56862721D4F096A00761466 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E56862751D4F096A00761466 /* RATreeView.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RATreeView.framework;
-			remoteRef = E56862741D4F096A00761466 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E56862771D4F096A00761466 /* RATreeViewTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RATreeViewTests.xctest;
-			remoteRef = E56862761D4F096A00761466 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -579,16 +599,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B29A0C3208D33C20087C3D8 /* RATreeView+TableViewDelegate.m in Sources */,
 				E5D84F641D37F58300D5AF18 /* TilePyramidViewController.m in Sources */,
 				E5B566B41D3FD29400DB0FD1 /* StartupViewController.m in Sources */,
+				2B29A09B208D338A0087C3D8 /* RATreeView.m in Sources */,
+				2B29A0BE208D33C20087C3D8 /* RATableView.m in Sources */,
+				2B29A0B9208D33C20087C3D8 /* RATreeNodeItem+Private.m in Sources */,
+				2B29A0BB208D33C20087C3D8 /* RATreeView+TableViewDataSource.m in Sources */,
 				E5D84F611D37F58300D5AF18 /* AppDelegate.m in Sources */,
 				E5823DBD1EA01D6B00889932 /* GPKGFeatureTileSource.m in Sources */,
+				2B29A0C2208D33C20087C3D8 /* RATreeView+Enums.m in Sources */,
+				2B29A0C1208D33C20087C3D8 /* RATreeNodeController.m in Sources */,
 				E5823DBF1EA01D6B00889932 /* GPKGRTreeIndexDao.m in Sources */,
 				E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */,
+				2B29A0C0208D33C20087C3D8 /* RABatchChanges.m in Sources */,
 				E5823DC01EA01D6B00889932 /* GPKGRTreeIndexResults.m in Sources */,
 				E5823DBE1EA01D6B00889932 /* GPKGRTreeIndex.m in Sources */,
+				2B29A0BD208D33C20087C3D8 /* RATreeView+Private.m in Sources */,
+				2B29A0BA208D33C20087C3D8 /* RABatchChangeEntity.m in Sources */,
 				E5823DC11EA01D6B00889932 /* GPKGTileSource.m in Sources */,
 				E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */,
+				2B29A0C4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m in Sources */,
+				2B29A0BF208D33C20087C3D8 /* RATreeNodeCollectionController.m in Sources */,
+				2B29A0C5208D33C20087C3D8 /* RATreeNode.m in Sources */,
+				2B29A0BC208D33C20087C3D8 /* RATreeNodeItem.m in Sources */,
 				E5B566B71D3FE33C00DB0FD1 /* ListTileTablesViewController.m in Sources */,
 				E5D84F5E1D37F58300D5AF18 /* main.m in Sources */,
 			);
@@ -601,11 +635,6 @@
 			isa = PBXTargetDependency;
 			name = WhirlyGlobeMaplyComponent;
 			targetProxy = 2BAFDA88208068F200BAD98E /* PBXContainerItemProxy */;
-		};
-		E568627E1D4F127A00761466 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "RATreeView iOS";
-			targetProxy = E568627D1D4F127A00761466 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -741,7 +770,7 @@
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ranenghosh.WGMaplyGPkgTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mousebirdconsulting.WGMaplyGPkgTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -772,7 +801,7 @@
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ranenghosh.WGMaplyGPkgTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mousebirdconsulting.WGMaplyGPkgTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

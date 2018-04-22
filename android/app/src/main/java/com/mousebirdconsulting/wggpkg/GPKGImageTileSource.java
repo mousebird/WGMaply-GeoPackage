@@ -2,9 +2,11 @@ package com.mousebirdconsulting.wggpkg;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.mousebird.maply.CoordSystem;
+import com.mousebird.maply.MaplyBaseController;
 import com.mousebird.maply.MaplyImageTile;
 import com.mousebird.maply.MaplyTileID;
 import com.mousebird.maply.Mbr;
@@ -35,7 +37,7 @@ import mil.nga.geopackage.tiles.user.TileRow;
  * Implements an image tile source from a GeoPackage table.
  */
 public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
-
+    MaplyBaseController control = null;
     TileDao tileDao;
     int minZoom = 0;
     int maxZoom = 0;
@@ -44,8 +46,9 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
     HashMap<Integer,Integer[]> tileOffsets = new HashMap<Integer,Integer[]>();
     GeoPackage gpkg;
 
-    public GPKGImageTileSource(String database, GeoPackage geoPackage, GeoPackageConnection geoPackageConnection,
+    public GPKGImageTileSource(MaplyBaseController inControl,String database, GeoPackage geoPackage, GeoPackageConnection geoPackageConnection,
                                TileDao inTileDao, HashMap<String, List<Number>> bounds) {
+        control = inControl;
         gpkg = geoPackage;
         tileDao = inTileDao;
         SpatialReferenceSystemDao srsDao = geoPackage.getSpatialReferenceSystemDao();
@@ -212,31 +215,42 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
         return true;
     }
 
-    public void startFetchForTile(QuadImageTileLayerInterface quadLayer, MaplyTileID tileID, int frame)
+    public void startFetchForTile(final QuadImageTileLayerInterface quadLayer, final MaplyTileID tileID, final int frame)
     {
-        GeoPackageTileRetriever tileRetrieve = new GeoPackageTileRetriever(tileDao);
+        control.getWorkingThread().addTask(new Runnable() {
+            @Override
+            public void run() {
+                GeoPackageTileRetriever tileRetrieve = new GeoPackageTileRetriever(tileDao);
 
-        Integer[] offsets = tileOffsets.get(tileID.level);
-        int newX = tileID.x - offsets[0];
-        int newY = ((1 << tileID.level) - tileID.y - 1) - offsets[1];
-        GeoPackageTile tile = tileRetrieve.getTile(newX,newY,tileID.level);
+                Integer[] offsets = tileOffsets.get(tileID.level);
+                int newX = tileID.x - offsets[0];
+                int newY = ((1 << tileID.level) - tileID.y - 1) - offsets[1];
+                GeoPackageTile tile = tileRetrieve.getTile(newX,newY,tileID.level);
 
-        byte[] tileData = null;
-        TileRow tileRow;
-        synchronized (gpkg) {
-            tileRow = tileDao.queryForTile(newX,newY,tileID.level);
-        }
-        if (tileRow != null) {
-            tileData = tileRow.getTileData();
-        }
+                Log.d("GPKG","Started loading: " + tileID);
 
-        if (tileData != null) {
-            Bitmap bm = BitmapFactory.decodeByteArray(tileData, 0, tileData.length);
-            MaplyImageTile imageTile = new MaplyImageTile(bm);
+                byte[] tileData = null;
+                TileRow tileRow;
+                if (gpkg == null || tileDao == null)
+                    return;
+                synchronized (gpkg) {
+                    tileRow = tileDao.queryForTile(newX,newY,tileID.level);
+                }
+                if (tileRow != null) {
+                    tileData = tileRow.getTileData();
+                }
 
-            quadLayer.loadedTile(tileID, frame, imageTile);
-        } else
-            quadLayer.loadedTile(tileID, frame, null);
+                Log.d("GPKG","Loaded: " + tileID);
+
+                if (tileData != null) {
+                    Bitmap bm = BitmapFactory.decodeByteArray(tileData, 0, tileData.length);
+                    MaplyImageTile imageTile = new MaplyImageTile(bm);
+
+                    quadLayer.loadedTile(tileID, frame, imageTile);
+                } else
+                    quadLayer.loadedTile(tileID, frame, null);
+            }
+        });
     }
 
     public void clear(QuadImageTileLayerInterface var1)
