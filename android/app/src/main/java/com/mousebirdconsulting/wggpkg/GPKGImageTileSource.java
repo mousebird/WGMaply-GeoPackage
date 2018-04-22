@@ -79,6 +79,57 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
         Mbr mbr = new Mbr();
         mbr.addPoint(new Point2d(bbox.getMinLongitude(),bbox.getMinLatitude()));
         mbr.addPoint(new Point2d(bbox.getMaxLongitude(),bbox.getMaxLatitude()));
+
+        TileMatrixSet tileMatrixSet = tileDao.getTileMatrixSet();
+        BoundingBox gpkgBBox = tileMatrixSet.getBoundingBox();
+
+        if (!isDegree) {
+            // The data on projection extents is lacking.  We will adjust the
+            //   assumed projection bounds to harmonize them with the layer bounds.
+            // FIXME: We should not have to do this, and it may not be robust.
+            // https://github.com/mousebird/WGMaply-GeoPackage/issues/1
+
+            TileMatrix tileMatrix = tileDao.getTileMatrix(tileDao.getMinZoom());
+            if (tileMatrix == null) {
+                return;
+            }
+
+            double xSridUnitsPerTile = tileMatrix.getTileWidth() * tileMatrix.getPixelXSize();
+            double ySridUnitsPerTile = tileMatrix.getTileHeight() * tileMatrix.getPixelYSize();
+
+            // First guess at projection bounds.
+            // Projection bounds should be a whole multiple of tile spans away from
+            //   the layer bounds.
+            mbr.ll.setValue(gpkgBBox.getMinLongitude() -
+                    Math.round((gpkgBBox.getMinLongitude() - mbr.ll.getX()) / xSridUnitsPerTile) *
+                            xSridUnitsPerTile,
+                    gpkgBBox.getMinLatitude() -
+                        Math.round((gpkgBBox.getMinLatitude() - mbr.ll.getY()) / ySridUnitsPerTile) *
+                            ySridUnitsPerTile);
+            mbr.ur.setValue(gpkgBBox.getMaxLongitude() +
+                    Math.round((mbr.ur.getX() - gpkgBBox.getMaxLongitude()) / xSridUnitsPerTile) *
+                            xSridUnitsPerTile,
+                    gpkgBBox.getMaxLatitude() +
+                            Math.round((mbr.ur.getY() - gpkgBBox.getMaxLatitude()) / ySridUnitsPerTile) *
+                                            ySridUnitsPerTile);
+
+            // Now adjust bounds, if necessary, so that there's the appropriate
+            //  power-of-two tile spans between them to conform to the tile pyramid.
+            int m = ( 1 << tileDao.getMinZoom()) -
+                    (int)(Math.round((mbr.ur.getX() - mbr.ll.getX())) / xSridUnitsPerTile);
+            int n = ( 1 << tileDao.getMinZoom()) -
+                    (int)(Math.round((mbr.ur.getY() - mbr.ll.getY())) / ySridUnitsPerTile);
+            double newLLx = mbr.ll.getX() - (m/2) * xSridUnitsPerTile;
+            double newURx = mbr.ur.getX() + (m-m/2) * xSridUnitsPerTile;
+            double newLLy = mbr.ll.getY() - (n/2) * ySridUnitsPerTile;
+            double newURy = mbr.ur.getY() + (n-n/2) * ySridUnitsPerTile;
+            mbr.ll.setValue(newLLx,newLLy);
+            mbr.ur.setValue(newURx,newURy);
+
+            projMinX = newLLx;
+            projMaxY = newURy;
+        }
+
         coordSys.setBounds(mbr);
 
         int n = -1;
@@ -104,7 +155,6 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
                 return;
             }
 
-            TileMatrixSet tileMatrixSet = tileDao.getTileMatrixSet();
             double xSridUnitsPerTile = n * tileMatrix.getPixelXSize();
             double ySridUnitsPerTile = n * tileMatrix.getPixelYSize();
             double xOffset = (tileMatrixSet.getMinX() - projMinX) / xSridUnitsPerTile;
