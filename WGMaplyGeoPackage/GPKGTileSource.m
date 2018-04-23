@@ -18,6 +18,7 @@
     GPKGStandardFormatTileRetriever *_retriever;
     GPKGTileDao *_tileDao;
     MaplyCoordinateSystem *_coordSys;
+    int zoomOffset;
     NSMutableDictionary *_tileOffsets;
     int _tileSize;
     NSDictionary *_bounds;
@@ -127,7 +128,20 @@
                 p.y = (gpkgBBox.minLatitude.doubleValue + gpkgBBox.maxLatitude.doubleValue)/2.0;
                 _center = [_coordSys localToGeo:p];
             }
-            
+
+            // Some packages have more tiles per zoom level than we'd expect.
+            // In theory this can be more flexible, but this works for now
+            zoomOffset = 0;
+            for (int z=_tileDao.minZoom; z<=_tileDao.maxZoom; z++) {
+                GPKGTileMatrix *tileMatrix = [_tileDao getTileMatrixWithZoomLevel:z];
+                int numTiles = 1<<z;
+                if (tileMatrix.matrixWidth.intValue > numTiles ||
+                    tileMatrix.matrixHeight.intValue > numTiles) {
+                    // Note: Should calculate rather than assuming
+                    zoomOffset = 1;
+                }
+            }
+
             _tileOffsets = [NSMutableDictionary dictionary];
             int n = -1;
             for (int z=_tileDao.minZoom; z<=_tileDao.maxZoom; z++) {
@@ -155,7 +169,7 @@
                 NSLog(@"units per tile %f %f", xSridUnitsPerTile, ySridUnitsPerTile);
                 NSLog(@"min x y %f %f", tileMatrixSet.minX.doubleValue, tileMatrixSet.minY.doubleValue);
                 NSLog(@"offset %i %f %f", z, xOffset, yOffset);
-                _tileOffsets[@(z)] = @[@((int)round(xOffset)), @((int)round(yOffset))];
+                _tileOffsets[@(z+zoomOffset)] = @[@((int)round(xOffset)), @((int)round(yOffset))];
                 
             }
             if (n == -1) {
@@ -187,11 +201,11 @@
 }
 
 - (int)minZoom {
-    return _tileDao.minZoom;
+    return _tileDao.minZoom+zoomOffset;
 }
 
 - (int)maxZoom {
-    return _tileDao.maxZoom;
+    return _tileDao.maxZoom+zoomOffset;
 }
 
 - (nonnull MaplyCoordinateSystem *)coordSys {
@@ -207,6 +221,7 @@
     NSArray *offsets = _tileOffsets[@(tileID.level)];
     int xOffset = ((NSNumber *)offsets[0]).intValue;
     int yOffset = ((NSNumber *)offsets[1]).intValue;
+    int level = tileID.level-zoomOffset;
     
     int newX = tileID.x - xOffset;
     int newY = ((1 << tileID.level) - tileID.y - 1) - yOffset;
@@ -214,7 +229,7 @@
     GPKGGeoPackageTile *gpkgTile;
     @synchronized (_geoPackage) {
         if (_retriever)
-            gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:tileID.level];
+            gpkgTile = [_retriever getTileWithX:newX andY:newY andZoom:level];
     }
     
     return [gpkgTile data];

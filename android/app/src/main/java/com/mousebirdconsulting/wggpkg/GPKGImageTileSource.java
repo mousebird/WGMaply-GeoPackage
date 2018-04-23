@@ -41,6 +41,7 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
     TileDao tileDao;
     int minZoom = 0;
     int maxZoom = 0;
+    int zoomOffset = 0;
     CoordSystem coordSys = null;
     boolean valid = false;
     HashMap<Integer,Integer[]> tileOffsets = new HashMap<Integer,Integer[]>();
@@ -135,6 +136,20 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
 
         coordSys.setBounds(mbr);
 
+        // Some packages have more tiles per zoom level than we'd expect.
+        // In theory this can be more flexible, but this works for now
+        zoomOffset = 0;
+        for (int z=(int)tileDao.getMinZoom(); z<=(int)tileDao.getMaxZoom(); z++)
+        {
+            TileMatrix tileMatrix = tileDao.getTileMatrix(z);
+            int numTiles = 1<<z;
+            if (tileMatrix.getMatrixWidth() > numTiles ||
+                    tileMatrix.getMatrixHeight() > numTiles) {
+                // Note: Should calculate rather than assuming
+                zoomOffset = 1;
+            }
+        }
+
         int n = -1;
         for (int z=(int)tileDao.getMinZoom(); z<=(int)tileDao.getMaxZoom(); z++)
         {
@@ -170,7 +185,7 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
 
             Integer[] offsets = new Integer[2];
             offsets[0] = (int)Math.round(xOffset);  offsets[1] = (int)Math.round(yOffset);
-            tileOffsets.put(z,offsets);
+            tileOffsets.put(z+zoomOffset,offsets);
         }
 
         if (n == -1)
@@ -197,12 +212,12 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
 
     public int minZoom()
     {
-        return (int)tileDao.getMinZoom();
+        return (int)tileDao.getMinZoom()+zoomOffset;
     }
 
     public int maxZoom()
     {
-        return (int)tileDao.getMaxZoom();
+        return (int)tileDao.getMaxZoom()+zoomOffset;
     }
 
     public int pixelsPerSide()
@@ -225,6 +240,7 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
                 Integer[] offsets = tileOffsets.get(tileID.level);
                 int newX = tileID.x - offsets[0];
                 int newY = ((1 << tileID.level) - tileID.y - 1) - offsets[1];
+                int level = tileID.level-zoomOffset;
                 GeoPackageTile tile = tileRetrieve.getTile(newX,newY,tileID.level);
 
                 Log.d("GPKG","Started loading: " + tileID);
@@ -234,7 +250,7 @@ public class GPKGImageTileSource implements QuadImageTileLayer.TileSource {
                 if (gpkg == null || tileDao == null)
                     return;
                 synchronized (gpkg) {
-                    tileRow = tileDao.queryForTile(newX,newY,tileID.level);
+                    tileRow = tileDao.queryForTile(newX,newY,level);
                 }
                 if (tileRow != null) {
                     tileData = tileRow.getTileData();

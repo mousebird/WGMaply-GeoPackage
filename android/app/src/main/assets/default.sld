@@ -69,6 +69,7 @@
                     <se:PolygonSymbolizer>
                         <se:Fill>
                             <se:SvgParameter name="fill">#a020f0</se:SvgParameter>
+							<se:SvgParameter name="fill-opacity">0.25</se:SvgParameter>
                         </se:Fill>
                         <se:Stroke>
                             <se:SvgParameter name="stroke">#ffff00</se:SvgParameter>
