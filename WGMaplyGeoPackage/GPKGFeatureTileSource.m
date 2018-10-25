@@ -51,6 +51,12 @@
     if (tileID.level > _targetLevel)
         return 0;
     
+    MaplyBoundingBoxD geoBboxD;
+    geoBboxD.ll.x = geoBbox.ll.x;
+    geoBboxD.ll.y = geoBbox.ll.y;
+    geoBboxD.ur.x = geoBbox.ur.x;
+    geoBboxD.ur.y = geoBbox.ur.y;
+
     NSMutableDictionary *featureStyles = [NSMutableDictionary new];
     
     GPKGResultSet * geometryIndexResults;
@@ -221,7 +227,10 @@
     for(id key in symbolizerKeys) {
         NSObject<MaplyVectorStyle> *symbolizer = [self.styleDelegate styleForUUID:key viewC:_viewC];
         NSArray *features = featureStyles[key];
-        [compObjs addObjectsFromArray:[symbolizer buildObjects:features forTile:tileID viewC:_viewC]];
+        MaplyVectorTileInfo *tileInfo = [[MaplyVectorTileInfo alloc] init];
+        tileInfo.tileID = tileID;
+        tileInfo.geoBBox = geoBboxD;
+        [compObjs addObjectsFromArray:[symbolizer buildObjects:features forTile:tileInfo viewC:_viewC]];
     }
     
     return n;

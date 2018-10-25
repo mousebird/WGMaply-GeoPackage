@@ -16,7 +16,6 @@
 #import "GPKGUtils.h"
 #import "GPKGRTreeIndex.h"
 
-
 @interface LayerMenuViewItem : NSObject
 @property (nonatomic, strong) NSString *displayText;
 - (id) initWithDisplayText:(NSString *)displayText;
@@ -1036,24 +1035,25 @@
                     break;
                 case GPKG_CDT_MBVECTOR_TILES:
                 {
-                    // Simple style with random colors
-                    MaplyVectorStyleSimpleGenerator *simpleStyle = [[MaplyVectorStyleSimpleGenerator alloc] initWithViewC:theViewC];
-
-                    // The tile source doesn't know what format the data is.  It's just data.
-                    // So we can reuse this for vector data too.
-                    GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
-
-                    // This parses the vector tile data on demand and builds features
-                    MapboxVectorTiles *vecTiles = [[MapboxVectorTiles alloc] initWithTileSource:gpkgTileSource style:simpleStyle viewC:theViewC];
-                    
-                    // Vector tiles are always in spherical mercator, so let's not get too clever
-                    MaplyCoordinateSystem *coordSys = [[MaplySphericalMercator alloc] initWebStandard];
-
-                    // The layer makes it all work
-                    MaplyQuadPagingLayer *layer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:coordSys delegate:vecTiles];
-                    layer.flipY = false;
-                    layer.singleLevelLoading = true;
-                    [self.delegate addFeatureLayer:layer];
+                    // Note: Broke this recently
+//                    // Simple style with random colors
+//                    MaplyVectorStyleSimpleGenerator *simpleStyle = [[MaplyVectorStyleSimpleGenerator alloc] initWithViewC:theViewC];
+//
+//                    // The tile source doesn't know what format the data is.  It's just data.
+//                    // So we can reuse this for vector data too.
+//                    GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
+//
+//                    // This parses the vector tile data on demand and builds features
+//                    MapboxVectorTiles *vecTiles = [[MapboxVectorTiles alloc] initWithTileSource:gpkgTileSource style:simpleStyle viewC:theViewC];
+//                    
+//                    // Vector tiles are always in spherical mercator, so let's not get too clever
+//                    MaplyCoordinateSystem *coordSys = [[MaplySphericalMercator alloc] initWebStandard];
+//
+//                    // The layer makes it all work
+//                    MaplyQuadPagingLayer *layer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:coordSys delegate:vecTiles];
+//                    layer.flipY = false;
+//                    layer.singleLevelLoading = true;
+//                    [self.delegate addFeatureLayer:layer];
                     
                 }
                     break;

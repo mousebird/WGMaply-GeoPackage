@@ -19,22 +19,30 @@ View the latest [Appledoc on CocoaDocs](http://cocoadocs.org/docsets/wkb-ios)
 
 #### Read ####
 
-    //NSData * bytes = ...    
-    
-    WKBByteReader * reader = [[WKBByteReader alloc] initWithData:bytes];
-    [reader setByteOrder:CFByteOrderBigEndian];
-    WKBGeometry * geometry = [WKBGeometryReader readGeometryWithReader:reader];
-    WKBGeometryType geometryType = geometry.geometryType;
+```objectivec
+
+//NSData * bytes = ...    
+
+WKBByteReader * reader = [[WKBByteReader alloc] initWithData:bytes];
+[reader setByteOrder:CFByteOrderBigEndian];
+WKBGeometry * geometry = [WKBGeometryReader readGeometryWithReader:reader];
+WKBGeometryType geometryType = geometry.geometryType;
+
+```
 
 #### Write ####
 
-    //WKBGeometry * geometry = ...
-    
-    WKBByteWriter * writer = [[WKBByteWriter alloc] init];
-    [writer setByteOrder:CFByteOrderBigEndian];
-    [WKBGeometryWriter writeGeometry:geometry withWriter:writer];
-    NSData * bytes = [writer getData];
-    [writer close];
+```objectivec
+
+//WKBGeometry * geometry = ...
+
+WKBByteWriter * writer = [[WKBByteWriter alloc] init];
+[writer setByteOrder:CFByteOrderBigEndian];
+[WKBGeometryWriter writeGeometry:geometry withWriter:writer];
+NSData * bytes = [writer getData];
+[writer close];
+
+```
 
 ### Build ###
 
@@ -61,7 +69,7 @@ Pull from [CocoaPods](https://cocoapods.org/pods/wkb-ios):
 Pull from GitHub:
 
     pod 'wkb-ios', :git => 'https://github.com/ngageoint/geopackage-wkb-iOS.git', :branch => 'master'
-    pod 'wkb-ios', :git => 'https://github.com/ngageoint/geopackage-wkb-iOS.git', :tag => '1.0.6'
+    pod 'wkb-ios', :git => 'https://github.com/ngageoint/geopackage-wkb-iOS.git', :tag => '1.0.9'
 
 Include as local project:
 
@@ -75,19 +83,27 @@ To use from Swift, import the wkb-ios bridging header from the Swift project's b
 
 #### Read ####
 
-    // let bytes: NSData = ...
-    
-    let reader: WKBByteReader = WKBByteReader(data: bytes);
-    reader.byteOrder = Int(CFByteOrderBigEndian.rawValue);
-    let geometry: WKBGeometry = WKBGeometryReader.readGeometryWithReader(reader);
-    let geometryType: WKBGeometryType = geometry.geometryType;
+```swift
+
+// let bytes: NSData = ...
+
+let reader: WKBByteReader = WKBByteReader(data: bytes);
+reader.byteOrder = Int(CFByteOrderBigEndian.rawValue);
+let geometry: WKBGeometry = WKBGeometryReader.readGeometryWithReader(reader);
+let geometryType: WKBGeometryType = geometry.geometryType;
+
+```
 
 #### Write ####
 
-    //let geometry: WKBGeometry = ...
-    
-    let writer: WKBByteWriter = WKBByteWriter();
-    writer.byteOrder = Int(CFByteOrderBigEndian.rawValue);
-    WKBGeometryWriter.writeGeometry(geometry, withWriter: writer);
-    let bytes: NSData = writer.getData();
-    writer.close();
+```swift
+
+//let geometry: WKBGeometry = ...
+
+let writer: WKBByteWriter = WKBByteWriter();
+writer.byteOrder = Int(CFByteOrderBigEndian.rawValue);
+WKBGeometryWriter.writeGeometry(geometry, withWriter: writer);
+let bytes: NSData = writer.getData();
+writer.close();
+
+```

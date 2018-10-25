@@ -13,6 +13,7 @@ NSString * const GPKG_CDT_FEATURES_NAME = @"features";
 NSString * const GPKG_CDT_TILES_NAME = @"tiles";
 NSString * const GPKG_CDT_ATTRIBUTES_NAME = @"attributes";
 NSString * const GPKG_CDT_ELEVATION_TILES_NAME = @"2d-gridded-coverage";
+NSString * const GPKG_CDT_MBVECTOR_TILES_NAME = @"mbvectiles";
 
 @implementation GPKGContentsDataTypes
 
@@ -32,6 +33,9 @@ NSString * const GPKG_CDT_ELEVATION_TILES_NAME = @"2d-gridded-coverage";
         case GPKG_CDT_ELEVATION_TILES:
             name = GPKG_CDT_ELEVATION_TILES_NAME;
             break;
+        case GPKG_CDT_MBVECTOR_TILES:
+            name = GPKG_CDT_MBVECTOR_TILES_NAME;
+            break;
     }
     
     return name;
@@ -47,6 +51,7 @@ NSString * const GPKG_CDT_ELEVATION_TILES_NAME = @"2d-gridded-coverage";
                                [NSNumber numberWithInteger:GPKG_CDT_TILES], GPKG_CDT_TILES_NAME,
                                [NSNumber numberWithInteger:GPKG_CDT_ATTRIBUTES], GPKG_CDT_ATTRIBUTES_NAME,
                                [NSNumber numberWithInteger:GPKG_CDT_ELEVATION_TILES], GPKG_CDT_ELEVATION_TILES_NAME,
+                               [NSNumber numberWithInteger:GPKG_CDT_MBVECTOR_TILES], GPKG_CDT_MBVECTOR_TILES_NAME,
                                nil
                                ];
         NSNumber *enumValue = [GPKGUtils objectForKey:name inDictionary:types];

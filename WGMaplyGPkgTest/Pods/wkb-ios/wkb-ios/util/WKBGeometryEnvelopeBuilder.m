@@ -28,11 +28,6 @@
     
     WKBGeometryEnvelope * envelope = [[WKBGeometryEnvelope alloc] init];
     
-    [envelope setMinX:[[NSDecimalNumber alloc] initWithDouble:DBL_MAX]];
-    [envelope setMaxX:[[NSDecimalNumber alloc] initWithDouble:-DBL_MAX]];
-    [envelope setMinY:[[NSDecimalNumber alloc] initWithDouble:DBL_MAX]];
-    [envelope setMaxY:[[NSDecimalNumber alloc] initWithDouble:-DBL_MAX]];
-    
     [self buildEnvelope:envelope andGeometry:geometry];
     
     return envelope;
@@ -65,6 +60,9 @@
             break;
         case WKB_COMPOUNDCURVE:
             [self addCompoundCurve:(WKBCompoundCurve *)geometry andEnvelope:envelope];
+            break;
+        case WKB_CURVEPOLYGON:
+            [self addCurvePolygon:(WKBCurvePolygon *)geometry andEnvelope:envelope];
             break;
         case WKB_POLYHEDRALSURFACE:
             [self addPolyhedralSurface:(WKBPolyhedralSurface *)geometry andEnvelope:envelope];
@@ -107,16 +105,16 @@
     
     NSDecimalNumber * x = point.x;
     NSDecimalNumber * y = point.y;
-    if([x compare:envelope.minX] == NSOrderedAscending){
+    if(envelope.minX == nil || [x compare:envelope.minX] == NSOrderedAscending){
         [envelope setMinX:x];
     }
-    if([x compare:envelope.maxX] == NSOrderedDescending){
+    if(envelope.maxX == nil || [x compare:envelope.maxX] == NSOrderedDescending){
         [envelope setMaxX:x];
     }
-    if([y compare:envelope.minY] == NSOrderedAscending){
+    if(envelope.minY == nil || [y compare:envelope.minY] == NSOrderedAscending){
         [envelope setMinY:y];
     }
-    if([y compare:envelope.maxY] == NSOrderedDescending){
+    if(envelope.maxY == nil || [y compare:envelope.maxY] == NSOrderedDescending){
         [envelope setMaxY:y];
     }
     if (point.hasZ) {
@@ -197,6 +195,15 @@
     
     for(WKBLineString * lineString in compoundCurve.lineStrings){
         [self addLineString:lineString andEnvelope:envelope];
+    }
+}
+
++(void) addCurvePolygon: (WKBCurvePolygon *) curvePolygon andEnvelope: (WKBGeometryEnvelope *) envelope{
+ 
+    [self updateHasZandMWithEnvelope:envelope andGeometry:curvePolygon];
+    
+    for(WKBCurve * ring in curvePolygon.rings){
+        [self buildEnvelope:envelope andGeometry:ring];
     }
 }
 
