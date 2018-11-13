@@ -937,7 +937,10 @@
         drawPriority = kMaplyVectorDrawPriorityDefault + featureTableItem.zorder.intValue;
     
     GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL sldData:sldData minZoom:1 maxZoom:20];
-        
+    
+    NSDictionary * filterDict = @{@"property_1": @"Ganges"};
+    [featureTileSource setFilterDict:filterDict];
+    
     MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
     vecLayer.numSimultaneousFetches = 1;
     vecLayer.drawPriority = drawPriority;

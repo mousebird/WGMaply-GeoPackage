@@ -198,6 +198,33 @@ NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION = @"geopackage.exten
     return featureRow;
 }
 
+-(GPKGFeatureRow *) getFeatureRowWithResultSet: (GPKGResultSet *)resultSet withFilterInfo:(NSDictionary*) filterInfo {
+    
+    GPKGGeometryIndex * geometryIndex = [self getGeometryIndexWithResultSet:resultSet];
+    
+    NSMutableString * where = [NSMutableString string];
+    NSMutableArray * whereArgs = [NSMutableArray array];
+    
+    [where appendString:[self.rtreeIndexDao buildPkWhereWithValue:geometryIndex.geomId]];
+    
+    [whereArgs addObject:geometryIndex.geomId];
+    
+    if(filterInfo)
+    {
+        for (NSString * key in filterInfo.allKeys) {
+            
+            [where appendString:@" and "];
+            [where appendString:[self.rtreeIndexDao buildWhereWithField:key andValue:[filterInfo objectForKey:key] andOperation:@"=="]];
+            
+            [whereArgs addObject:[filterInfo objectForKey:key]];
+        }
+    }
+    
+    GPKGResultSet * resultSetObj = [self.featureDao queryWhere:where andWhereArgs:whereArgs andGroupBy:nil andHaving:nil andOrderBy:nil andLimit:nil];
+    GPKGFeatureRow * featureRow = (GPKGFeatureRow*)[self.featureDao getFirstObject:resultSetObj];
+    return featureRow;
+}
+
 -(GPKGBoundingBox *)getMinimalBoundingBox {
     return [self.rtreeIndexDao getMinimalBoundingBox];
 }

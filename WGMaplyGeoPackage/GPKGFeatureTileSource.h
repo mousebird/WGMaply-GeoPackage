@@ -30,7 +30,7 @@
 
 @interface GPKGFeatureTileStyler : NSObject
 
-- (int)buildObjectsWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andCompObjs:(NSMutableArray * __nonnull)compObjs;
+- (int)buildObjectsWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andCompObjs:(NSMutableArray * __nonnull)compObjs andFilterDict:(NSDictionary* __nullable)filterDict;
 
 /// @brief The styling delegate turns vector data into visible objects in the toolkit
 @property (nonatomic, strong, nonnull) NSObject<MaplyVectorStyleDelegate> *styleDelegate;
@@ -50,5 +50,7 @@
 - (void)close;
 
 @property (nonatomic, readonly) MaplyCoordinate center;
+
+@property (nonatomic, strong) NSDictionary * filterDict;
 
 @end
