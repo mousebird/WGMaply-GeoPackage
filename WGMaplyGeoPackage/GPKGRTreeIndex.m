@@ -205,7 +205,7 @@ NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION = @"geopackage.exten
     NSMutableString * where = [NSMutableString string];
     NSMutableArray * whereArgs = [NSMutableArray array];
     
-    [where appendString:[self.rtreeIndexDao buildPkWhereWithValue:geometryIndex.geomId]];
+    [where appendString:[self.featureDao buildPkWhereWithValue:geometryIndex.geomId]];
     
     [whereArgs addObject:geometryIndex.geomId];
     
