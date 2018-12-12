@@ -198,7 +198,7 @@ NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION = @"geopackage.exten
     return featureRow;
 }
 
--(GPKGFeatureRow *) getFeatureRowWithResultSet: (GPKGResultSet *)resultSet withFilterInfo:(NSDictionary*) filterInfo {
+-(GPKGFeatureRow *) getFeatureRowWithResultSet: (GPKGResultSet *)resultSet withFilterInfo:(NSDictionary *) filterInfo {
     
     GPKGGeometryIndex * geometryIndex = [self getGeometryIndexWithResultSet:resultSet];
     

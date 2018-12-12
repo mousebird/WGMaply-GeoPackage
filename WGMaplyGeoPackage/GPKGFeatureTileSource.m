@@ -46,7 +46,7 @@
 
 
 
-- (int)buildObjectsWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andCompObjs:(NSMutableArray *)compObjs andFilterDict:(NSDictionary * _Nullable)filterDict {
+- (int)buildObjectsWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andCompObjs:(NSMutableArray *)compObjs andFilterDict:(NSDictionary *)filterDict {
     
     if (tileID.level > _targetLevel)
         return 0;
@@ -85,7 +85,7 @@
         while([results moveToNext]) {
             
             
-            GPKGFeatureRow * row = [_rtreeIndex getFeatureRowWithResultSet:results withFilterInfo:filterDict];
+            GPKGFeatureRow *row = [_rtreeIndex getFeatureRowWithResultSet:results withFilterInfo:filterDict];
             GPKGGeometryData *geometryData = [row getGeometry];
             
             if (!columnNames)
