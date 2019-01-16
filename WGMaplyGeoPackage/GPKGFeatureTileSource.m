@@ -46,7 +46,7 @@
 
 
 
-- (int)buildObjectsWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andCompObjs:(NSMutableArray *)compObjs {
+- (int)buildObjectsWithTileID:(MaplyTileID)tileID andGeoBBox:(MaplyBoundingBox)geoBbox andGeoBBoxDeg:(MaplyBoundingBox)geoBboxDeg andCompObjs:(NSMutableArray *)compObjs andFilterDict:(NSDictionary *)filterDict {
     
     if (tileID.level > _targetLevel)
         return 0;
@@ -85,7 +85,7 @@
         while([results moveToNext]) {
             
             
-            GPKGFeatureRow *row = [_rtreeIndex getFeatureRowWithResultSet:results];
+            GPKGFeatureRow *row = [_rtreeIndex getFeatureRowWithResultSet:results withFilterInfo:filterDict];
             GPKGGeometryData *geometryData = [row getGeometry];
             
             if (!columnNames)
@@ -535,7 +535,7 @@
         NSMutableArray *compObjs = [NSMutableArray array];
         bool complete = true;
         @synchronized (_geoPackage) {
-            n = [_tileParser buildObjectsWithTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andCompObjs:compObjs];
+            n = [_tileParser buildObjectsWithTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andCompObjs:compObjs andFilterDict:self.filterDict];
         }
         
         if (compObjs.count == 0) {

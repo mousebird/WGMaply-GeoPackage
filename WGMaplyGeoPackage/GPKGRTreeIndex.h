@@ -32,6 +32,7 @@ extern NSString * const GPKG_PROP_EXTENSION_RTREE_INDEX_DEFINITION;
 -(GPKGResultSet *) queryWithBoundingBox: (GPKGBoundingBox *) boundingBox andProjection: (GPKGProjection *) projection;
 
 -(GPKGFeatureRow *) getFeatureRowWithResultSet: (GPKGResultSet *) resultSet;
+-(GPKGFeatureRow *) getFeatureRowWithResultSet: (GPKGResultSet *) resultSet withFilterInfo:(NSDictionary *) filterInfo;
 
 -(GPKGBoundingBox *)getMinimalBoundingBox;
 
