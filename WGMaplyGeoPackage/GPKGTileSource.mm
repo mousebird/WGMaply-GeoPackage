@@ -9,11 +9,61 @@
 #import "GPKGTileSource.h"
 #import "GPKGGeoPackageFactory.h"
 #import "GPKGStandardFormatTileRetriever.h"
-#import "MaplyCoordinateSystem.h"
 #import "GPKGProjectionRetriever.h"
+#import "MaplyComponent.h"
+
+// Encapsulates a single tile load request
+@interface GPKGTileFetchInfo : NSObject
+
+@property (nonatomic,assign) int x;
+@property (nonatomic,assign) int y;
+@property (nonatomic,assign) int level;
+
+@end
 
 
-@implementation GPKGTileSource {
+// Internal object used by the QuadImageLoader to generate tile load info
+@interface GPKGTileInfo : NSObject<MaplyTileInfoNew>
+@end
+
+@implementation GPKGTileInfo
+{
+    int minZoom,maxZoom;
+}
+
+- (instancetype)initWithMinZoom:(int)inMinZoom maxZoom:(int)inMaxZoom
+{
+    self = [super init];
+    minZoom = inMinZoom;
+    maxZoom = inMaxZoom;
+    
+    return self;
+}
+
+- (id _Nullable)fetchInfoForTile:(MaplyTileID)tileID flipY:(bool)flipY
+{
+    GPKGTileFetchInfo *fetchInfo = [[GPKGTileFetchInfo alloc] init];
+    fetchInfo.x = tileID.x;
+    fetchInfo.y = tileID.y;
+    fetchInfo.level = tileID.level;
+    
+    return fetchInfo;
+}
+
+- (int)minZoom
+{
+    return minZoom;
+}
+
+- (int)maxZoom
+{
+    return maxZoom;
+}
+
+@end
+
+
+@implementation GPKGTileFetcher {
     GPKGGeoPackage *_geoPackage;
     GPKGStandardFormatTileRetriever *_retriever;
     GPKGTileDao *_tileDao;
@@ -23,7 +73,6 @@
     int _tileSize;
     NSDictionary *_bounds;
     MaplyCoordinate _center;
-    
 }
 
 - (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds {

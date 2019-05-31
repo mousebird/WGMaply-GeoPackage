@@ -4,3 +4,6 @@
 [submodule "libs/WhirlyGlobe"]
 	path = libs/WhirlyGlobe
 	url = https://github.com/mousebird/WhirlyGlobe.git
+[submodule "libs/WhirlyGlobe-3"]
+	path = libs/WhirlyGlobe-3
+	url = https://github.com/mousebird/WhirlyGlobe-3

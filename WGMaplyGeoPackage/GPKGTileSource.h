@@ -14,11 +14,14 @@
 /**
     A tile source implementation that works with a GeoPackage tile layer.
   */
-@interface GPKGTileSource : NSObject <MaplyTileSource>
+@interface GPKGTileFetcher : NSObject <MaplyTileFetcher>
 
 /** Set up with a GeoPackage and the table name we'd like to load as an image layer.
   */
-- (id)initWithGeoPackage:(GPKGGeoPackage *)geoPackage tableName:(NSString *)tableName bounds:(NSDictionary *)bounds;
+- (id _Nullable )initWithGeoPackage:(GPKGGeoPackage *_Nonnull)geoPackage tableName:(NSString *_Nonnull)tableName bounds:(NSDictionary *_Nullable)bounds;
+
+/// TileInfo objected needed by a QuadImageLoader
+- (nullable NSObject<MaplyTileInfoNew> *)tileInfo;
 
 - (void)close;
 

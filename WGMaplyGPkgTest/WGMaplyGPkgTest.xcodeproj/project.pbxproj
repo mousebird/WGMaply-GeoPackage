@@ -21,8 +21,9 @@
 		2B29A0C3208D33C20087C3D8 /* RATreeView+TableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B2208D33C20087C3D8 /* RATreeView+TableViewDelegate.m */; };
 		2B29A0C4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m */; };
 		2B29A0C5208D33C20087C3D8 /* RATreeNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B29A0B5208D33C20087C3D8 /* RATreeNode.m */; };
-		2BAFDA86208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
-		2BAFDA87208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2B7E689722A0A07000BBFD9E /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */; };
+		2B7E689822A0A07B00BBFD9E /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */; };
+		2B7E689922A0A07B00BBFD9E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
 		E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = E5190A5E1D49B5A7003130E2 /* map_pin.png */; };
 		E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */; };
@@ -35,12 +36,11 @@
 		E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */; };
 		E56E11051D51D4E3004B47F7 /* LayerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */; };
 		E56E11071D53DB95004B47F7 /* ic_geometry.png in Resources */ = {isa = PBXBuildFile; fileRef = E56E11061D53DB95004B47F7 /* ic_geometry.png */; };
-		E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */; };
 		E5823DBD1EA01D6B00889932 /* GPKGFeatureTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB31EA01D6B00889932 /* GPKGFeatureTileSource.m */; };
 		E5823DBE1EA01D6B00889932 /* GPKGRTreeIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB51EA01D6B00889932 /* GPKGRTreeIndex.m */; };
 		E5823DBF1EA01D6B00889932 /* GPKGRTreeIndexDao.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB71EA01D6B00889932 /* GPKGRTreeIndexDao.m */; };
 		E5823DC01EA01D6B00889932 /* GPKGRTreeIndexResults.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DB91EA01D6B00889932 /* GPKGRTreeIndexResults.m */; };
-		E5823DC11EA01D6B00889932 /* GPKGTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = E5823DBB1EA01D6B00889932 /* GPKGTileSource.m */; };
+		E5823DC11EA01D6B00889932 /* GPKGTileSource.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5823DBB1EA01D6B00889932 /* GPKGTileSource.mm */; };
 		E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577D1DBDBA3400680149 /* mainNAVL.sld */; };
 		E5A357851DBEA18D00680149 /* DME.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A3577F1DBEA18D00680149 /* DME.png */; };
 		E5A357861DBEA18D00680149 /* NDB.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A357801DBEA18D00680149 /* NDB.png */; };
@@ -67,40 +67,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2BAFDA88208068F200BAD98E /* PBXContainerItemProxy */ = {
+		2B7E689322A0A06D00BBFD9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
+			containerPortal = 2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2BE536FF1D2499E500B60FAD;
+			remoteInfo = WhirlyGlobeMaplyComponent;
+		};
+		2B7E689522A0A06D00BBFD9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2BE537091D2499E500B60FAD;
+			remoteInfo = WhirlyGlobeMaplyComponentTests;
+		};
+		2B7E689A22A0A07B00BBFD9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2BE536FE1D2499E500B60FAD;
 			remoteInfo = WhirlyGlobeMaplyComponent;
-		};
-		E56E4A791E831FB4008F0194 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2BE536FF1D2499E500B60FAD;
-			remoteInfo = WhirlyGlobeMaplyComponent;
-		};
-		E56E4A7B1E831FB4008F0194 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2BE537091D2499E500B60FAD;
-			remoteInfo = WhirlyGlobeMaplyComponentTests;
-		};
-		E5D84F801D38010200D5AF18 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2BE536FF1D2499E500B60FAD;
-			remoteInfo = WhirlyGlobeMaplyComponent;
-		};
-		E5D84F821D38010200D5AF18 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2BE537091D2499E500B60FAD;
-			remoteInfo = WhirlyGlobeMaplyComponentTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -111,7 +97,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				2BAFDA87208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */,
+				2B7E689922A0A07B00BBFD9E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -150,6 +136,7 @@
 		2B29A0B6208D33C20087C3D8 /* RABatchChanges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RABatchChanges.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RABatchChanges.h"; sourceTree = "<group>"; };
 		2B29A0B7208D33C20087C3D8 /* RATreeNodeCollectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNodeCollectionController.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeCollectionController.h"; sourceTree = "<group>"; };
 		2B29A0B8208D33C20087C3D8 /* RATreeNode_ClassExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNode_ClassExtension.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNode_ClassExtension.h"; sourceTree = "<group>"; };
+		2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe-3/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5190A5E1D49B5A7003130E2 /* map_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_pin.png; sourceTree = "<group>"; };
@@ -165,7 +152,6 @@
 		E56E11021D51D4E3004B47F7 /* LayerTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerTableViewCell.m; sourceTree = "<group>"; };
 		E56E11031D51D4E3004B47F7 /* LayerTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LayerTableViewCell.xib; sourceTree = "<group>"; };
 		E56E11061D53DB95004B47F7 /* ic_geometry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_geometry.png; path = icons/ic_geometry.png; sourceTree = "<group>"; };
-		E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
 		E5823DB21EA01D6B00889932 /* GPKGFeatureTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGFeatureTileSource.h; path = ../WGMaplyGeoPackage/GPKGFeatureTileSource.h; sourceTree = "<group>"; };
 		E5823DB31EA01D6B00889932 /* GPKGFeatureTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGFeatureTileSource.m; path = ../WGMaplyGeoPackage/GPKGFeatureTileSource.m; sourceTree = "<group>"; };
 		E5823DB41EA01D6B00889932 /* GPKGRTreeIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGRTreeIndex.h; path = ../WGMaplyGeoPackage/GPKGRTreeIndex.h; sourceTree = "<group>"; };
@@ -175,7 +161,7 @@
 		E5823DB81EA01D6B00889932 /* GPKGRTreeIndexResults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGRTreeIndexResults.h; path = ../WGMaplyGeoPackage/GPKGRTreeIndexResults.h; sourceTree = "<group>"; };
 		E5823DB91EA01D6B00889932 /* GPKGRTreeIndexResults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGRTreeIndexResults.m; path = ../WGMaplyGeoPackage/GPKGRTreeIndexResults.m; sourceTree = "<group>"; };
 		E5823DBA1EA01D6B00889932 /* GPKGTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPKGTileSource.h; path = ../WGMaplyGeoPackage/GPKGTileSource.h; sourceTree = "<group>"; };
-		E5823DBB1EA01D6B00889932 /* GPKGTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPKGTileSource.m; path = ../WGMaplyGeoPackage/GPKGTileSource.m; sourceTree = "<group>"; };
+		E5823DBB1EA01D6B00889932 /* GPKGTileSource.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GPKGTileSource.mm; path = ../WGMaplyGeoPackage/GPKGTileSource.mm; sourceTree = "<group>"; };
 		E5A3577D1DBDBA3400680149 /* mainNAVL.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainNAVL.sld; sourceTree = "<group>"; };
 		E5A3577F1DBEA18D00680149 /* DME.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DME.png; sourceTree = "<group>"; };
 		E5A357801DBEA18D00680149 /* NDB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDB.png; sourceTree = "<group>"; };
@@ -200,7 +186,6 @@
 		E5D84F6B1D37F58300D5AF18 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E5D84F6D1D37F58300D5AF18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E5D84F751D37FF4100D5AF18 /* GPkgTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPkgTestConfig.h; sourceTree = "<group>"; };
-		E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
 		E5D84F851D38015700D5AF18 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E5D84F871D38015E00D5AF18 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		E5D84F891D38016400D5AF18 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -215,12 +200,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E56E4A7D1E831FCC008F0194 /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
+				2B7E689722A0A07000BBFD9E /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
 				E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */,
-				2BAFDA86208068F200BAD98E /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
 				E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */,
 				E5D84F8A1D38016400D5AF18 /* libz.tbd in Frameworks */,
 				E5D84F881D38015E00D5AF18 /* libc++.tbd in Frameworks */,
+				2B7E689822A0A07B00BBFD9E /* WhirlyGlobeMaplyComponent.framework in Frameworks */,
 				E5D84F861D38015700D5AF18 /* CoreLocation.framework in Frameworks */,
 				53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */,
 			);
@@ -275,28 +260,27 @@
 			name = RATreeView;
 			sourceTree = "<group>";
 		};
+		2B7E688F22A0A06D00BBFD9E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */,
+				2B7E689622A0A06D00BBFD9E /* WhirlyGlobeMaplyComponentTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		5877722F8265A0C7942B11C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */,
+				2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */,
 				E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */,
 				E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */,
 				E5D84F891D38016400D5AF18 /* libz.tbd */,
 				E5D84F871D38015E00D5AF18 /* libc++.tbd */,
 				E5D84F851D38015700D5AF18 /* CoreLocation.framework */,
-				E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */,
 				7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		E56E4A751E831FB3008F0194 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */,
-				E56E4A7C1E831FB4008F0194 /* WhirlyGlobeMaplyComponentTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		E5823DA91EA01D2500889932 /* WGMaplyGeoPackage */ = {
@@ -312,7 +296,7 @@
 				E5823DB81EA01D6B00889932 /* GPKGRTreeIndexResults.h */,
 				E5823DB91EA01D6B00889932 /* GPKGRTreeIndexResults.m */,
 				E5823DBA1EA01D6B00889932 /* GPKGTileSource.h */,
-				E5823DBB1EA01D6B00889932 /* GPKGTileSource.m */,
+				E5823DBB1EA01D6B00889932 /* GPKGTileSource.mm */,
 			);
 			name = WGMaplyGeoPackage;
 			sourceTree = "<group>";
@@ -387,15 +371,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		E5D84F7B1D38010100D5AF18 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E5D84F811D38010200D5AF18 /* WhirlyGlobeMaplyComponent.framework */,
-				E5D84F831D38010200D5AF18 /* WhirlyGlobeMaplyComponentTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E5F576CA1DD19A1A009282C6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -431,7 +406,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2BAFDA89208068F200BAD98E /* PBXTargetDependency */,
+				2B7E689B22A0A07B00BBFD9E /* PBXTargetDependency */,
 			);
 			name = WGMaplyGPkgTest;
 			productName = WGMaplyGPkgTest;
@@ -459,6 +434,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -467,12 +443,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = E56E4A751E831FB3008F0194 /* Products */;
-					ProjectRef = E56E4A741E831FB3008F0194 /* WhirlyGlobeMaplyComponent.xcodeproj */;
-				},
-				{
-					ProductGroup = E5D84F7B1D38010100D5AF18 /* Products */;
-					ProjectRef = E5D84F7A1D38010100D5AF18 /* WhirlyGlobeMaplyComponent.xcodeproj */;
+					ProductGroup = 2B7E688F22A0A06D00BBFD9E /* Products */;
+					ProjectRef = 2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -483,32 +455,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		E56E4A7A1E831FB4008F0194 /* WhirlyGlobeMaplyComponent.framework */ = {
+		2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = WhirlyGlobeMaplyComponent.framework;
-			remoteRef = E56E4A791E831FB4008F0194 /* PBXContainerItemProxy */;
+			remoteRef = 2B7E689322A0A06D00BBFD9E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E56E4A7C1E831FB4008F0194 /* WhirlyGlobeMaplyComponentTests.xctest */ = {
+		2B7E689622A0A06D00BBFD9E /* WhirlyGlobeMaplyComponentTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = WhirlyGlobeMaplyComponentTests.xctest;
-			remoteRef = E56E4A7B1E831FB4008F0194 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E5D84F811D38010200D5AF18 /* WhirlyGlobeMaplyComponent.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = WhirlyGlobeMaplyComponent.framework;
-			remoteRef = E5D84F801D38010200D5AF18 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E5D84F831D38010200D5AF18 /* WhirlyGlobeMaplyComponentTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = WhirlyGlobeMaplyComponentTests.xctest;
-			remoteRef = E5D84F821D38010200D5AF18 /* PBXContainerItemProxy */;
+			remoteRef = 2B7E689522A0A06D00BBFD9E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -609,7 +567,7 @@
 				E5823DBE1EA01D6B00889932 /* GPKGRTreeIndex.m in Sources */,
 				2B29A0BD208D33C20087C3D8 /* RATreeView+Private.m in Sources */,
 				2B29A0BA208D33C20087C3D8 /* RABatchChangeEntity.m in Sources */,
-				E5823DC11EA01D6B00889932 /* GPKGTileSource.m in Sources */,
+				E5823DC11EA01D6B00889932 /* GPKGTileSource.mm in Sources */,
 				E56E11041D51D4E3004B47F7 /* LayerTableViewCell.m in Sources */,
 				2B29A0C4208D33C20087C3D8 /* RATreeView+RATreeNodeCollectionControllerDataSource.m in Sources */,
 				2B29A0BF208D33C20087C3D8 /* RATreeNodeCollectionController.m in Sources */,
@@ -623,10 +581,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2BAFDA89208068F200BAD98E /* PBXTargetDependency */ = {
+		2B7E689B22A0A07B00BBFD9E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = WhirlyGlobeMaplyComponent;
-			targetProxy = 2BAFDA88208068F200BAD98E /* PBXContainerItemProxy */;
+			targetProxy = 2B7E689A22A0A07B00BBFD9E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -750,13 +708,13 @@
 					"\"${PODS_ROOT}/Headers/Public/geopackage-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/ios/library/WhirlyGlobe-MaplyComponent/include\"",
 					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/ios/library/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/third-party/KissXML/KissXML\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/ios/library/WhirlyGlobeLib/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/third-party/eigen/\"",
 					"\"$(SRCROOT)/../WGMaplyGeoPackage\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
@@ -781,13 +739,13 @@
 					"\"${PODS_ROOT}/Headers/Public/geopackage-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/proj4\"",
 					"\"${PODS_ROOT}/Headers/Public/wkb-ios\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/ios/library/WhirlyGlobe-MaplyComponent/include\"",
 					"\"$(SRCROOT)/../libs/RATreeView/RATreeView/RATreeView\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/KissXML/KissXML\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/ios/library/WhirlyGlobe-MaplyComponent/include/vector_tiles\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/third-party/KissXML/KissXML\"",
 					"\"$(SDKROOT)/usr/include/libxml2\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/ios/library/WhirlyGlobeLib/include\"",
-					"\"$(SRCROOT)/../libs/WhirlyGlobe/third-party/eigen/\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/ios/library/WhirlyGlobeLib/include\"",
+					"\"$(SRCROOT)/../libs/WhirlyGlobe-3/third-party/eigen/\"",
 					"\"$(SRCROOT)/../WGMaplyGeoPackage\"",
 				);
 				INFOPLIST_FILE = WGMaplyGPkgTest/Info.plist;
