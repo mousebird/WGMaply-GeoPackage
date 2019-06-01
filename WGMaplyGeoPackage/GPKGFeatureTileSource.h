@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "MaplyComponent.h"
 #import "GPKGProgress.h"
-#import "MapboxVectorTiles.h"
 
 
 //#define GPKG_FEATURE_TILE_SOURCE_MAX_POINTS 4096
@@ -41,16 +40,18 @@
 
 @end
 
-
-
-
-@interface GPKGFeatureTileSource : NSObject <MaplyPagingDelegate, GPKGProgress>
+/** Feature Tile Source loads feature data for individual "tiles".
+  */
+@interface GPKGFeatureTileFetcher : MaplySimpleTileFetcher <GPKGProgress>
 
 - (id __nullable)initWithGeoPackage:(GPKGGeoPackage * __nonnull)geoPackage tableName:(NSString * __nonnull)tableName bounds:(NSDictionary * __nonnull)bounds sldURL:(NSURL * __nullable)sldURL sldData:(NSData * __nullable)sldData minZoom:(unsigned int)minZoom maxZoom:(unsigned int)maxZoom;
 - (void)close;
 
 @property (nonatomic, readonly) MaplyCoordinate center;
 
-@property (nonatomic, strong) NSDictionary * filterDict;
+@property (nonatomic, strong,nullable) NSDictionary * filterDict;
+
+/// This needs to be set after the fact to get geometry info
+@property (weak,nullable) MaplyQuadLoaderBase *loader;
 
 @end

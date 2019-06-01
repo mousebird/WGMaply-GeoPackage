@@ -10,7 +10,6 @@
 #import "GPkgTestConfig.h"
 #import "GPKGGeoPackageFactory.h"
 #import "GPKGTileSource.h"
-#import "MaplyWMSTileSource.h"
 #import "GPKGIOUtils.h"
 #import "GPKGFeatureTileSource.h"
 
@@ -28,13 +27,13 @@
     GPKGGeoPackage *_geoPackage;
 
     
-    GPKGTileSource *_gpkgTileSource;
-    MaplyQuadImageTilesLayer *_imageLayer;
+    GPKGTileFetcher *_gpkgTileFetcher;
+    MaplyQuadImageLoader *_imageLoader;
     
     LayerMenuViewController *_layerMenuVC;
     UIPopoverController *_popControl;
     
-    MaplyQuadImageTilesLayer *_basemapLayer;
+    MaplyQuadImageLoader *_basemapLoader;
     
 }
 
@@ -89,11 +88,11 @@
 
 }
 
-- (NSDictionary <NSString *, MaplyRemoteTileInfo *> *) getBasemapLayerTileInfoDict {
+- (NSDictionary <NSString *, MaplyRemoteTileInfoNew *> *) getBasemapLayerTileInfoDict {
     
     return @{
-             @"Light" :    [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://basemaps.cartocdn.com/rastertiles/voyager/" ext:@"png" minZoom:0 maxZoom:20],
-             @"Dark" : [[MaplyRemoteTileInfo alloc] initWithBaseURL:@"http://s.basemaps.cartocdn.com/dark_all/" ext:@"png" minZoom:0 maxZoom:20],
+             @"Light" :    [[MaplyRemoteTileInfoNew alloc] initWithBaseURL:@"http://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png" minZoom:0 maxZoom:20],
+             @"Dark" : [[MaplyRemoteTileInfoNew alloc] initWithBaseURL:@"http://s.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" minZoom:0 maxZoom:20],
              };
 }
 
@@ -116,29 +115,29 @@
     _layerMenuVC.view.frame = CGRectMake(0, 0, 400.0,4.0/5.0*self.view.bounds.size.height);
 }
 
-- (void) setBasemapLayer:(MaplyQuadImageTilesLayer *)basemapLayer {
-    if (_basemapLayer) {
-        [theViewC removeLayer:_basemapLayer];
+- (void) setBasemapLoader:(MaplyQuadImageLoader *)basemapLoader {
+    if (_basemapLoader) {
+        [_basemapLoader shutdown];
     }
-    _basemapLayer = basemapLayer;
-    [theViewC addLayer:_basemapLayer];
+    _basemapLoader = basemapLoader;
 }
 
-- (void) addTileLayer:(MaplyQuadImageTilesLayer *)tileLayer {
-    [theViewC addLayer:tileLayer];
+- (void)addTileLoader:(MaplyQuadImageLoader *)tileLayer
+{
 }
 
-- (void) removeTileLayer:(MaplyQuadImageTilesLayer *)tileLayer {
-    [theViewC removeLayer:tileLayer];
+- (void)removeTileLoader:(MaplyQuadImageLoader *)tileLayer
+{
+    [tileLayer shutdown];
 }
 
-- (void) addFeatureLayer:(MaplyQuadPagingLayer *)featureLayer {
-    [theViewC addLayer:featureLayer];
+- (void)addFeatureLoader:(MaplyQuadPagingLoader *)featureLayer
+{
 }
 
-- (void) removeFeatureLayer:(MaplyQuadPagingLayer *)featureLayer {
-    [theViewC removeLayer:featureLayer];
+- (void)removeFeatureLoader:(MaplyQuadPagingLoader *)featureLayer
+{
+    [featureLayer shutdown];
 }
-
 
 @end

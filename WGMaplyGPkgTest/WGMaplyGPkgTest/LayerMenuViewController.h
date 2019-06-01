@@ -11,20 +11,14 @@
 #import "GPKGProgress.h"
 #import "WhirlyGlobeComponent.h"
 
-
-@class MaplyQuadImageTilesLayer;
-@class MaplyQuadPagingLayer;
-@class MaplyRemoteTileInfo;
-@class MaplyCoordinateSystem;
-
 @protocol LayerMenuViewControllerDelegate <NSObject>
-- (void) setBasemapLayer:(MaplyQuadImageTilesLayer *)basemapLayer;
+- (void) setBasemapLoader:(MaplyQuadImageLoader *)basemapLayer;
 
-- (void) addTileLayer:(MaplyQuadImageTilesLayer *)tileLayer;
-- (void) removeTileLayer:(MaplyQuadImageTilesLayer *)tileLayer;
+- (void) addTileLoader:(MaplyQuadImageLoader *)tileLayer;
+- (void) removeTileLoader:(MaplyQuadImageLoader *)tileLayer;
 
-- (void) addFeatureLayer:(MaplyQuadPagingLayer *)featureLayer;
-- (void) removeFeatureLayer:(MaplyQuadPagingLayer *)featureLayer;
+- (void) addFeatureLoader:(MaplyQuadPagingLoader *)featureLayer;
+- (void) removeFeatureLoader:(MaplyQuadPagingLoader *)featureLayer;
 @end
 
 
@@ -36,7 +30,7 @@
 
 @interface LayerMenuViewController : UIViewController <RATreeViewDataSource, RATreeViewDelegate, GPKGProgress, LayerMenuViewItemDelegate>
 
-- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys viewC:(MaplyBaseViewController *)viewC;
+- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfoNew *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys viewC:(MaplyBaseViewController *)viewC;
 
 @property (nonatomic, weak) NSObject<LayerMenuViewControllerDelegate> *delegate;
 

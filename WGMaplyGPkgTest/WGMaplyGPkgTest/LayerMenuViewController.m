@@ -141,8 +141,8 @@
 @property (nonatomic, weak) LayerMenuViewGeopackageItem *geopackageItem;
 @property (nonatomic, strong) NSString *tileTableName;
 
-@property (nonatomic, strong) GPKGTileSource *tileSource;
-@property (nonatomic, strong) MaplyQuadImageTilesLayer *imageLayer;
+@property (nonatomic, strong) GPKGTileFetcher *tileFetcher;
+@property (nonatomic, strong) MaplyQuadImageLoader *imageLoader;
 
 @property (nonatomic, weak) NSObject<LayerMenuViewItemDelegate> *delegate;
 
@@ -178,7 +178,7 @@
     
     cell.idxImage.image = nil;
     
-    cell.enabledSwitch.on = (self.imageLayer != nil);
+    cell.enabledSwitch.on = (self.imageLoader != nil);
     
     [cell.enabledSwitch removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
     [cell.enabledSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
@@ -201,8 +201,8 @@
 @property (nonatomic, weak) LayerMenuViewGeopackageItem *geopackageItem;
 @property (nonatomic, strong) NSString *featureTableName;
 
-@property (nonatomic, strong) GPKGFeatureTileSource *featureSource;
-@property (nonatomic, strong) MaplyQuadPagingLayer *pagingLayer;
+@property (nonatomic, strong) GPKGFeatureTileFetcher *featureFetcher;
+@property (nonatomic, strong) MaplyQuadPagingLoader *pagingLayer;
 
 @property (nonatomic, weak) NSObject<LayerMenuViewItemDelegate> *delegate;
 
@@ -312,7 +312,7 @@
 
 @interface LayerMenuViewController () {
     RATreeView *_treeView;
-    NSDictionary <NSString *, MaplyRemoteTileInfo *> *_basemapLayerTileInfoDict;
+    NSDictionary <NSString *, MaplyRemoteTileInfoNew *> *_basemapLayerTileInfoDict;
     NSArray<LayerMenuViewBasemapItem *> *_basemapLayerEntries;
     NSArray<LayerMenuViewGeopackageItem *> *_geopackageEntries;
     int _firstBasemapLayerIndex, _lastBasemapLayerIndex, _firstGeopackageIndex, _lastGeopackageIndex;
@@ -330,7 +330,7 @@
 @implementation LayerMenuViewController
 
 
-- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfo *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys viewC:(MaplyBaseViewController *)viewC {
+- (id) initWithBasemapLayerTileInfoDict:(NSDictionary<NSString *, MaplyRemoteTileInfoNew *> *)basemapLayerTileInfoDict bounds:(NSDictionary *)bounds coordSys:(MaplyCoordinateSystem *)coordSys viewC:(MaplyBaseViewController *)viewC {
     
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
@@ -438,7 +438,7 @@
 - (void)setBasemapLayerIndex:(int)basemapLayerIndex {
     if (!self.delegate || !_basemapLayerTileInfoDict || _basemapLayerTileInfoDict.count <= basemapLayerIndex)
         return;
-    MaplyRemoteTileInfo *ti = _basemapLayerTileInfoDict[_basemapLayerEntries[basemapLayerIndex].displayText];
+    MaplyRemoteTileInfoNew *ti = _basemapLayerTileInfoDict[_basemapLayerEntries[basemapLayerIndex].displayText];
     MaplyRemoteTileSource *tileSource = [[MaplyRemoteTileSource alloc] initWithInfo:ti];
     MaplyQuadImageTilesLayer *layer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:tileSource.coordSys tileSource:tileSource];
     layer.drawPriority = kMaplyImageLayerDrawPriorityDefault;

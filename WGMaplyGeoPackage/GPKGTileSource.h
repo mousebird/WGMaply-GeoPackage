@@ -14,7 +14,7 @@
 /**
     A tile source implementation that works with a GeoPackage tile layer.
   */
-@interface GPKGTileFetcher : NSObject <MaplyTileFetcher>
+@interface GPKGTileFetcher : MaplySimpleTileFetcher
 
 /** Set up with a GeoPackage and the table name we'd like to load as an image layer.
   */
@@ -23,9 +23,19 @@
 /// TileInfo objected needed by a QuadImageLoader
 - (nullable NSObject<MaplyTileInfoNew> *)tileInfo;
 
-- (void)close;
+// Min zoom read from file
+- (int)minZoom;
+
+// Max zoom read from file
+- (int)maxZoom;
+
+// Close the GeoPackage table and so forth
+- (void)shutdown;
 
 /// Center of the layer
 @property (nonatomic, readonly) MaplyCoordinate center;
+
+// Coordinate system of the data
+- (MaplyCoordinateSystem * __nonnull)coordSys;
 
 @end
