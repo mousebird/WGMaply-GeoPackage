@@ -438,10 +438,10 @@
         
         
         if ((gpkgBBox.minLongitude.doubleValue == gpkgBBox.maxLongitude.doubleValue) || (gpkgBBox.minLatitude.doubleValue == gpkgBBox.maxLatitude.doubleValue))
-            _targetLevel = self.minZoom;
+            _targetLevel = _minZoom;
         else {
-            _targetLevel = self.maxZoom;
-            for (int level=self.minZoom; level<self.maxZoom; level++) {
+            _targetLevel = _maxZoom;
+            for (int level=_minZoom; level<_maxZoom; level++) {
                 double xSridUnitsPerTile = (bbox.ur.x - bbox.ll.x) / (1 << level);
                 double ySridUnitsPerTile = (bbox.ur.y - bbox.ll.y) / (1 << level);
                 
@@ -484,7 +484,7 @@
 }
 
 - (int)maxZoom {
-    return _maxZoom;
+    return MIN(_maxZoom,_targetLevel);
 }
 
 - (MaplyCoordinate)center {
@@ -506,7 +506,7 @@
             else
                 [_styleSet loadSldURL:_sldURL];
 
-            _tileParser = [[GPKGFeatureTileStyler alloc] initWithStyle:_styleSet viewC:_loader.viewC targetLevel:_targetLevel maxZoom:self.maxZoom markerImage:_markerImage rtreeIndex:_rtreeIndex geomProjTransform:_geomProjTransform];
+            _tileParser = [[GPKGFeatureTileStyler alloc] initWithStyle:_styleSet viewC:_loader.viewC targetLevel:_targetLevel maxZoom:_maxZoom markerImage:_markerImage rtreeIndex:_rtreeIndex geomProjTransform:_geomProjTransform];
         }
     }
     
@@ -522,9 +522,11 @@
         n = [_tileParser buildObjectsWithTileID:tileID andGeoBBox:geoBbox andGeoBBoxDeg:geoBboxDeg andCompObjs:compObjs andFilterDict:self.filterDict];
     }
     
+//    NSLog(@"Trying to load %d : (%d,%d)",tileID.level,tileID.x,tileID.y);
+    
     if (compObjs.count == 0) {
-        if (n > 0 && tileID.level > 5) {
-            
+        if (n > 0 && tileID.level > 1) {
+
             MaplyCoordinate coords[5];
             coords[0] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ll.y);
             coords[1] = MaplyCoordinateMake(geoBbox.ur.x, geoBbox.ll.y);
@@ -532,6 +534,7 @@
             coords[3] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ur.y);
             coords[4] = MaplyCoordinateMake(geoBbox.ll.x, geoBbox.ll.y);
             MaplyVectorObject *vecObj = [[MaplyVectorObject alloc] initWithLineString:coords numCoords:5 attributes:nil];
+            [vecObj subdivideToGlobe:0.001];
             
             MaplyComponentObject *vecCompObj = [_loader.viewC addVectors:@[vecObj] desc:_gridDesc mode:MaplyThreadCurrent];
             
