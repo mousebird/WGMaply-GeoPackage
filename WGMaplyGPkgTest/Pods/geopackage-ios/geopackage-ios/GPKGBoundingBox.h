@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-@import MapKit;
+#import <MapKit/MapKit.h>
 #import "WKBGeometryEnvelope.h"
 
 /**

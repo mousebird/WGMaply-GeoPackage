@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "GPKGSpatialReferenceSystem.h"
 #import "GPKGBoundingBox.h"
+#import "GPKGContentsDataTypes.h"
 
 /**
  *  Contents table constants

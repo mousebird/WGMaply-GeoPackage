@@ -434,15 +434,22 @@
         [_treeView selectRowForItem:selBasemapItem animated:NO scrollPosition:RATreeViewScrollPositionNone];
 }
 
-
 - (void)setBasemapLayerIndex:(int)basemapLayerIndex {
     if (!self.delegate || !_basemapLayerTileInfoDict || _basemapLayerTileInfoDict.count <= basemapLayerIndex)
         return;
     MaplyRemoteTileInfoNew *ti = _basemapLayerTileInfoDict[_basemapLayerEntries[basemapLayerIndex].displayText];
-    MaplyRemoteTileSource *tileSource = [[MaplyRemoteTileSource alloc] initWithInfo:ti];
-    MaplyQuadImageTilesLayer *layer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:tileSource.coordSys tileSource:tileSource];
-    layer.drawPriority = kMaplyImageLayerDrawPriorityDefault;
-    layer.handleEdges = true;
+    
+    // These describe how we want to break down the globe
+    MaplySamplingParams *params = [[MaplySamplingParams alloc] init];
+    params.coordSys = ti.coordSys;
+    params.coverPoles = false;
+    params.edgeMatching = true;
+    params.minZoom = ti.minZoom;
+    params.maxZoom = ti.maxZoom;
+    params.singleLevel = true;
+    
+    // This does the actual data loading
+    MaplyQuadImageLoader *loader = [[MaplyQuadImageLoader alloc] initWithParams:params tileInfo:ti viewC:theViewC];
     
     for (id selItem in [_treeView itemsForSelectedRows]) {
         if ([selItem isKindOfClass:[LayerMenuViewBasemapItem class]]) {
@@ -454,7 +461,7 @@
     }
     [_treeView selectRowForItem:_basemapLayerEntries[basemapLayerIndex] animated:NO scrollPosition:RATreeViewScrollPositionNone];
     
-    [self.delegate setBasemapLayer:layer];
+    [self.delegate setBasemapLoader:loader];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -936,19 +943,29 @@
     if (featureTableItem.zorder && ![featureTableItem.zorder isEqual:[NSNull null]])
         drawPriority = kMaplyVectorDrawPriorityDefault + featureTableItem.zorder.intValue;
     
-    GPKGFeatureTileSource *featureTileSource = [[GPKGFeatureTileSource alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL sldData:sldData minZoom:1 maxZoom:20];
+    // A fetcher knows how to actually go and get data
+    GPKGFeatureTileFetcher *featureTileFetcher = [[GPKGFeatureTileFetcher alloc] initWithGeoPackage:_indexingItem.gpkg tableName:featureTableItem.featureTableName bounds:_bounds sldURL:sldURL sldData:sldData minZoom:1 maxZoom:20];
     
     // Note: For testing filtering
 //    NSDictionary *filterDict = @{@"property_1": @"Ganges"};
 //    [featureTileSource setFilterDict:filterDict];
     
-    MaplyQuadPagingLayer *vecLayer = [[MaplyQuadPagingLayer alloc] initWithCoordSystem:_coordSys delegate:featureTileSource];
-    vecLayer.numSimultaneousFetches = 1;
-    vecLayer.drawPriority = drawPriority;
+    // Sampling Params describe how the globe/map is structured
+    MaplySamplingParams *params = [[MaplySamplingParams alloc] init];
+    params.minZoom = featureTileFetcher.minZoom;
+    params.maxZoom = featureTileFetcher.maxZoom;
+    params.minImportance = 1024*1024;
+    params.singleLevel = true;
+    params.coordSys = _coordSys;
     
-    featureTableItem.featureSource = featureTileSource;
-    featureTableItem.pagingLayer = vecLayer;
-    [self.delegate addFeatureLayer:vecLayer];
+    // This decides what to load and when
+    MaplyQuadPagingLoader *vecLoader = [[MaplyQuadPagingLoader alloc] initWithParams:params tileInfo:featureTileFetcher.tileInfo loadInterp:nil viewC:theViewC];
+    [vecLoader setTileFetcher:featureTileFetcher];
+    featureTileFetcher.loader = vecLoader;
+    
+    featureTableItem.featureFetcher = featureTileFetcher;
+    featureTableItem.pagingLayer = vecLoader;
+    [self.delegate addFeatureLoader:vecLoader];
 
     [_treeView reloadRowsForItems:@[featureTableItem] withRowAnimation:RATreeViewRowAnimationNone];
     
@@ -1005,11 +1022,10 @@
     if ([layerItem isKindOfClass:[LayerMenuViewTileTableItem class]]) {
         
         LayerMenuViewTileTableItem *tileTableItem = (LayerMenuViewTileTableItem *)layerItem;
-        if (tileTableItem.imageLayer) {
-            [self.delegate removeTileLayer:tileTableItem.imageLayer];
-            tileTableItem.imageLayer = nil;
-            [tileTableItem.tileSource close];
-            tileTableItem.tileSource = nil;
+        if (tileTableItem.imageLoader) {
+            [self.delegate removeTileLoader:tileTableItem.imageLoader];
+            tileTableItem.imageLoader = nil;
+            tileTableItem.tileFetcher = nil;
         } else {
             LayerMenuViewGeopackageItem *geopackageItem = tileTableItem.geopackageItem;
             GPKGGeoPackage *gpkg = [_gpkgGeoPackageManager open:geopackageItem.name];
@@ -1023,18 +1039,27 @@
             {
                 case GPKG_CDT_TILES:
                 {
-                    GPKGTileSource *gpkgTileSource = [[GPKGTileSource alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
+                    // This know show to fetch the actual tiles
+                    GPKGTileFetcher *tileFetcher = [[GPKGTileFetcher alloc] initWithGeoPackage:gpkg tableName:tileTableItem.tileTableName bounds:_bounds];
                     
-                    MaplyQuadImageTilesLayer *imageLayer = [[MaplyQuadImageTilesLayer alloc] initWithCoordSystem:gpkgTileSource.coordSys tileSource:gpkgTileSource];
+                    // Describes how we break down the globe/map
+                    MaplySamplingParams *params = [[MaplySamplingParams alloc] init];
+                    params.minZoom = tileFetcher.minZoom;
+                    params.maxZoom = tileFetcher.maxZoom;
+                    params.coverPoles = false;
+                    params.edgeMatching = true;
+                    params.coordSys = tileFetcher.coordSys;
                     
-                    imageLayer.numSimultaneousFetches = 2;
+                    // Manages the actual loading
+                    MaplyQuadImageLoader *imageLoader = [[MaplyQuadImageLoader alloc] initWithParams:params tileInfo:tileFetcher.tileInfo viewC:theViewC];
                     // This fades in the image layer
                     //            imageLayer.color = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:0.5];
-                    imageLayer.drawPriority = kMaplyImageLayerDrawPriorityDefault + 100;
+                    [imageLoader setTileFetcher:tileFetcher];
+                    imageLoader.baseDrawPriority = kMaplyImageLayerDrawPriorityDefault + 10000;
                     
-                    tileTableItem.tileSource = gpkgTileSource;
-                    tileTableItem.imageLayer = imageLayer;
-                    [self.delegate addTileLayer:imageLayer];
+                    tileTableItem.tileFetcher = tileFetcher;
+                    tileTableItem.imageLoader = imageLoader;
+                    [self.delegate addTileLoader:imageLoader];
                 }
                     break;
                 case GPKG_CDT_MBVECTOR_TILES:
@@ -1072,10 +1097,9 @@
         
         LayerMenuViewFeatureTableItem *featureTableItem = (LayerMenuViewFeatureTableItem *)layerItem;
         if (featureTableItem.pagingLayer) {
-            [self.delegate removeFeatureLayer:featureTableItem.pagingLayer];
+            [self.delegate removeFeatureLoader:featureTableItem.pagingLayer];
             featureTableItem.pagingLayer = nil;
-            [featureTableItem.featureSource close];
-            featureTableItem.featureSource = nil;
+            featureTableItem.featureFetcher = nil;
         } else {
             
             if (_importingGeopackageItem ||

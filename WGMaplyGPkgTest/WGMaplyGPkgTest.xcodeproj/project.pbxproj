@@ -24,6 +24,7 @@
 		2B7E689722A0A07000BBFD9E /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */; };
 		2B7E689822A0A07B00BBFD9E /* WhirlyGlobeMaplyComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */; };
 		2B7E689922A0A07B00BBFD9E /* WhirlyGlobeMaplyComponent.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7E689422A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2B7E68A222A59E0400BBFD9E /* default.sld in Resources */ = {isa = PBXBuildFile; fileRef = 2B7E68A122A59E0400BBFD9E /* default.sld */; };
 		53D73DD20E561EA6253260D0 /* libPods-WGMaplyGPkgTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */; };
 		E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = E5190A5E1D49B5A7003130E2 /* map_pin.png */; };
 		E53FD7681D4ED2A500FD73BD /* LayerMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E53FD7661D4ED2A500FD73BD /* LayerMenuViewController.m */; };
@@ -63,7 +64,6 @@
 		E5D84F8C1D38016B00D5AF18 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */; };
 		E5D84F8E1D38017200D5AF18 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */; };
 		E5F576D01DD19A49009282C6 /* bounds.json in Resources */ = {isa = PBXBuildFile; fileRef = E5F576CF1DD19A49009282C6 /* bounds.json */; };
-		E5F576D21DD19A50009282C6 /* default.sld in Resources */ = {isa = PBXBuildFile; fileRef = E5F576D11DD19A50009282C6 /* default.sld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +137,7 @@
 		2B29A0B7208D33C20087C3D8 /* RATreeNodeCollectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNodeCollectionController.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNodeCollectionController.h"; sourceTree = "<group>"; };
 		2B29A0B8208D33C20087C3D8 /* RATreeNode_ClassExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RATreeNode_ClassExtension.h; path = "../libs/RATreeView/RATreeView/RATreeView/Private Files/RATreeNode_ClassExtension.h"; sourceTree = "<group>"; };
 		2B7E688E22A0A06D00BBFD9E /* WhirlyGlobeMaplyComponent.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhirlyGlobeMaplyComponent.xcodeproj; path = "../libs/WhirlyGlobe-3/ios/library/WhirlyGlobe-MaplyComponent/WhirlyGlobeMaplyComponent.xcodeproj"; sourceTree = "<group>"; };
+		2B7E68A122A59E0400BBFD9E /* default.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = default.sld; path = "../../libs/WhirlyGlobe-3/resources/vectors/styles/default.sld"; sourceTree = "<group>"; };
 		58468FBE490675646BC1E021 /* Pods-WGMaplyGPkgTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WGMaplyGPkgTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WGMaplyGPkgTest/Pods-WGMaplyGPkgTest.debug.xcconfig"; sourceTree = "<group>"; };
 		7035D2E3588AEB66A14C7E74 /* libPods-WGMaplyGPkgTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WGMaplyGPkgTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5190A5E1D49B5A7003130E2 /* map_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map_pin.png; sourceTree = "<group>"; };
@@ -191,8 +192,7 @@
 		E5D84F891D38016400D5AF18 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		E5D84F8B1D38016B00D5AF18 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		E5D84F8D1D38017200D5AF18 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		E5F576CF1DD19A49009282C6 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = bounds.json; path = ../../libs/WhirlyGlobe/resources/srs/bounds.json; sourceTree = "<group>"; };
-		E5F576D11DD19A50009282C6 /* default.sld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = default.sld; path = ../../libs/WhirlyGlobe/resources/vectors/styles/default.sld; sourceTree = "<group>"; };
+		E5F576CF1DD19A49009282C6 /* bounds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = bounds.json; path = "../../libs/WhirlyGlobe-3/resources/srs/bounds.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,7 +374,7 @@
 		E5F576CA1DD19A1A009282C6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E5F576D11DD19A50009282C6 /* default.sld */,
+				2B7E68A122A59E0400BBFD9E /* default.sld */,
 				E5F576CF1DD19A49009282C6 /* bounds.json */,
 			);
 			name = Resources;
@@ -481,7 +481,7 @@
 				E5D84F6C1D37F58300D5AF18 /* LaunchScreen.storyboard in Resources */,
 				E5A357871DBEA18D00680149 /* VOR.png in Resources */,
 				E53FD7691D4ED2A500FD73BD /* LayerMenuViewController.xib in Resources */,
-				E5F576D21DD19A50009282C6 /* default.sld in Resources */,
+				2B7E68A222A59E0400BBFD9E /* default.sld in Resources */,
 				E5A3577E1DBDBA3400680149 /* mainNAVL.sld in Resources */,
 				E5190A5F1D49B5A7003130E2 /* map_pin.png in Resources */,
 				E56E10FA1D51CA51004B47F7 /* ic_polygon.png in Resources */,

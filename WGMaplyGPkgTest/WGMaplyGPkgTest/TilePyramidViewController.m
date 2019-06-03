@@ -90,9 +90,15 @@
 
 - (NSDictionary <NSString *, MaplyRemoteTileInfoNew *> *) getBasemapLayerTileInfoDict {
     
+    MaplyRemoteTileInfoNew *lightTI = [[MaplyRemoteTileInfoNew alloc] initWithBaseURL:@"http://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png" minZoom:0 maxZoom:20];
+    lightTI.coordSys = [[MaplySphericalMercator alloc] initWebStandard];
+    
+    MaplyRemoteTileInfoNew *darkTI = [[MaplyRemoteTileInfoNew alloc] initWithBaseURL:@"http://s.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" minZoom:0 maxZoom:20];
+    darkTI.coordSys = lightTI.coordSys;
+    
     return @{
-             @"Light" :    [[MaplyRemoteTileInfoNew alloc] initWithBaseURL:@"http://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png" minZoom:0 maxZoom:20],
-             @"Dark" : [[MaplyRemoteTileInfoNew alloc] initWithBaseURL:@"http://s.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" minZoom:0 maxZoom:20],
+             @"Light" :    lightTI,
+             @"Dark" : darkTI,
              };
 }
 
